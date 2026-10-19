@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Fields, today</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+a{color:#003f7e;text-decoration:none}a:hover{color:#004c97}
+</style>
+</helmet>
+<div style="position: relative; width: 1040px; height: 420px; padding: 40px 48px; display: flex; flex-direction: column; gap: 32px; background: #ffffff; color: #2d3943; font-family: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing: antialiased;">
+<section style="display: flex; flex-direction: column; gap: 12px;">
+<h2 style="margin: 0; font-size: 12px; line-height: 16px; font-weight: 600; color: #64727e;">Text input: focused, read-only, invalid</h2>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; align-items: start;">
+<div style="display: flex; flex-direction: column; gap: 6px; min-width: 0;">
+<label for="ft-name" style="width: fit-content; font-size: 12.5px; line-height: 18px; font-weight: 700; color: #1c2733;">Name</label>
+<input id="ft-name" type="text" value="Harbor Street Credit Union" style="width: 100%; height: 36px; padding: 0 12px; border-radius: 7px; border: 1px solid rgba(0,51,101,0.10); background: #ffffff; font-family: inherit; font-size: 13px; color: #2d3943; border-color: #0069aa; box-shadow: 0 0 0 3px rgba(0,105,170,0.20); outline: 0;">
+<p style="margin: 0; font-size: 11.5px; line-height: 1.5; color: #64727e;">Shown in the tenant switcher.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px; min-width: 0;">
+<label for="ft-slug" style="width: fit-content; font-size: 12.5px; line-height: 18px; font-weight: 700; color: #1c2733;">Slug</label>
+<input id="ft-slug" type="text" value="harbor-street" readonly="readonly" style="width: 100%; height: 36px; padding: 0 12px; border-radius: 7px; border: 1px solid rgba(0,51,101,0.10); background: #ffffff; font-family: inherit; font-size: 13px; color: #2d3943; background: rgba(0,76,151,0.05);">
+<p style="margin: 0; font-size: 11.5px; line-height: 1.5; color: #64727e;">Fixed after the tenant is created.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px; min-width: 0;">
+<label for="ft-source" style="width: fit-content; font-size: 12.5px; line-height: 18px; font-weight: 700; color: #1c2733; color: oklch(50.5% 0.213 27.518);">Source name</label>
+<input id="ft-source" type="text" aria-invalid="true" aria-describedby="ft-source-err" placeholder="Loan servicing API" style="width: 100%; height: 36px; padding: 0 12px; border-radius: 7px; border: 1px solid rgba(0,51,101,0.10); background: #ffffff; font-family: inherit; font-size: 13px; color: #2d3943; border-color: oklch(63.7% 0.237 25.331);">
+<p id="ft-source-err" style="margin: 0; font-size: 11.5px; line-height: 1.5; color: #64727e; font-weight: 500; color: oklch(50.5% 0.213 27.518);">Give the source a name.</p>
+</div>
+</div>
+</section>
+<section style="display: flex; flex-direction: column; gap: 12px;">
+<h2 style="margin: 0; font-size: 12px; line-height: 16px; font-weight: 600; color: #64727e;">Select, search with clear, textarea</h2>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; align-items: start;">
+<div style="display: flex; flex-direction: column; gap: 6px; min-width: 0;">
+<label for="ft-status" style="width: fit-content; font-size: 12.5px; line-height: 18px; font-weight: 700; color: #1c2733;">Status</label>
+<span style="position: relative; display: flex; align-items: center;">
+<select id="ft-status" style="width: 100%; height: 36px; padding: 0 12px; border-radius: 7px; border: 1px solid rgba(0,51,101,0.10); background: #ffffff; font-family: inherit; font-size: 13px; color: #2d3943; appearance: none; -webkit-appearance: none;"><option selected="selected">Active</option><option>Pending</option><option>Suspended</option></select>
+<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="position: absolute; right: 10px; pointer-events: none;"><path d="m6 9 6 6 6-6"/></svg>
+</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px; min-width: 0;">
+<label for="ft-find" style="width: fit-content; font-size: 12.5px; line-height: 18px; font-weight: 700; color: #1c2733;">Find a tenant</label>
+<span style="display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 2px 0 12px; border-radius: 7px; border: 1px solid rgba(0,51,101,0.10); background: #ffffff;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+<input id="ft-find" type="text" value="harbor" style="flex: 1 1 auto; min-width: 0; height: 100%; padding: 0; border: 0; outline: 0; background: transparent; font-family: inherit; font-size: 13px; color: #2d3943;">
+<button type="button" aria-label="Clear" style="display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; padding: 0; border: 0; cursor: pointer; width: 32px; height: 32px; border-radius: 7px; background: transparent; color: #64727e;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px; min-width: 0;">
+<label for="ft-note" style="width: fit-content; font-size: 12.5px; line-height: 18px; font-weight: 700; color: #1c2733;">Note to the requester</label>
+<textarea id="ft-note" rows="4" placeholder="What needs to change?" style="display: block; width: 100%; height: 96px; padding: 8px 12px; border-radius: 7px; border: 1px solid rgba(0,51,101,0.10); background: #ffffff; resize: none; font-family: inherit; font-size: 13px; line-height: 1.625; color: #2d3943;"></textarea>
+</div>
+</div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1040,"height":420}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

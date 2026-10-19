@@ -1,0 +1,8 @@
+/* The workflows area's stylesheet. An app imports it after `tailwindcss`,
+   brand/tokens.css and styles.css — see styles.css for why the sheets never
+   import one another.
+
+   The @source line is what makes this area's class names reach the app's CSS:
+   Tailwind only auto-scans the app's own Vite root, and this package is
+   outside it. It resolves against this file's real path. */
+@source "./**/*.{ts,tsx}";

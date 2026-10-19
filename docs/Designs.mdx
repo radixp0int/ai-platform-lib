@@ -1,0 +1,42 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Docs/Designs" />
+
+# Designs
+
+The design work the library is built from is saved in `designs/` at the repo
+root. The files are copies of design canvases: `canvas.json` is the index
+(pages, artboard positions, row titles) and each `*.dc.html` is one artboard.
+They are for reading, not for editing by hand; re-save from the canvas after
+changing it.
+
+| Folder                       | What it is                                                                                                  | Built as                                                 |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| `designs/platform-shell/`    | The platform shell: top bar, pinned pages, tenant switcher, side menu, and the pages around them            | **Recipes / App shell** and the components it is made of |
+| `designs/agentic-flows/`     | The workflow run canvas: horizontal lanes, the flow console, node kit                                       | **Workflows / Recipes / Loan review run**                |
+| `designs/responsive-review/` | The tablet and phone review: which widths are supported, how to decide what gives way, evidence screenshots | Rules every component and recipe follows                 |
+
+## Platform shell
+
+The canvas has four pages. The current direction is **Mercury direction 2.0**
+(files prefixed `M2`): Mercury-style pages under a navy top bar that carries
+the menu toggle, the logo, up to three pinned pages, the tenant switcher, a
+search icon, notifications and the account menu.
+
+| Canvas page           | Files     | Status                                                                              |
+| --------------------- | --------- | ----------------------------------------------------------------------------------- |
+| Airtable direction    | no prefix | First pass. Its top bar carried into 2.0.                                           |
+| Mercury direction     | `M…`      | Second pass, with the controls in the page rather than a top bar.                   |
+| Mercury direction 2.0 | `M2…`     | **Current.** What the app shell recipe implements.                                  |
+| Component revisions   | `Rev…`    | **Rejected.** A Mercury-style restyle of eight components. Kept for reference only. |
+
+Decisions that came out of the reviews and are easy to undo by accident:
+
+- The tenant switcher lives in the top bar, not the side menu, because a wizard
+  hides the side menu.
+- A space a tenant does not have is left out of the menu, not shown locked.
+- The tenants list sits outside any tenant and is a data table.
+- In chat, only the chat's own menu shows (new chat, filters, history), and it
+  is resizable by dragging.
+- Buttons on the pages are the library's `Button`. The pill buttons in the
+  artboards were not carried over.

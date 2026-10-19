@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Chat menu and composer, proposed</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+a{color:#003f7e;text-decoration:none}a:hover{color:#004c97}
+</style>
+</helmet>
+<div style="position: relative; width: 1040px; height: 760px; display: flex; overflow: hidden; background: #ffffff; color: #2d3943; font-family: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing: antialiased;">
+<aside aria-label="Chat menu" style="display: flex; flex-direction: column; width: 288px; flex: 0 0 auto; background: #fafbfc; border-right: 1px solid rgba(0,51,101,0.10);">
+<div style="display: flex; align-items: center; gap: 8px; padding: 8px 6px 4px 18px;">
+<span style="flex: 1 1 auto; font-size: 15px; line-height: 24px; font-weight: 600; color: #1c2733;">Chat</span>
+<button type="button" aria-label="Hide chat menu" aria-expanded="true" style="display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; padding: 0; border: 0; cursor: pointer; width: 44px; height: 44px; border-radius: 9999px; background: transparent; color: #64727e;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m11 6-6 6 6 6M19 6l-6 6 6 6"/></svg></button>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px; padding: 0 12px;">
+<button type="button" style="display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; font-family: inherit; white-space: nowrap; cursor: pointer; border-radius: 9999px; font-weight: 600; height: 44px; padding: 0 22px; gap: 8px; font-size: 14px; border: 0; background: #004c97; color: #ffffff; width: 100%;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>New chat</span></button>
+<a href="#search-chat" style="display: flex; align-items: center; gap: 10px; height: 44px; margin-top: 4px; padding: 0 6px; border-radius: 8px; font-size: 14px; font-weight: 500; color: #2d3943;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><span>Search chat</span></a>
+</div>
+<section aria-label="Filters" style="display: flex; flex-direction: column; gap: 8px; flex: 1 1 auto; min-height: 0; overflow: hidden; margin-top: 4px; padding: 12px 18px 0 18px; border-top: 1px solid rgba(0,51,101,0.10);">
+<div style="display: flex; align-items: baseline; gap: 8px;">
+<h2 style="margin: 0; font-size: 13px; line-height: 20px; font-weight: 600; color: #1c2733;">Filters</h2>
+<span style="font-size: 12px; line-height: 16px; color: #64727e; font-variant-numeric: tabular-nums;">43,693 items in scope</span>
+</div>
+<div style="display: flex; align-items: center; gap: 8px;">
+<label for="cn-range" style="font-size: 12px; line-height: 16px; color: #64727e; font-weight: 500; flex: 0 0 auto;">Range</label>
+<select id="cn-range" style="min-width: 0; height: 36px; padding: 0 10px; border-radius: 8px; border: 1px solid rgba(0,51,101,0.12); background: rgba(0,51,101,0.04); font-family: inherit; font-size: 13px; color: #1c2733; flex: 1 1 auto;"><option>Last 7 days</option><option selected="selected">Last 30 days</option><option>Last 90 days</option></select>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px;">
+<span style="font-size: 12px; line-height: 16px; color: #64727e; font-weight: 500;">Add a filter</span>
+<div style="display: flex; gap: 6px;">
+<label for="cn-type" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%);">Filter type</label>
+<select id="cn-type" style="min-width: 0; height: 36px; padding: 0 10px; border-radius: 8px; border: 1px solid rgba(0,51,101,0.12); background: rgba(0,51,101,0.04); font-family: inherit; font-size: 13px; color: #1c2733; width: 96px; flex: 0 0 auto; padding: 0 6px;"><option selected="selected">Merchant</option></select>
+<label for="cn-value" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%);">Filter value</label>
+<input id="cn-value" type="text" placeholder="Delta Air Lines" style="min-width: 0; height: 36px; padding: 0 10px; border-radius: 8px; border: 1px solid rgba(0,51,101,0.12); background: rgba(0,51,101,0.04); font-family: inherit; font-size: 13px; color: #1c2733; flex: 1 1 auto;">
+<button type="button" aria-label="Add the filter" disabled="disabled" style="display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; padding: 0; border: 0; cursor: pointer; width: 36px; height: 36px; border-radius: 9999px; background: rgba(0,51,101,0.05); color: #2d3943; opacity: 0.4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+</div>
+<span style="font-size: 12px; line-height: 16px; color: #64727e;">Matches the merchant string on each transaction.</span>
+</div>
+<span style="font-size: 12px; line-height: 16px; color: #64727e;">No filters yet. Answers draw from everything in scope.</span>
+<div style="display: flex; align-items: center; gap: 8px; height: 36px; flex: 0 0 auto; padding: 0 10px; border-radius: 8px; border: 1px solid rgba(0,51,101,0.12); background: rgba(0,51,101,0.04);">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+<label for="cn-find" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%);">Find a filter</label>
+<input id="cn-find" type="text" placeholder="Find a filter…" style="flex: 1 1 auto; min-width: 0; height: 100%; padding: 0; border: 0; outline: 0; background: transparent; font-family: inherit; font-size: 13px; color: #1c2733;">
+</div>
+<div style="display: flex; flex-direction: column;">
+<div style="display: flex; align-items: center; gap: 4px; padding-left: 2px;">
+<span style="position: relative; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; flex: 0 0 auto;"><input type="checkbox" aria-label="All accounts" style="appearance: none; -webkit-appearance: none; width: 16px; height: 16px; margin: 0; border: 1.5px solid rgba(0,51,101,0.36); border-radius: 4px; background: #ffffff; cursor: pointer;"></span>
+<button type="button" aria-expanded="true" style="display: flex; align-items: center; gap: 6px; flex: 1 1 auto; min-width: 0; height: 34px; padding: 0 2px; border-radius: 6px; border: 0; background: transparent; font-family: inherit; text-align: left; cursor: pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg><span style="flex: 1 1 auto; font-size: 13px; font-weight: 600; color: #1c2733;">Accounts</span><span style="font-size: 12px; font-variant-numeric: tabular-nums; color: #64727e;">7</span></button>
+</div>
+<label style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 2px; border-radius: 6px; cursor: pointer;"><span style="position: relative; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; flex: 0 0 auto;"><input type="checkbox" aria-label="High-Yield Savings" style="appearance: none; -webkit-appearance: none; width: 16px; height: 16px; margin: 0; border: 1.5px solid rgba(0,51,101,0.36); border-radius: 4px; background: #ffffff; cursor: pointer;"></span><span style="flex: 1 1 auto; min-width: 0; font-size: 13px; color: #2d3943; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">High-Yield Savings</span><span style="flex: 0 0 auto; font-size: 12px; font-variant-numeric: tabular-nums; color: #64727e;">9,994</span></label>
+<label style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 2px; border-radius: 6px; cursor: pointer;"><span style="position: relative; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; flex: 0 0 auto;"><input type="checkbox" aria-label="Everyday Checking" style="appearance: none; -webkit-appearance: none; width: 16px; height: 16px; margin: 0; border: 1.5px solid rgba(0,51,101,0.36); border-radius: 4px; background: #ffffff; cursor: pointer;"></span><span style="flex: 1 1 auto; min-width: 0; font-size: 13px; color: #2d3943; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Everyday Checking</span><span style="flex: 0 0 auto; font-size: 12px; font-variant-numeric: tabular-nums; color: #64727e;">8,750</span></label>
+<label style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 2px; border-radius: 6px; cursor: pointer;"><span style="position: relative; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; flex: 0 0 auto;"><input type="checkbox" aria-label="Money Market" style="appearance: none; -webkit-appearance: none; width: 16px; height: 16px; margin: 0; border: 1.5px solid rgba(0,51,101,0.36); border-radius: 4px; background: #ffffff; cursor: pointer;"></span><span style="flex: 1 1 auto; min-width: 0; font-size: 13px; color: #2d3943; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Money Market</span><span style="flex: 0 0 auto; font-size: 12px; font-variant-numeric: tabular-nums; color: #64727e;">8,581</span></label>
+<label style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 2px; border-radius: 6px; cursor: pointer;"><span style="position: relative; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; flex: 0 0 auto;"><input type="checkbox" aria-label="Operating — Alderfinch" style="appearance: none; -webkit-appearance: none; width: 16px; height: 16px; margin: 0; border: 1.5px solid rgba(0,51,101,0.36); border-radius: 4px; background: #ffffff; cursor: pointer;"></span><span style="flex: 1 1 auto; min-width: 0; font-size: 13px; color: #2d3943; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Operating — Alderfinch</span><span style="flex: 0 0 auto; font-size: 12px; font-variant-numeric: tabular-nums; color: #64727e;">8,348</span></label>
+<label style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 2px; border-radius: 6px; cursor: pointer;"><span style="position: relative; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; flex: 0 0 auto;"><input type="checkbox" aria-label="Payroll" style="appearance: none; -webkit-appearance: none; width: 16px; height: 16px; margin: 0; border: 1.5px solid rgba(0,51,101,0.36); border-radius: 4px; background: #ffffff; cursor: pointer;"></span><span style="flex: 1 1 auto; min-width: 0; font-size: 13px; color: #2d3943; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Payroll</span><span style="flex: 0 0 auto; font-size: 12px; font-variant-numeric: tabular-nums; color: #64727e;">8,009</span></label>
+</div>
+</section>
+<section aria-label="Chat history" style="flex: 0 0 auto; padding: 6px 18px 10px 18px; border-top: 1px solid rgba(0,51,101,0.10);">
+<button type="button" aria-expanded="false" style="display: flex; align-items: center; gap: 6px; width: 100%; height: 36px; padding: 0 2px; border-radius: 6px; border: 0; background: transparent; font-family: inherit; text-align: left; cursor: pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><span style="flex: 1 1 auto; font-size: 13px; font-weight: 600; color: #1c2733;">Recent</span><span style="font-size: 12px; font-variant-numeric: tabular-nums; color: #64727e;">7</span></button>
+</section>
+</aside>
+<main style="display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0; background: #ffffff;">
+<div style="display: flex; align-items: center; padding: 16px 24px 0 24px;">
+<a href="#widget-demo" style="display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; font-family: inherit; white-space: nowrap; cursor: pointer; border-radius: 9999px; font-weight: 600; height: 36px; padding: 0 18px; gap: 8px; font-size: 14px; border: 1px solid rgba(0,51,101,0.16); background: #ffffff; color: #1c2733; margin-left: auto;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4.5 3.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg><span>Widget demo</span></a>
+</div>
+<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1 1 auto; min-height: 0; padding: 0 40px 24px 40px;">
+<div style="display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 640px;">
+<span aria-hidden="true" style="display: block; width: 44px; height: 44px; flex: 0 0 auto; border-radius: 9999px; background: radial-gradient(circle at 32% 28%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 34%), radial-gradient(circle at 70% 25%, #ffb27a 0%, rgba(255,178,122,0) 45%), radial-gradient(circle at 28% 70%, #ef6a00 0%, rgba(239,106,0,0) 55%), radial-gradient(circle at 75% 78%, #0069aa 0%, rgba(0,105,170,0) 62%), radial-gradient(circle at 50% 50%, #7dabdb 0%, #004c97 78%); box-shadow: inset 0 -6px 11px rgba(0,25,50,0.35), inset 0 4px 7px rgba(255,255,255,0.5);"></span>
+<h1 style="margin: 22px 0 0 0; font-size: 32px; line-height: 1.2; font-weight: 400; letter-spacing: -0.015em; color: #1c2733; text-align: center;">Good evening, Joe</h1>
+<p style="margin: 8px 0 0 0; font-size: 16px; line-height: 24px; color: #64727e;">How can I help you today?</p>
+<div style="align-self: stretch; margin-top: 36px;">
+<p style="display: flex; align-items: center; gap: 6px; margin: 0 0 10px 0; font-size: 12px; line-height: 16px; font-weight: 600; color: #64727e;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg><span>Suggested for today</span></p>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;">
+<button type="button" style="display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(0,51,101,0.12); background: #ffffff; font-family: inherit; text-align: left; cursor: pointer;"><span style="font-size: 14px; line-height: 1.45; font-weight: 500; color: #1c2733;">What changed in our cash position since Friday?</span><span style="font-size: 12px; line-height: 1.4; color: #64727e;">Monday check-in</span></button>
+<button type="button" style="display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(0,51,101,0.12); background: #ffffff; font-family: inherit; text-align: left; cursor: pointer;"><span style="font-size: 14px; line-height: 1.45; font-weight: 500; color: #1c2733;">Which invoices are due this week?</span><span style="font-size: 12px; line-height: 1.4; color: #64727e;">Popular in your org</span></button>
+<button type="button" style="display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(0,51,101,0.12); background: #ffffff; font-family: inherit; text-align: left; cursor: pointer;"><span style="font-size: 14px; line-height: 1.45; font-weight: 500; color: #1c2733;">Summarize policy updates from the last 7 days</span><span style="font-size: 12px; line-height: 1.4; color: #64727e;">New this week</span></button>
+<button type="button" style="display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(0,51,101,0.12); background: #ffffff; font-family: inherit; text-align: left; cursor: pointer;"><span style="font-size: 14px; line-height: 1.45; font-weight: 500; color: #1c2733;">Show accounts with unusual activity today</span><span style="font-size: 12px; line-height: 1.4; color: #64727e;">Trending today</span></button>
+</div>
+</div>
+<div style="align-self: stretch; margin-top: 16px; padding: 6px 10px 10px 10px; border-radius: 16px; border: 1px solid rgba(0,51,101,0.16); background: #ffffff; box-shadow: 0 6px 20px rgba(0,25,50,0.06);">
+<label for="cn-ask" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%);">Message Acme</label>
+<textarea id="cn-ask" rows="2" placeholder="Ask anything…" style="display: block; width: 100%; height: 56px; padding: 10px 8px 4px 8px; border: 0; outline: 0; resize: none; background: transparent; font-family: inherit; font-size: 16px; line-height: 1.5; color: #1c2733;"></textarea>
+<div style="display: flex; align-items: center; gap: 6px;">
+<button type="button" aria-label="Attach files" style="display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; padding: 0; border: 0; cursor: pointer; width: 40px; height: 40px; border-radius: 9999px; background: rgba(0,51,101,0.05); color: #2d3943;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+<button type="button" aria-label="Hold to speak" style="display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; padding: 0; border: 0; cursor: pointer; width: 40px; height: 40px; border-radius: 9999px; background: transparent; color: #64727e;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+<button type="button" aria-label="Send" disabled="disabled" style="display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; padding: 0; border: 0; cursor: pointer; margin-left: auto; width: 40px; height: 40px; border-radius: 9999px; background: #004c97; color: #ffffff; opacity: 0.4;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1040,"height":760}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

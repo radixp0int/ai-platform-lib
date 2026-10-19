@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Chat menu and composer, today</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+a{color:#003f7e;text-decoration:none}a:hover{color:#004c97}
+</style>
+</helmet>
+<div style="position: relative; width: 1040px; height: 760px; padding: 12px; display: flex; gap: 12px; overflow: hidden; background: radial-gradient(60% 50% at 12% 0%, rgba(0,76,151,0.10), rgba(0,76,151,0) 70%), radial-gradient(50% 45% at 100% 100%, rgba(0,105,170,0.09), rgba(0,105,170,0) 70%), #f5f7f9; color: #2d3943; font-family: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing: antialiased;">
+<aside aria-label="Chat menu" style="display: flex; flex-direction: column; width: 288px; flex: 0 0 auto; border-radius: 10px; background: rgba(255,255,255,0.62); border: 1px solid rgba(0,51,101,0.10); -webkit-backdrop-filter: blur(18px) saturate(1.3); backdrop-filter: blur(18px) saturate(1.3);">
+<div style="display: flex; align-items: center; gap: 10px; padding: 20px 20px 16px 20px;">
+<span style="font-size: 18px; line-height: 28px; font-weight: 600; letter-spacing: -0.025em; color: #1c2733;">Chat</span>
+<button type="button" aria-label="Collapse sidebar" aria-expanded="true" style="display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; padding: 0; border: 0; cursor: pointer; margin-left: auto; width: 32px; height: 32px; border-radius: 7px; background: transparent; color: #64727e;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button>
+</div>
+<div style="padding: 0 16px;">
+<button type="button" style="display: flex; align-items: center; gap: 10px; width: 100%; padding: 12px 16px; border: 0; border-radius: 7px; background: #ffffff; box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,51,101,0.10); font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 600; color: #1c2733; cursor: pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0069aa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4.5 3.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg><span>New chat</span></button>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px; flex: 1 1 auto; min-height: 0; overflow: hidden; margin-top: 16px; padding: 0 16px 12px 16px;">
+<a href="#search-chat" style="display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px; border-radius: 7px; font-size: 14px; line-height: 20px; font-weight: 500; color: #2d3943;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><span>Search chat</span></a>
+<button type="button" aria-expanded="true" style="display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px; border-radius: 7px; font-size: 14px; line-height: 20px; font-weight: 500; color: #2d3943; border: 0; background: transparent; font-family: inherit; text-align: left; cursor: pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16l-6 7.5V19l-4-2v-4.5z"/></svg><span style="flex: 1 1 auto;">Filters</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+<div style="display: flex; flex-direction: column; gap: 8px; flex: 1 1 auto; min-height: 0; overflow: hidden; padding: 2px 8px 4px 8px;">
+<p style="margin: 0; font-size: 12px; line-height: 18px; font-weight: 600; color: #1c2733;">43,693 items in scope</p>
+<div style="display: flex; align-items: center; gap: 8px;">
+<label for="ct-range" style="font-size: 10px; line-height: 16px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #64727e; flex: 0 0 auto;">Range</label>
+<select id="ct-range" style="min-width: 0; padding: 6px 8px; border-radius: 7px; border: 1px solid rgba(0,51,101,0.10); background: #ffffff; font-family: inherit; font-size: 12px; color: #2d3943; flex: 1 1 auto; font-weight: 500;"><option>Last 7 days</option><option selected="selected">Last 30 days</option><option>Last 90 days</option></select>
+</div>
+<div style="padding: 10px; border-radius: 10px; border: 1px solid rgba(0,51,101,0.10); background: rgba(255,255,255,0.62);">
+<p style="margin: 0 0 8px 0; font-size: 10px; line-height: 16px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #64727e;">Add a facet</p>
+<div style="display: flex; gap: 6px;">
+<label for="ct-type" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%);">Facet type</label>
+<select id="ct-type" style="min-width: 0; padding: 6px 8px; border-radius: 7px; border: 1px solid rgba(0,51,101,0.10); background: #ffffff; font-family: inherit; font-size: 12px; color: #2d3943; width: 96px; flex: 0 0 auto; padding: 6px; font-weight: 500;"><option selected="selected">Merchant</option></select>
+<label for="ct-value" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%);">Facet value</label>
+<input id="ct-value" type="text" placeholder="Delta Air Lines" style="min-width: 0; padding: 6px 8px; border-radius: 7px; border: 1px solid rgba(0,51,101,0.10); background: #ffffff; font-family: inherit; font-size: 12px; color: #2d3943; flex: 1 1 auto;">
+<button type="button" aria-label="Add the facet" disabled="disabled" style="display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; padding: 0; border: 0; cursor: pointer; width: 30px; border-radius: 7px; background: #004c97; color: #ffffff; opacity: 0.4;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+</div>
+<p style="margin: 6px 0 0 0; font-size: 11px; line-height: 1.375; color: #64727e;">Matches the merchant string on each transaction.</p>
+</div>
+<p style="margin: 0; font-size: 11.5px; line-height: 1.5; color: #64727e;">No filters yet. Answers draw from everything in scope.</p>
+<div style="position: relative; display: flex; flex: 0 0 auto;">
+<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="position: absolute; top: 9px; left: 9px;"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+<label for="ct-find" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%);">Find a filter</label>
+<input id="ct-find" type="text" placeholder="Find a filter…" style="min-width: 0; padding: 6px 8px; border-radius: 7px; border: 1px solid rgba(0,51,101,0.10); background: #ffffff; font-family: inherit; font-size: 12px; color: #2d3943; width: 100%; padding-left: 28px; background: rgba(255,255,255,0.62);">
+</div>
+<div style="display: flex; flex-direction: column;">
+<div style="display: flex; align-items: center; gap: 4px; padding-left: 8px;">
+<span style="position: relative; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; flex: 0 0 auto;"><input type="checkbox" aria-label="All accounts" style="appearance: none; -webkit-appearance: none; width: 18px; height: 18px; margin: 0; border: 2px solid rgba(100,114,126,0.6); border-radius: 4px; background: #ffffff; cursor: pointer;"></span>
+<button type="button" aria-expanded="true" style="display: flex; align-items: center; gap: 8px; flex: 1 1 auto; min-width: 0; padding: 6px 4px; border-radius: 7px; border: 0; background: transparent; font-family: inherit; text-align: left; cursor: pointer;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg><span style="flex: 1 1 auto; font-size: 12.5px; font-weight: 600; color: #1c2733;">Accounts</span><span style="font-size: 10.5px; font-weight: 600; font-variant-numeric: tabular-nums; color: #64727e;">7</span></button>
+</div>
+<label style="display: flex; align-items: center; gap: 10px; height: 28px; padding: 0 8px; border-radius: 7px; cursor: pointer;"><span style="position: relative; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; flex: 0 0 auto;"><input type="checkbox" aria-label="High-Yield Savings" style="appearance: none; -webkit-appearance: none; width: 18px; height: 18px; margin: 0; border: 2px solid rgba(100,114,126,0.6); border-radius: 4px; background: #ffffff; cursor: pointer;"></span><span style="flex: 1 1 auto; min-width: 0; font-size: 12.5px; color: #2d3943; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">High-Yield Savings</span><span style="flex: 0 0 auto; font-size: 11.5px; font-variant-numeric: tabular-nums; color: #64727e;">9,994</span></label>
+<label style="display: flex; align-items: center; gap: 10px; height: 28px; padding: 0 8px; border-radius: 7px; cursor: pointer;"><span style="position: relative; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; flex: 0 0 auto;"><input type="checkbox" aria-label="Everyday Checking" style="appearance: none; -webkit-appearance: none; width: 18px; height: 18px; margin: 0; border: 2px solid rgba(100,114,126,0.6); border-radius: 4px; background: #ffffff; cursor: pointer;"></span><span style="flex: 1 1 auto; min-width: 0; font-size: 12.5px; color: #2d3943; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Everyday Checking</span><span style="flex: 0 0 auto; font-size: 11.5px; font-variant-numeric: tabular-nums; color: #64727e;">8,750</span></label>
+<label style="display: flex; align-items: center; gap: 10px; height: 28px; padding: 0 8px; border-radius: 7px; cursor: pointer;"><span style="position: relative; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; flex: 0 0 auto;"><input type="checkbox" aria-label="Money Market" style="appearance: none; -webkit-appearance: none; width: 18px; height: 18px; margin: 0; border: 2px solid rgba(100,114,126,0.6); border-radius: 4px; background: #ffffff; cursor: pointer;"></span><span style="flex: 1 1 auto; min-width: 0; font-size: 12.5px; color: #2d3943; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Money Market</span><span style="flex: 0 0 auto; font-size: 11.5px; font-variant-numeric: tabular-nums; color: #64727e;">8,581</span></label>
+<label style="display: flex; align-items: center; gap: 10px; height: 28px; padding: 0 8px; border-radius: 7px; cursor: pointer;"><span style="position: relative; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; flex: 0 0 auto;"><input type="checkbox" aria-label="Operating — Alderfinch" style="appearance: none; -webkit-appearance: none; width: 18px; height: 18px; margin: 0; border: 2px solid rgba(100,114,126,0.6); border-radius: 4px; background: #ffffff; cursor: pointer;"></span><span style="flex: 1 1 auto; min-width: 0; font-size: 12.5px; color: #2d3943; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Operating — Alderfinch</span><span style="flex: 0 0 auto; font-size: 11.5px; font-variant-numeric: tabular-nums; color: #64727e;">8,348</span></label>
+<label style="display: flex; align-items: center; gap: 10px; height: 28px; padding: 0 8px; border-radius: 7px; cursor: pointer;"><span style="position: relative; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; flex: 0 0 auto;"><input type="checkbox" aria-label="Payroll" style="appearance: none; -webkit-appearance: none; width: 18px; height: 18px; margin: 0; border: 2px solid rgba(100,114,126,0.6); border-radius: 4px; background: #ffffff; cursor: pointer;"></span><span style="flex: 1 1 auto; min-width: 0; font-size: 12.5px; color: #2d3943; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Payroll</span><span style="flex: 0 0 auto; font-size: 11.5px; font-variant-numeric: tabular-nums; color: #64727e;">8,009</span></label>
+</div>
+</div>
+<div style="flex: 0 0 auto; padding-top: 4px; border-top: 1px solid rgba(0,51,101,0.10);">
+<button type="button" aria-expanded="false" style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px; border-radius: 7px; border: 0; background: transparent; font-family: inherit; text-align: left; cursor: pointer;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><span style="flex: 1 1 auto; font-size: 11px; line-height: 16px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #64727e;">Recent</span><span style="font-size: 11px; font-variant-numeric: tabular-nums; color: #64727e;">7</span></button>
+</div>
+</div>
+</aside>
+<main style="display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0; border-radius: 10px; background: rgba(255,255,255,0.62); border: 1px solid rgba(0,51,101,0.10); -webkit-backdrop-filter: blur(18px) saturate(1.3); backdrop-filter: blur(18px) saturate(1.3);">
+<div style="display: flex; align-items: center; padding: 16px 20px 0 20px;">
+<a href="#widget-demo" style="display: flex; align-items: center; gap: 6px; height: 36px; margin-left: auto; padding: 0 12px; border-radius: 7px; background: rgba(255,255,255,0.62); border: 1px solid rgba(0,51,101,0.10); -webkit-backdrop-filter: blur(18px) saturate(1.3); backdrop-filter: blur(18px) saturate(1.3); font-size: 14px; font-weight: 500; color: #64727e;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4.5 3.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg><span>Widget demo</span></a>
+</div>
+<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1 1 auto; min-height: 0; padding: 0 32px 24px 32px;">
+<div style="display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 640px;">
+<span aria-hidden="true" style="display: block; width: 64px; height: 64px; flex: 0 0 auto; border-radius: 9999px; background: radial-gradient(circle at 32% 28%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 34%), radial-gradient(circle at 70% 25%, #ffb27a 0%, rgba(255,178,122,0) 45%), radial-gradient(circle at 28% 70%, #ef6a00 0%, rgba(239,106,0,0) 55%), radial-gradient(circle at 75% 78%, #0069aa 0%, rgba(0,105,170,0) 62%), radial-gradient(circle at 50% 50%, #7dabdb 0%, #004c97 78%); box-shadow: inset 0 -8px 16px rgba(0,25,50,0.35), inset 0 5px 11px rgba(255,255,255,0.5);"></span>
+<h1 style="margin: 28px 0 0 0; font-size: 40px; line-height: 1.1; font-weight: 700; letter-spacing: -0.025em; color: #1c2733; text-align: center;">Good evening, Joe</h1>
+<p style="margin: 12px 0 0 0; font-size: 18px; line-height: 28px; color: #64727e;">How can I help you today?</p>
+<div style="align-self: stretch; margin-top: 32px;">
+<p style="display: flex; align-items: center; gap: 6px; margin: 0 0 8px 0; padding: 0 4px; font-size: 11px; line-height: 16px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #64727e;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#0069aa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg><span>Suggested for today</span></p>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;">
+<button type="button" style="display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 10px 14px; border-radius: 7px; background: rgba(255,255,255,0.62); border: 1px solid rgba(0,51,101,0.10); -webkit-backdrop-filter: blur(18px) saturate(1.3); backdrop-filter: blur(18px) saturate(1.3); font-family: inherit; text-align: left; cursor: pointer;"><span style="font-size: 13px; line-height: 1.5; font-weight: 600; color: #1c2733;">What changed in our cash position since Friday?</span><span style="font-size: 11px; line-height: 1.5; color: #64727e;">Monday check-in</span></button>
+<button type="button" style="display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 10px 14px; border-radius: 7px; background: rgba(255,255,255,0.62); border: 1px solid rgba(0,51,101,0.10); -webkit-backdrop-filter: blur(18px) saturate(1.3); backdrop-filter: blur(18px) saturate(1.3); font-family: inherit; text-align: left; cursor: pointer;"><span style="font-size: 13px; line-height: 1.5; font-weight: 600; color: #1c2733;">Which invoices are due this week?</span><span style="font-size: 11px; line-height: 1.5; color: #64727e;">Popular in your org</span></button>
+<button type="button" style="display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 10px 14px; border-radius: 7px; background: rgba(255,255,255,0.62); border: 1px solid rgba(0,51,101,0.10); -webkit-backdrop-filter: blur(18px) saturate(1.3); backdrop-filter: blur(18px) saturate(1.3); font-family: inherit; text-align: left; cursor: pointer;"><span style="font-size: 13px; line-height: 1.5; font-weight: 600; color: #1c2733;">Summarize policy updates from the last 7 days</span><span style="font-size: 11px; line-height: 1.5; color: #64727e;">New this week</span></button>
+<button type="button" style="display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 10px 14px; border-radius: 7px; background: rgba(255,255,255,0.62); border: 1px solid rgba(0,51,101,0.10); -webkit-backdrop-filter: blur(18px) saturate(1.3); backdrop-filter: blur(18px) saturate(1.3); font-family: inherit; text-align: left; cursor: pointer;"><span style="font-size: 13px; line-height: 1.5; font-weight: 600; color: #1c2733;">Show accounts with unusual activity today</span><span style="font-size: 11px; line-height: 1.5; color: #64727e;">Trending today</span></button>
+</div>
+</div>
+<div style="align-self: stretch; margin-top: 16px; border-radius: 10px; background: rgba(255,255,255,0.62); border: 1px solid rgba(0,51,101,0.10); -webkit-backdrop-filter: blur(18px) saturate(1.3); backdrop-filter: blur(18px) saturate(1.3); box-shadow: 0 20px 25px -5px rgba(0,76,151,0.10), 0 8px 10px -6px rgba(0,76,151,0.10);">
+<label for="ct-ask" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%);">Message Acme</label>
+<textarea id="ct-ask" rows="2" placeholder="Ask anything…" style="display: block; width: 100%; height: 60px; padding: 14px 16px 4px 16px; border: 0; outline: 0; resize: none; background: transparent; font-family: inherit; font-size: 15px; line-height: 1.625; color: #1c2733;"></textarea>
+<div style="display: flex; align-items: center; gap: 6px; padding: 0 12px 12px 12px;">
+<button type="button" aria-label="Attach files" style="display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; padding: 0; border: 0; cursor: pointer; width: 36px; height: 36px; border-radius: 9999px; background: transparent; color: #64727e;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+<button type="button" aria-label="Hold to speak" style="display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; padding: 0; border: 0; cursor: pointer; width: 36px; height: 36px; border-radius: 9999px; background: transparent; color: #64727e;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+<button type="button" aria-label="Send" disabled="disabled" style="display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; padding: 0; border: 0; cursor: pointer; margin-left: auto; width: 36px; height: 36px; border-radius: 9999px; background: #004c97; color: #ffffff; opacity: 0.4;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1040,"height":760}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

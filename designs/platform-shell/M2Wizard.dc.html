@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Add a source — wizard, 2.0</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+a{color:#003f7e;text-decoration:none}a:hover{color:#004c97}
+</style>
+</helmet>
+<div style="position: relative; width: 1440px; height: 900px; overflow: hidden; display: flex; flex-direction: column; background: #ffffff; color: #2d3943; font-family: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing: antialiased;">
+
+  <header style="display: flex; align-items: center; height: 60px; flex: 0 0 auto; padding: 0 12px 0 10px; background: #002a52; color: #ffffff;">
+    <a href="M2Home.dc.html" aria-label="Close and discard this source" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex: 0 0 auto; border-radius: 7px; color: #d9e6f5;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></a>
+    <a href="M2Home.dc.html" aria-label="Acme, go to Home" style="display: flex; align-items: center; gap: 10px; height: 44px; margin-left: 10px; padding: 0 8px; border-radius: 7px; color: #ffffff;"><span aria-hidden="true" style="display: block; width: 24px; height: 24px; flex: 0 0 auto; border-radius: 9999px; background: radial-gradient(circle at 32% 28%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 34%), radial-gradient(circle at 70% 25%, #ffb27a 0%, rgba(255,178,122,0) 45%), radial-gradient(circle at 28% 70%, #ef6a00 0%, rgba(239,106,0,0) 55%), radial-gradient(circle at 75% 78%, #0069aa 0%, rgba(0,105,170,0) 62%), radial-gradient(circle at 50% 50%, #7dabdb 0%, #004c97 78%); box-shadow: inset 0 -3px 6px rgba(0,25,50,0.35), inset 0 2px 4px rgba(255,255,255,0.5);"></span><span style="font-size: 17px; font-weight: 700; letter-spacing: -0.01em;">Acme</span></a>
+    <span aria-hidden="true" style="width: 1px; height: 24px; margin: 0 12px; background: rgba(255,255,255,0.20);"></span>
+    <span style="padding: 0 8px; font-size: 14px; font-weight: 600; color: #d9e6f5;">Ingestion  ›  Add a source</span>
+    <span style="flex: 1 1 auto;"></span>
+    <span aria-label="Tenant: Alderfinch Treasury" style="display: flex; align-items: center; gap: 10px; height: 44px; margin: 0 4px; padding: 0 14px 0 8px; border-radius: 7px; border: 1px solid rgba(255,255,255,0.20); font-size: 14px; font-weight: 700; color: #ffffff;">
+      <span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; flex: 0 0 auto; border-radius: 6px; background: #eef4fb; font-size: 11px; font-weight: 700; color: #002a52;">AT</span>
+      <span>Alderfinch Treasury</span>
+    </span>
+    <button type="button" aria-label="Account: John Ozzo" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex: 0 0 auto; border: 0; background: transparent; cursor: pointer;">
+      <span style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 9999px; background: #eef4fb; font-family: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif; font-size: 12px; font-weight: 700; color: #002a52;">JO</span>
+    </button>
+  </header>
+
+  <div style="display: flex; flex: 1 1 auto; min-height: 0; padding: 28px 0 0 96px; gap: 160px;">
+    <ol aria-label="Steps" style="display: flex; flex-direction: column; width: 200px; flex: 0 0 auto; margin: 0; padding: 0; list-style: none; border-left: 2px solid rgba(0,51,101,0.12);">
+          <li aria-current="step" style="display: flex; align-items: center; height: 36px; margin-left: -2px; padding-left: 16px; border-left: 2px solid #004c97; font-size: 14px; font-weight: 700; color: #1c2733;">Source</li>
+          <li style="display: flex; align-items: center; height: 36px; margin-left: -2px; padding-left: 16px; border-left: 2px solid transparent; font-size: 14px; font-weight: 500; color: #64727e;">Connect</li>
+          <li style="display: flex; align-items: center; height: 36px; margin-left: -2px; padding-left: 16px; border-left: 2px solid transparent; font-size: 14px; font-weight: 500; color: #64727e;">Schedule</li>
+          <li style="display: flex; align-items: center; height: 36px; margin-left: -2px; padding-left: 16px; border-left: 2px solid transparent; font-size: 14px; font-weight: 500; color: #64727e;">Review</li>
+    </ol>
+
+    <main style="display: flex; flex-direction: column; width: 560px; flex: 0 0 auto;">
+      <h1 style="margin: 0; font-size: 28px; font-weight: 400; line-height: 1.2; letter-spacing: -0.015em; color: #1c2733;">Source</h1>
+      <p style="margin: 8px 0 0 0; font-size: 15px; line-height: 1.55; color: #64727e;">Choose what to add. Sources stay inside Alderfinch Treasury; other tenants never see them.</p>
+
+      <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 24px;">
+        <label for="m-source-api" style="display: flex; align-items: flex-start; gap: 14px; padding: 18px 20px; border-radius: 12px; cursor: pointer; background: rgba(0,76,151,0.04); border: 1.5px solid #004c97;">
+          <input id="m-source-api" type="radio" name="m-source" checked="checked" style="width: 18px; height: 18px; margin: 2px 0 0 0; accent-color: #004c97;">
+          <span style="display: flex; flex-direction: column; gap: 2px;"><span style="font-size: 15px; font-weight: 700; color: #1c2733;">Connect an API</span><span style="font-size: 14px; line-height: 1.5; color: #64727e;">Pull records from another system on a schedule.</span></span>
+        </label>
+        <label for="m-source-docs" style="display: flex; align-items: flex-start; gap: 14px; padding: 18px 20px; border-radius: 12px; cursor: pointer; background: #ffffff; border: 1.5px solid rgba(0,51,101,0.14);">
+          <input id="m-source-docs" type="radio" name="m-source" style="width: 18px; height: 18px; margin: 2px 0 0 0; accent-color: #004c97;">
+          <span style="display: flex; flex-direction: column; gap: 2px;"><span style="font-size: 15px; font-weight: 700; color: #1c2733;">Upload documents</span><span style="font-size: 14px; line-height: 1.5; color: #64727e;">Add files from your computer.</span></span>
+        </label>
+      </div>
+
+      <label for="m-source-name" style="margin-top: 24px; font-size: 13px; font-weight: 600; color: #2d3943;">Source name</label>
+      <input id="m-source-name" type="text" placeholder="Name this source" style="height: 44px; margin-top: 6px; padding: 0 12px; border-radius: 8px; border: 1px solid rgba(0,51,101,0.16); background: rgba(0,51,101,0.02); font-family: inherit; font-size: 14px; color: #1c2733;">
+    </main>
+  </div>
+
+  <footer style="display: flex; align-items: center; gap: 8px; height: 80px; flex: 0 0 auto; padding: 0 0 0 456px; border-top: 1px solid rgba(0,51,101,0.10);">
+    <a href="M2Home.dc.html" style="display: flex; align-items: center; gap: 6px; height: 44px; padding: 0 18px; border-radius: 9999px; background: rgba(0,51,101,0.06); font-size: 14px; font-weight: 600; color: #2d3943;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg><span>Go back</span></a>
+    <button type="button" style="display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 20px; border-radius: 9999px; background: #004c97; font-size: 14px; font-weight: 700; color: #ffffff; border: 0; font-family: inherit; cursor: pointer;"><span>Next</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

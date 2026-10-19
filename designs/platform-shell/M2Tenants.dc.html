@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>All tenants — Mercury 2.0</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+a{color:#003f7e;text-decoration:none}a:hover{color:#004c97}
+</style>
+</helmet>
+<div style="position: relative; width: 1440px; height: 1000px; overflow: hidden; display: flex; flex-direction: column; background: #ffffff; color: #2d3943; font-family: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing: antialiased;">
+
+  <header style="display: flex; align-items: center; height: 60px; flex: 0 0 auto; padding: 0 12px 0 10px; background: #002a52; color: #ffffff;">
+    <a href="M2Workflows.dc.html" aria-label="Collapse menu" aria-expanded="true" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex: 0 0 auto; border-radius: 7px; color: #d9e6f5;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><path d="M9.5 4.5v15"/></svg></a>
+    <a href="M2Home.dc.html" aria-label="Acme, go to Home" style="display: flex; align-items: center; gap: 10px; height: 44px; margin-left: 10px; padding: 0 8px; border-radius: 7px; color: #ffffff;"><span aria-hidden="true" style="display: block; width: 24px; height: 24px; flex: 0 0 auto; border-radius: 9999px; background: radial-gradient(circle at 32% 28%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 34%), radial-gradient(circle at 70% 25%, #ffb27a 0%, rgba(255,178,122,0) 45%), radial-gradient(circle at 28% 70%, #ef6a00 0%, rgba(239,106,0,0) 55%), radial-gradient(circle at 75% 78%, #0069aa 0%, rgba(0,105,170,0) 62%), radial-gradient(circle at 50% 50%, #7dabdb 0%, #004c97 78%); box-shadow: inset 0 -3px 6px rgba(0,25,50,0.35), inset 0 2px 4px rgba(255,255,255,0.5);"></span><span style="font-size: 17px; font-weight: 700; letter-spacing: -0.01em;">Acme</span></a>
+    <span aria-hidden="true" style="width: 1px; height: 24px; margin: 0 12px; background: rgba(255,255,255,0.20);"></span>
+    <nav aria-label="Favorite pages" style="display: flex; align-self: stretch; gap: 2px;">
+      <a href="M2Tasks.dc.html" style="display: flex; align-items: center; gap: 8px; padding: 0 14px; font-size: 14px; color: #aecbe9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg><span style="max-width: 190px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Tasks</span></a>
+      <a href="M2Workflows.dc.html" style="display: flex; align-items: center; gap: 8px; padding: 0 14px; font-size: 14px; color: #aecbe9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="7" height="6" rx="1.5"/><rect x="14" y="14" width="7" height="6" rx="1.5"/><path d="M10 7h4a3 3 0 0 1 3 3v4"/></svg><span style="max-width: 190px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Runs</span><span style="font-size: 13px;">Workflows</span></a>
+      <a href="M2ChatOngoing.dc.html" style="display: flex; align-items: center; gap: 8px; padding: 0 14px; font-size: 14px; color: #aecbe9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4.5 3.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg><span style="max-width: 190px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Monthly savings plan</span><span style="font-size: 13px;">Chat</span></a>
+    </nav>
+    <a href="M2Favorites.dc.html" aria-label="Manage favorites, 3 of 3 pinned" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex: 0 0 auto; border-radius: 7px; color: #d9e6f5; margin-left: 4px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 4 2.5 5.2 5.7.8-4.1 4 1 5.6L12 16.9 6.9 19.6l1-5.6-4.1-4 5.7-.8z"/></svg></a>
+    <span style="flex: 1 1 auto;"></span>
+    <a href="M2TenantSwitcher.dc.html" aria-label="Switch tenant. Current tenant: Alderfinch Treasury" style="display: flex; align-items: center; gap: 10px; width: 256px; height: 44px; margin: 0 4px; padding: 0 10px 0 8px; border-radius: 7px; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.20); color: #ffffff;">
+      <span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; flex: 0 0 auto; border-radius: 6px; background: #eef4fb; font-size: 11px; font-weight: 700; color: #002a52;">AT</span>
+      <span style="flex: 1 1 auto; min-width: 0; font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Alderfinch Treasury</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d9e6f5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+    </a>
+    <button type="button" aria-label="Search this tenant" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex: 0 0 auto; border: 0; border-radius: 7px; background: transparent; color: #d9e6f5; cursor: pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></button>
+    <button type="button" aria-label="Notifications" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex: 0 0 auto; border: 0; border-radius: 7px; background: transparent; color: #d9e6f5; cursor: pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></button>
+    <button type="button" aria-label="Account: John Ozzo" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex: 0 0 auto; border: 0; background: transparent; cursor: pointer;">
+      <span style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 9999px; background: #eef4fb; font-family: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif; font-size: 12px; font-weight: 700; color: #002a52;">JO</span>
+    </button>
+  </header>
+
+  <div style="display: flex; flex: 1 1 auto; min-height: 0;">
+  <aside style="display: flex; flex-direction: column; width: 248px; flex: 0 0 auto; padding: 12px; background: #fafbfc; border-right: 1px solid rgba(0,51,101,0.10);">
+    <nav aria-label="Main" style="display: flex; flex-direction: column; gap: 2px; margin-top: 4px;">
+      <a href="M2Home.dc.html" style="display: flex; align-items: center; gap: 10px; flex: 1 1 auto; min-width: 0; height: 44px; padding: 0 10px; border-radius: 8px; font-size: 14px; font-weight: 500; color: #2d3943;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h12v-9"/><path d="M10 19v-5h4v5"/></svg>
+        <span style="flex: 1 1 auto;">Home</span>
+      </a>
+      <a href="M2Tasks.dc.html" style="display: flex; align-items: center; gap: 10px; flex: 1 1 auto; min-width: 0; height: 44px; padding: 0 10px; border-radius: 8px; font-size: 14px; font-weight: 500; color: #2d3943;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg>
+        <span style="flex: 1 1 auto;">Tasks</span>
+        <span aria-label="2 waiting" style="display: flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; flex: 0 0 auto; padding: 0 6px; border-radius: 9999px; background: #cb4a11; font-size: 11px; font-weight: 700; color: #ffffff;">2</span>
+      </a>
+      <div style="margin-top: 18px; padding: 0 10px 6px 10px; font-size: 12px; font-weight: 600; color: #64727e;">Spaces</div>
+      <a href="M2Chat.dc.html" style="display: flex; align-items: center; gap: 10px; flex: 1 1 auto; min-width: 0; height: 44px; padding: 0 10px; border-radius: 8px; font-size: 14px; font-weight: 500; color: #2d3943;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4.5 3.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg>
+        <span style="flex: 1 1 auto;">Chat</span>
+      </a>
+      <div style="display: flex; align-items: center;">
+        <a href="M2Workflows.dc.html" style="display: flex; align-items: center; gap: 10px; flex: 1 1 auto; min-width: 0; height: 44px; padding: 0 10px; border-radius: 8px; font-size: 14px; font-weight: 500; color: #2d3943;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="7" height="6" rx="1.5"/><rect x="14" y="14" width="7" height="6" rx="1.5"/><path d="M10 7h4a3 3 0 0 1 3 3v4"/></svg>
+          <span style="flex: 1 1 auto;">Workflows</span>
+        </a>
+        <button type="button" aria-label="Expand Workflows" aria-expanded="false" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex: 0 0 auto; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+      </div>
+      <div style="margin-top: 18px; padding: 0 10px 6px 10px; font-size: 12px; font-weight: 600; color: #64727e;">Data</div>
+      <div style="display: flex; align-items: center;">
+        <a href="#insights" style="display: flex; align-items: center; gap: 10px; flex: 1 1 auto; min-width: 0; height: 44px; padding: 0 10px; border-radius: 8px; font-size: 14px; font-weight: 500; color: #2d3943;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>
+          <span style="flex: 1 1 auto;">Insights</span>
+        </a>
+        <button type="button" aria-label="Expand Insights" aria-expanded="false" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex: 0 0 auto; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+      </div>
+      <div style="display: flex; align-items: center;">
+        <a href="#ingestion" style="display: flex; align-items: center; gap: 10px; flex: 1 1 auto; min-width: 0; height: 44px; padding: 0 10px; border-radius: 8px; font-size: 14px; font-weight: 500; color: #2d3943;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v10M8 10l4 4 4-4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+          <span style="flex: 1 1 auto;">Ingestion</span>
+        </a>
+        <button type="button" aria-label="Expand Ingestion" aria-expanded="false" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex: 0 0 auto; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+      </div>
+    </nav>
+  </aside>
+
+  <div style="display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0;">
+    <main style="display: flex; justify-content: center; flex: 1 1 auto; min-height: 0; padding: 24px 40px 0 40px;">
+      <div style="display: flex; flex-direction: column; gap: 16px; width: 100%; max-width: 1112px;">
+
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <h1 style="margin: 0; font-size: 28px; font-weight: 400; line-height: 1.2; letter-spacing: -0.015em; color: #1c2733;">Tenants</h1>
+          <p style="margin: 0; font-size: 14px; color: #64727e;">100 tenants, sorted by name. Only platform admins see this page.</p>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <button type="button" aria-expanded="false" style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 16px; border-radius: 8px; background: #ffffff; border: 1px solid rgba(0,51,101,0.16); font-family: inherit; font-size: 14px; font-weight: 700; color: #1c2733; cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16l-6 7.5V19l-4-2v-4.5z"/></svg><span>Filters</span></button>
+          <div style="display: flex; align-items: center; gap: 10px; flex: 1 1 auto; height: 44px; padding: 0 12px; border-radius: 8px; background: #ffffff; border: 1px solid rgba(0,51,101,0.16);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+            <label for="m2-tenants-find" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%);">Search and filter tenants</label>
+            <input id="m2-tenants-find" type="text" placeholder="Search, or type to narrow to a field…" style="flex: 1 1 auto; min-width: 0; height: 100%; padding: 0; border: 0; outline: 0; background: transparent; font-family: inherit; font-size: 14px; color: #1c2733;">
+            <span style="padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(0,51,101,0.16); font-size: 12px; font-weight: 700; color: #64727e;">⌘K</span>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; border-radius: 12px; background: #ffffff; border: 1px solid rgba(0,51,101,0.12); box-shadow: 0 1px 3px rgba(0,25,50,0.05); overflow: hidden;">
+          <div style="display: grid; grid-template-columns: 44px 36px minmax(0, 2.1fr) 116px minmax(0, 2fr) minmax(0, 1.4fr) 116px 92px; column-gap: 12px; align-items: center; height: 44px; padding: 0 16px 0 8px;">
+            <span style="display: flex; justify-content: center;"><input type="checkbox" aria-label="Select all tenants on this page" style="width: 16px; height: 16px; margin: 0; accent-color: #004c97;"></span>
+            <span></span>
+            <button type="button" aria-label="Sorted by Name, ascending" style="display: flex; align-items: center; gap: 4px; height: 44px; padding: 0; border: 0; background: transparent; font-family: inherit; font-size: 12px; font-weight: 700; color: #64727e; cursor: pointer; color: #1c2733;">Name <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V6M7 11l5-5 5 5"/></svg></button>
+            <button type="button" aria-label="Sort by Status" style="display: flex; align-items: center; gap: 4px; height: 44px; padding: 0; border: 0; background: transparent; font-family: inherit; font-size: 12px; font-weight: 700; color: #64727e; cursor: pointer;">Status</button><button type="button" aria-label="Sort by Spaces" style="display: flex; align-items: center; gap: 4px; height: 44px; padding: 0; border: 0; background: transparent; font-family: inherit; font-size: 12px; font-weight: 700; color: #64727e; cursor: pointer;">Spaces</button><button type="button" aria-label="Sort by Primary contact" style="display: flex; align-items: center; gap: 4px; height: 44px; padding: 0; border: 0; background: transparent; font-family: inherit; font-size: 12px; font-weight: 700; color: #64727e; cursor: pointer;">Primary contact</button><button type="button" aria-label="Sort by Created" style="display: flex; align-items: center; gap: 4px; height: 44px; padding: 0; border: 0; background: transparent; font-family: inherit; font-size: 12px; font-weight: 700; color: #64727e; cursor: pointer;">Created</button>
+            <span></span>
+          </div>
+          <div style="display: grid; grid-template-columns: 44px 36px minmax(0, 2.1fr) 116px minmax(0, 2fr) minmax(0, 1.4fr) 116px 92px; column-gap: 12px; align-items: center; height: 48px; padding: 0 16px 0 8px; border-top: 1px solid rgba(0,51,101,0.10); background: rgba(0,51,101,0.05); font-size: 14px; color: #2d3943;">
+            <span style="display: flex; justify-content: center;"><input type="checkbox" aria-label="Select Alderfinch Retail" style="width: 16px; height: 16px; margin: 0; accent-color: #004c97;"></span>
+            <button type="button" aria-label="Close Alderfinch Retail" aria-expanded="true" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer; width: 36px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+            <span style="display: flex; align-items: center; gap: 10px; min-width: 0;"><span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; flex: 0 0 auto; font-weight: 700; width: 28px; height: 28px; border-radius: 7px; font-size: 11px; background: rgba(0,76,151,0.08); color: #004c97;">AR</span><a href="#alderfinch-retail" style="font-weight: 700; color: #1c2733; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Alderfinch Retail</a></span>
+            <span style="display: flex;"><span style="display: flex; align-items: center; height: 24px; flex: 0 0 auto; padding: 0 10px; border-radius: 9999px; background: rgba(0,76,151,0.08); font-size: 12px; font-weight: 700; color: #004c97;">Active</span></span>
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Chat</span>
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Rachel Okafor</span>
+            <span style="color: #64727e; white-space: nowrap;">Jan 6, 2026</span>
+            <span style="display: flex; justify-content: flex-end;"><button type="button" aria-label="Edit Alderfinch Retail" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg></button><button type="button" aria-label="More actions for Alderfinch Retail" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 12h.01M12 12h.01M18 12h.01"/></svg></button></span>
+          </div>
+          <div style="display: flex; align-items: flex-end; gap: 28px; padding: 16px 16px 18px 100px; border-top: 1px solid rgba(0,51,101,0.10); background: rgba(0,51,101,0.05);">
+            <div style="display: flex; flex-direction: column; gap: 6px; width: 240px; flex: 0 0 auto;">
+              <label for="m2-tenant-name" style="font-size: 12px; font-weight: 700; color: #64727e;">Name</label>
+              <input id="m2-tenant-name" type="text" value="Alderfinch Retail" style="height: 44px; padding: 0 12px; border-radius: 8px; border: 1px solid rgba(0,51,101,0.16); background: #ffffff; font-family: inherit; font-size: 14px; color: #1c2733;">
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px; flex: 0 0 auto;">
+              <span style="font-size: 12px; font-weight: 700; color: #64727e;">Slug, fixed</span>
+              <span style="display: flex; align-items: center; height: 44px; font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 13px; color: #1c2733;">alderfinch-retail</span>
+            </div>
+            <fieldset style="display: flex; flex-direction: column; gap: 6px; flex: 1 1 auto; min-width: 0; margin: 0; padding: 0; border: 0;">
+              <legend style="padding: 0 0 6px 0; font-size: 12px; font-weight: 700; color: #64727e;">Spaces</legend>
+              <div style="display: flex; gap: 20px;">
+                <label for="m2-space-chat" style="display: flex; align-items: center; gap: 8px; height: 44px; font-size: 14px; color: #1c2733; cursor: pointer;">
+                  <input id="m2-space-chat" type="checkbox" checked="checked" style="width: 16px; height: 16px; margin: 0; accent-color: #004c97;">
+                  <span>Chat</span>
+                </label>
+                <label for="m2-space-workflows" style="display: flex; align-items: center; gap: 8px; height: 44px; font-size: 14px; color: #1c2733; cursor: pointer;">
+                  <input id="m2-space-workflows" type="checkbox" style="width: 16px; height: 16px; margin: 0; accent-color: #004c97;">
+                  <span>Workflows</span>
+                </label>
+                <label for="m2-space-insights" style="display: flex; align-items: center; gap: 8px; height: 44px; font-size: 14px; color: #1c2733; cursor: pointer;">
+                  <input id="m2-space-insights" type="checkbox" style="width: 16px; height: 16px; margin: 0; accent-color: #004c97;">
+                  <span>Insights</span>
+                </label>
+                <label for="m2-space-ingestion" style="display: flex; align-items: center; gap: 8px; height: 44px; font-size: 14px; color: #1c2733; cursor: pointer;">
+                  <input id="m2-space-ingestion" type="checkbox" style="width: 16px; height: 16px; margin: 0; accent-color: #004c97;">
+                  <span>Ingestion</span>
+                </label>
+              </div>
+            </fieldset>
+            <div style="display: flex; gap: 8px; flex: 0 0 auto;">
+              <button type="button" style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 16px; border-radius: 8px; background: #ffffff; border: 1px solid rgba(0,51,101,0.16); font-family: inherit; font-size: 14px; font-weight: 700; color: #1c2733; cursor: pointer; border: 0; background: #004c97; color: #ffffff;">Save</button>
+              <button type="button" style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 16px; border-radius: 8px; background: #ffffff; border: 1px solid rgba(0,51,101,0.16); font-family: inherit; font-size: 14px; font-weight: 700; color: #1c2733; cursor: pointer;">Cancel</button>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 44px 36px minmax(0, 2.1fr) 116px minmax(0, 2fr) minmax(0, 1.4fr) 116px 92px; column-gap: 12px; align-items: center; height: 48px; padding: 0 16px 0 8px; border-top: 1px solid rgba(0,51,101,0.10); font-size: 14px; color: #2d3943;">
+            <span style="display: flex; justify-content: center;"><input type="checkbox" aria-label="Select Alderfinch Treasury" style="width: 16px; height: 16px; margin: 0; accent-color: #004c97;"></span>
+            <button type="button" aria-label="Edit Alderfinch Treasury" aria-expanded="false" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer; width: 36px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+            <span style="display: flex; align-items: center; gap: 10px; min-width: 0;"><span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; flex: 0 0 auto; font-weight: 700; width: 28px; height: 28px; border-radius: 7px; font-size: 11px; background: rgba(0,76,151,0.08); color: #004c97;">AT</span><a href="#alderfinch-treasury" style="font-weight: 700; color: #1c2733; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Alderfinch Treasury</a></span>
+            <span style="display: flex;"><span style="display: flex; align-items: center; height: 24px; flex: 0 0 auto; padding: 0 10px; border-radius: 9999px; background: rgba(0,76,151,0.08); font-size: 12px; font-weight: 700; color: #004c97;">Active</span></span>
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Chat, Workflows, Insights, Ingestion</span>
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Dana Whitfield</span>
+            <span style="color: #64727e; white-space: nowrap;">Jan 6, 2026</span>
+            <span style="display: flex; justify-content: flex-end;"><button type="button" aria-label="Edit Alderfinch Treasury" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg></button><button type="button" aria-label="More actions for Alderfinch Treasury" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 12h.01M12 12h.01M18 12h.01"/></svg></button></span>
+          </div>
+          <div style="display: grid; grid-template-columns: 44px 36px minmax(0, 2.1fr) 116px minmax(0, 2fr) minmax(0, 1.4fr) 116px 92px; column-gap: 12px; align-items: center; height: 48px; padding: 0 16px 0 8px; border-top: 1px solid rgba(0,51,101,0.10); font-size: 14px; color: #2d3943;">
+            <span style="display: flex; justify-content: center;"><input type="checkbox" aria-label="Select Bayshore Financial" style="width: 16px; height: 16px; margin: 0; accent-color: #004c97;"></span>
+            <button type="button" aria-label="Edit Bayshore Financial" aria-expanded="false" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer; width: 36px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+            <span style="display: flex; align-items: center; gap: 10px; min-width: 0;"><span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; flex: 0 0 auto; font-weight: 700; width: 28px; height: 28px; border-radius: 7px; font-size: 11px; background: rgba(0,76,151,0.08); color: #004c97;">BF</span><a href="#bayshore-financial" style="font-weight: 700; color: #1c2733; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Bayshore Financial</a></span>
+            <span style="display: flex;"><span style="display: flex; align-items: center; height: 24px; flex: 0 0 auto; padding: 0 10px; border-radius: 9999px; background: rgba(0,76,151,0.08); font-size: 12px; font-weight: 700; color: #004c97;">Active</span></span>
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Chat, Workflows</span>
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Marcus Webb</span>
+            <span style="color: #64727e; white-space: nowrap;">Jan 11, 2026</span>
+            <span style="display: flex; justify-content: flex-end;"><button type="button" aria-label="Edit Bayshore Financial" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg></button><button type="button" aria-label="More actions for Bayshore Financial" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 12h.01M12 12h.01M18 12h.01"/></svg></button></span>
+          </div>
+          <div style="display: grid; grid-template-columns: 44px 36px minmax(0, 2.1fr) 116px minmax(0, 2fr) minmax(0, 1.4fr) 116px 92px; column-gap: 12px; align-items: center; height: 48px; padding: 0 16px 0 8px; border-top: 1px solid rgba(0,51,101,0.10); font-size: 14px; color: #2d3943;">
+            <span style="display: flex; justify-content: center;"><input type="checkbox" aria-label="Select Capital Trust Bank" style="width: 16px; height: 16px; margin: 0; accent-color: #004c97;"></span>
+            <button type="button" aria-label="Edit Capital Trust Bank" aria-expanded="false" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer; width: 36px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+            <span style="display: flex; align-items: center; gap: 10px; min-width: 0;"><span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; flex: 0 0 auto; font-weight: 700; width: 28px; height: 28px; border-radius: 7px; font-size: 11px; background: rgba(0,76,151,0.08); color: #004c97;">CT</span><a href="#capital-trust" style="font-weight: 700; color: #1c2733; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Capital Trust Bank</a></span>
+            <span style="display: flex;"><span style="display: flex; align-items: center; height: 24px; flex: 0 0 auto; padding: 0 10px; border-radius: 9999px; background: oklch(93% 0.04 25); font-size: 12px; font-weight: 700; color: oklch(45% 0.18 27);">Suspended</span></span>
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Chat</span>
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Jessica Nguyen</span>
+            <span style="color: #64727e; white-space: nowrap;">Feb 21, 2026</span>
+            <span style="display: flex; justify-content: flex-end;"><button type="button" aria-label="Edit Capital Trust Bank" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg></button><button type="button" aria-label="More actions for Capital Trust Bank" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 12h.01M12 12h.01M18 12h.01"/></svg></button></span>
+          </div>
+          <div style="display: grid; grid-template-columns: 44px 36px minmax(0, 2.1fr) 116px minmax(0, 2fr) minmax(0, 1.4fr) 116px 92px; column-gap: 12px; align-items: center; height: 48px; padding: 0 16px 0 8px; border-top: 1px solid rgba(0,51,101,0.10); font-size: 14px; color: #2d3943;">
+            <span style="display: flex; justify-content: center;"><input type="checkbox" aria-label="Select Crestview Bank" style="width: 16px; height: 16px; margin: 0; accent-color: #004c97;"></span>
+            <button type="button" aria-label="Edit Crestview Bank" aria-expanded="false" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer; width: 36px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+            <span style="display: flex; align-items: center; gap: 10px; min-width: 0;"><span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; flex: 0 0 auto; font-weight: 700; width: 28px; height: 28px; border-radius: 7px; font-size: 11px; background: rgba(0,76,151,0.08); color: #004c97;">CB</span><a href="#crestview" style="font-weight: 700; color: #1c2733; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Crestview Bank</a></span>
+            <span style="display: flex;"><span style="display: flex; align-items: center; height: 24px; flex: 0 0 auto; padding: 0 10px; border-radius: 9999px; background: rgba(0,76,151,0.08); font-size: 12px; font-weight: 700; color: #004c97;">Active</span></span>
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Chat, Workflows, Insights, Ingestion</span>
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Sarah Johnson</span>
+            <span style="color: #64727e; white-space: nowrap;">Mar 14, 2026</span>
+            <span style="display: flex; justify-content: flex-end;"><button type="button" aria-label="Edit Crestview Bank" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg></button><button type="button" aria-label="More actions for Crestview Bank" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 12h.01M12 12h.01M18 12h.01"/></svg></button></span>
+          </div>
+          <div style="display: grid; grid-template-columns: 44px 36px minmax(0, 2.1fr) 116px minmax(0, 2fr) minmax(0, 1.4fr) 116px 92px; column-gap: 12px; align-items: center; height: 48px; padding: 0 16px 0 8px; border-top: 1px solid rgba(0,51,101,0.10); font-size: 14px; color: #2d3943;">
+            <span style="display: flex; justify-content: center;"><input type="checkbox" aria-label="Select Fairfield Savings" style="width: 16px; height: 16px; margin: 0; accent-color: #004c97;"></span>
+            <button type="button" aria-label="Edit Fairfield Savings" aria-expanded="false" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer; width: 36px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+            <span style="display: flex; align-items: center; gap: 10px; min-width: 0;"><span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; flex: 0 0 auto; font-weight: 700; width: 28px; height: 28px; border-radius: 7px; font-size: 11px; background: rgba(0,76,151,0.08); color: #004c97;">FS</span><a href="#fairfield-savings" style="font-weight: 700; color: #1c2733; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Fairfield Savings</a></span>
+            <span style="display: flex;"><span style="display: flex; align-items: center; height: 24px; flex: 0 0 auto; padding: 0 10px; border-radius: 9999px; background: oklch(92% 0.07 65); font-size: 12px; font-weight: 700; color: oklch(40% 0.13 55);">Pending</span></span>
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Chat</span>
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Nia Coleman</span>
+            <span style="color: #64727e; white-space: nowrap;">Dec 4, 2025</span>
+            <span style="display: flex; justify-content: flex-end;"><button type="button" aria-label="Edit Fairfield Savings" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg></button><button type="button" aria-label="More actions for Fairfield Savings" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 12h.01M12 12h.01M18 12h.01"/></svg></button></span>
+          </div>
+          <div style="display: grid; grid-template-columns: 44px 36px minmax(0, 2.1fr) 116px minmax(0, 2fr) minmax(0, 1.4fr) 116px 92px; column-gap: 12px; align-items: center; height: 48px; padding: 0 16px 0 8px; border-top: 1px solid rgba(0,51,101,0.10); font-size: 14px; color: #2d3943;">
+            <span style="display: flex; justify-content: center;"><input type="checkbox" aria-label="Select Granite State Savings" style="width: 16px; height: 16px; margin: 0; accent-color: #004c97;"></span>
+            <button type="button" aria-label="Edit Granite State Savings" aria-expanded="false" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer; width: 36px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+            <span style="display: flex; align-items: center; gap: 10px; min-width: 0;"><span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; flex: 0 0 auto; font-weight: 700; width: 28px; height: 28px; border-radius: 7px; font-size: 11px; background: rgba(0,76,151,0.08); color: #004c97;">GS</span><a href="#granite-state" style="font-weight: 700; color: #1c2733; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Granite State Savings</a></span>
+            <span style="display: flex;"><span style="display: flex; align-items: center; height: 24px; flex: 0 0 auto; padding: 0 10px; border-radius: 9999px; background: rgba(0,76,151,0.08); font-size: 12px; font-weight: 700; color: #004c97;">Active</span></span>
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Chat, Insights</span>
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Priya Raman</span>
+            <span style="color: #64727e; white-space: nowrap;">Jan 19, 2026</span>
+            <span style="display: flex; justify-content: flex-end;"><button type="button" aria-label="Edit Granite State Savings" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg></button><button type="button" aria-label="More actions for Granite State Savings" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 12h.01M12 12h.01M18 12h.01"/></svg></button></span>
+          </div>
+          <div style="display: grid; grid-template-columns: 44px 36px minmax(0, 2.1fr) 116px minmax(0, 2fr) minmax(0, 1.4fr) 116px 92px; column-gap: 12px; align-items: center; height: 48px; padding: 0 16px 0 8px; border-top: 1px solid rgba(0,51,101,0.10); font-size: 14px; color: #2d3943;">
+            <span style="display: flex; justify-content: center;"><input type="checkbox" aria-label="Select Harbor Street Credit Union" style="width: 16px; height: 16px; margin: 0; accent-color: #004c97;"></span>
+            <button type="button" aria-label="Edit Harbor Street Credit Union" aria-expanded="false" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer; width: 36px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+            <span style="display: flex; align-items: center; gap: 10px; min-width: 0;"><span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; flex: 0 0 auto; font-weight: 700; width: 28px; height: 28px; border-radius: 7px; font-size: 11px; background: rgba(0,76,151,0.08); color: #004c97;">HS</span><a href="#harbor-street" style="font-weight: 700; color: #1c2733; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Harbor Street Credit Union</a></span>
+            <span style="display: flex;"><span style="display: flex; align-items: center; height: 24px; flex: 0 0 auto; padding: 0 10px; border-radius: 9999px; background: rgba(0,76,151,0.08); font-size: 12px; font-weight: 700; color: #004c97;">Active</span></span>
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Chat, Workflows</span>
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Sam Raines</span>
+            <span style="color: #64727e; white-space: nowrap;">Nov 20, 2025</span>
+            <span style="display: flex; justify-content: flex-end;"><button type="button" aria-label="Edit Harbor Street Credit Union" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg></button><button type="button" aria-label="More actions for Harbor Street Credit Union" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 12h.01M12 12h.01M18 12h.01"/></svg></button></span>
+          </div>
+          <div style="display: grid; grid-template-columns: 44px 36px minmax(0, 2.1fr) 116px minmax(0, 2fr) minmax(0, 1.4fr) 116px 92px; column-gap: 12px; align-items: center; height: 48px; padding: 0 16px 0 8px; border-top: 1px solid rgba(0,51,101,0.10); font-size: 14px; color: #2d3943;">
+            <span style="display: flex; justify-content: center;"><input type="checkbox" aria-label="Select Horizon National Bank" style="width: 16px; height: 16px; margin: 0; accent-color: #004c97;"></span>
+            <button type="button" aria-label="Edit Horizon National Bank" aria-expanded="false" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer; width: 36px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+            <span style="display: flex; align-items: center; gap: 10px; min-width: 0;"><span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; flex: 0 0 auto; font-weight: 700; width: 28px; height: 28px; border-radius: 7px; font-size: 11px; background: rgba(0,76,151,0.08); color: #004c97;">HB</span><a href="#horizon-national" style="font-weight: 700; color: #1c2733; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Horizon National Bank</a></span>
+            <span style="display: flex;"><span style="display: flex; align-items: center; height: 24px; flex: 0 0 auto; padding: 0 10px; border-radius: 9999px; background: rgba(0,76,151,0.08); font-size: 12px; font-weight: 700; color: #004c97;">Active</span></span>
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Chat, Workflows, Ingestion</span>
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">David Rodriguez</span>
+            <span style="color: #64727e; white-space: nowrap;">Feb 28, 2026</span>
+            <span style="display: flex; justify-content: flex-end;"><button type="button" aria-label="Edit Horizon National Bank" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg></button><button type="button" aria-label="More actions for Horizon National Bank" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 12h.01M12 12h.01M18 12h.01"/></svg></button></span>
+          </div>
+          <div style="display: grid; grid-template-columns: 44px 36px minmax(0, 2.1fr) 116px minmax(0, 2fr) minmax(0, 1.4fr) 116px 92px; column-gap: 12px; align-items: center; height: 48px; padding: 0 16px 0 8px; border-top: 1px solid rgba(0,51,101,0.10); font-size: 14px; color: #2d3943;">
+            <span style="display: flex; justify-content: center;"><input type="checkbox" aria-label="Select Integrity Financial Corp." style="width: 16px; height: 16px; margin: 0; accent-color: #004c97;"></span>
+            <button type="button" aria-label="Edit Integrity Financial Corp." aria-expanded="false" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer; width: 36px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+            <span style="display: flex; align-items: center; gap: 10px; min-width: 0;"><span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; flex: 0 0 auto; font-weight: 700; width: 28px; height: 28px; border-radius: 7px; font-size: 11px; background: rgba(0,76,151,0.08); color: #004c97;">IC</span><a href="#integrity-financial" style="font-weight: 700; color: #1c2733; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Integrity Financial Corp.</a></span>
+            <span style="display: flex;"><span style="display: flex; align-items: center; height: 24px; flex: 0 0 auto; padding: 0 10px; border-radius: 9999px; background: rgba(0,76,151,0.08); font-size: 12px; font-weight: 700; color: #004c97;">Active</span></span>
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Chat, Workflows</span>
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Christopher Lee</span>
+            <span style="color: #64727e; white-space: nowrap;">Feb 14, 2026</span>
+            <span style="display: flex; justify-content: flex-end;"><button type="button" aria-label="Edit Integrity Financial Corp." style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg></button><button type="button" aria-label="More actions for Integrity Financial Corp." style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 12h.01M12 12h.01M18 12h.01"/></svg></button></span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 16px; height: 60px; padding: 0 16px; border-top: 1px solid rgba(0,51,101,0.10);">
+            <span style="font-size: 13px; font-variant-numeric: tabular-nums; color: #64727e;">1–10 of 100</span>
+            <span style="display: flex; align-items: center; gap: 8px;">
+              <label for="m2-tenants-size" style="font-size: 13px; color: #64727e;">Rows</label>
+              <select id="m2-tenants-size" style="height: 36px; padding: 0 8px; border-radius: 8px; border: 1px solid rgba(0,51,101,0.16); background: #ffffff; font-family: inherit; font-size: 13px; color: #1c2733;">
+                <option>5</option>
+                <option selected="selected">10</option>
+                <option>25</option>
+              </select>
+            </span>
+            <span style="flex: 1 1 auto;"></span>
+            <nav aria-label="Pagination" style="display: flex; align-items: center; gap: 4px;">
+              <span aria-disabled="true" style="display: flex; align-items: center; height: 36px; padding: 0 10px; font-size: 13px; font-weight: 600; color: #64727e;">Previous</span>
+              <a href="#page-1" aria-current='page' style="display: flex; align-items: center; justify-content: center; min-width: 36px; height: 36px; padding: 0 6px; border-radius: 8px; background: rgba(0,76,151,0.08); font-weight: 700; color: #004c97; font-size: 13px;">1</a><a href="#page-2" style="display: flex; align-items: center; justify-content: center; min-width: 36px; height: 36px; padding: 0 6px; border-radius: 8px; color: #2d3943; font-size: 13px;">2</a><a href="#page-3" style="display: flex; align-items: center; justify-content: center; min-width: 36px; height: 36px; padding: 0 6px; border-radius: 8px; color: #2d3943; font-size: 13px;">3</a><span style="display: flex; align-items: center; justify-content: center; width: 28px; font-size: 13px; color: #64727e;">…</span><a href="#page-10" style="display: flex; align-items: center; justify-content: center; min-width: 36px; height: 36px; padding: 0 6px; border-radius: 8px; color: #2d3943; font-size: 13px;">10</a>
+              <a href="#page-2" style="display: flex; align-items: center; height: 36px; padding: 0 10px; border-radius: 8px; font-size: 13px; font-weight: 700; color: #003f7e;">Next</a>
+            </nav>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

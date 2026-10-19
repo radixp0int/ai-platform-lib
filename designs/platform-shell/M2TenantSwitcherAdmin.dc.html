@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tenant switcher, platform admin — Mercury 2.0</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+a{color:#003f7e;text-decoration:none}a:hover{color:#004c97}
+</style>
+</helmet>
+<div style="position: relative; width: 1440px; height: 900px; overflow: hidden; display: flex; flex-direction: column; background: #ffffff; color: #2d3943; font-family: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing: antialiased;">
+
+  <header style="display: flex; align-items: center; height: 60px; flex: 0 0 auto; padding: 0 12px 0 10px; background: #002a52; color: #ffffff;">
+    <a href="M2Workflows.dc.html" aria-label="Collapse menu" aria-expanded="true" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex: 0 0 auto; border-radius: 7px; color: #d9e6f5;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><path d="M9.5 4.5v15"/></svg></a>
+    <a href="M2Home.dc.html" aria-label="Acme, go to Home" style="display: flex; align-items: center; gap: 10px; height: 44px; margin-left: 10px; padding: 0 8px; border-radius: 7px; color: #ffffff;"><span aria-hidden="true" style="display: block; width: 24px; height: 24px; flex: 0 0 auto; border-radius: 9999px; background: radial-gradient(circle at 32% 28%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 34%), radial-gradient(circle at 70% 25%, #ffb27a 0%, rgba(255,178,122,0) 45%), radial-gradient(circle at 28% 70%, #ef6a00 0%, rgba(239,106,0,0) 55%), radial-gradient(circle at 75% 78%, #0069aa 0%, rgba(0,105,170,0) 62%), radial-gradient(circle at 50% 50%, #7dabdb 0%, #004c97 78%); box-shadow: inset 0 -3px 6px rgba(0,25,50,0.35), inset 0 2px 4px rgba(255,255,255,0.5);"></span><span style="font-size: 17px; font-weight: 700; letter-spacing: -0.01em;">Acme</span></a>
+    <span aria-hidden="true" style="width: 1px; height: 24px; margin: 0 12px; background: rgba(255,255,255,0.20);"></span>
+    <nav aria-label="Favorite pages" style="display: flex; align-self: stretch; gap: 2px;">
+      <a href="M2Tasks.dc.html" style="display: flex; align-items: center; gap: 8px; padding: 0 14px; font-size: 14px; color: #aecbe9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg><span style="max-width: 190px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Tasks</span></a>
+      <a href="M2Workflows.dc.html" style="display: flex; align-items: center; gap: 8px; padding: 0 14px; font-size: 14px; color: #aecbe9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="7" height="6" rx="1.5"/><rect x="14" y="14" width="7" height="6" rx="1.5"/><path d="M10 7h4a3 3 0 0 1 3 3v4"/></svg><span style="max-width: 190px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Runs</span><span style="font-size: 13px;">Workflows</span></a>
+      <a href="M2ChatOngoing.dc.html" style="display: flex; align-items: center; gap: 8px; padding: 0 14px; font-size: 14px; color: #aecbe9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4.5 3.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg><span style="max-width: 190px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Monthly savings plan</span><span style="font-size: 13px;">Chat</span></a>
+    </nav>
+    <a href="M2Favorites.dc.html" aria-label="Manage favorites, 3 of 3 pinned" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex: 0 0 auto; border-radius: 7px; color: #d9e6f5; margin-left: 4px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 4 2.5 5.2 5.7.8-4.1 4 1 5.6L12 16.9 6.9 19.6l1-5.6-4.1-4 5.7-.8z"/></svg></a>
+    <span style="flex: 1 1 auto;"></span>
+    <a href="M2Home.dc.html" aria-label="Close tenant switcher. Current tenant: Alderfinch Treasury" aria-expanded="true" style="display: flex; align-items: center; gap: 10px; width: 256px; height: 44px; margin: 0 4px; padding: 0 10px 0 8px; border-radius: 7px; background: rgba(255,255,255,0.20); border: 1px solid rgba(255,255,255,0.70); color: #ffffff;">
+      <span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; flex: 0 0 auto; border-radius: 6px; background: #eef4fb; font-size: 11px; font-weight: 700; color: #002a52;">AT</span>
+      <span style="flex: 1 1 auto; min-width: 0; font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Alderfinch Treasury</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d9e6f5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 11v9H4v-9zM7 11l4-7a2 2 0 0 1 3 2l-1 4h5a2 2 0 0 1 2 2.3l-1 5a2 2 0 0 1-2 1.7H7"/></svg>
+    </a>
+    <button type="button" aria-label="Search this tenant" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex: 0 0 auto; border: 0; border-radius: 7px; background: transparent; color: #d9e6f5; cursor: pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></button>
+    <button type="button" aria-label="Notifications" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex: 0 0 auto; border: 0; border-radius: 7px; background: transparent; color: #d9e6f5; cursor: pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></button>
+    <button type="button" aria-label="Account: John Ozzo" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex: 0 0 auto; border: 0; background: transparent; cursor: pointer;">
+      <span style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 9999px; background: #eef4fb; font-family: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif; font-size: 12px; font-weight: 700; color: #002a52;">JO</span>
+    </button>
+  </header>
+
+  <div role="dialog" aria-label="Switch tenant" style="position: absolute; z-index: 5; display: flex; flex-direction: column; gap: 2px; padding: 8px; border-radius: 12px; background: #ffffff; border: 1px solid rgba(0,51,101,0.12); box-shadow: 0 16px 40px rgba(0,25,50,0.16), 0 2px 6px rgba(0,25,50,0.06); top: 58px; right: 148px; width: 400px;">
+    <div style="display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 12px; border-radius: 8px; background: rgba(0,51,101,0.05);">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+      <label for="m2-tenant-find" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%);">Find a tenant</label>
+      <input id="m2-tenant-find" type="text" placeholder="Find a tenant" style="flex: 1 1 auto; min-width: 0; height: 100%; padding: 0; border: 0; outline: 0; background: transparent; font-family: inherit; font-size: 14px; color: #1c2733;">
+    </div>
+    <div style="display: flex; align-items: baseline; gap: 8px; padding: 10px 12px 4px 12px;">
+      <span style="font-size: 12px; font-weight: 600; color: #64727e;">All tenants</span>
+      <span style="font-size: 12px; color: #64727e;">6 of 100</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 4px; height: 56px; padding: 0 12px; border-radius: 8px; background: rgba(0,51,101,0.05);">
+      <a href="M2Home.dc.html" aria-current="true" style="display: flex; align-items: center; gap: 12px; flex: 1 1 auto; min-width: 0; height: 100%; color: #2d3943;">
+        <span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; flex: 0 0 auto; font-weight: 700; width: 32px; height: 32px; border-radius: 8px; font-size: 12px; background: #004c97; color: #ffffff;">AT</span>
+        <span style="display: flex; flex-direction: column; min-width: 0;"><span style="font-size: 14px; font-weight: 600; color: #1c2733;">Alderfinch Treasury</span><span style="font-size: 12px; color: #64727e;">Chat, Workflows, Insights, Ingestion</span></span>
+      </a>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#004c97" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Current tenant"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>
+    </div>
+    <div style="display: flex; align-items: center; gap: 4px; height: 56px; padding: 0 12px; border-radius: 8px; background: rgba(0,51,101,0.05);">
+      <a href="#alderfinch-retail" style="display: flex; align-items: center; gap: 12px; flex: 1 1 auto; min-width: 0; height: 100%; color: #2d3943;">
+        <span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; flex: 0 0 auto; font-weight: 700; width: 32px; height: 32px; border-radius: 8px; font-size: 12px; background: #ffffff; border: 1.5px solid #004c97; color: #004c97;">AR</span>
+        <span style="display: flex; flex-direction: column; min-width: 0;"><span style="font-size: 14px; font-weight: 600; color: #1c2733;">Alderfinch Retail</span><span style="font-size: 12px; color: #64727e;">Chat</span></span>
+      </a>
+      <a href="M2Tenants.dc.html" aria-label="Edit Alderfinch Retail" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex: 0 0 auto; border-radius: 8px; color: #64727e; margin-right: -8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg></a>
+    </div>
+    <div style="display: flex; align-items: center; gap: 4px; height: 56px; padding: 0 12px; border-radius: 8px;">
+      <a href="#bayshore-financial" style="display: flex; align-items: center; gap: 12px; flex: 1 1 auto; min-width: 0; height: 100%; color: #2d3943;">
+        <span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; flex: 0 0 auto; font-weight: 700; width: 32px; height: 32px; border-radius: 8px; font-size: 12px; background: rgba(0,76,151,0.08); color: #004c97;">BF</span>
+        <span style="display: flex; flex-direction: column; min-width: 0;"><span style="font-size: 14px; font-weight: 600; color: #1c2733;">Bayshore Financial</span><span style="font-size: 12px; color: #64727e;">Chat, Workflows</span></span>
+      </a>
+      
+    </div>
+    <div style="display: flex; align-items: center; gap: 4px; height: 56px; padding: 0 12px; border-radius: 8px;">
+      <a href="#capital-trust" style="display: flex; align-items: center; gap: 12px; flex: 1 1 auto; min-width: 0; height: 100%; color: #2d3943;">
+        <span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; flex: 0 0 auto; font-weight: 700; width: 32px; height: 32px; border-radius: 8px; font-size: 12px; background: rgba(0,76,151,0.08); color: #004c97;">CT</span>
+        <span style="display: flex; flex-direction: column; min-width: 0;"><span style="font-size: 14px; font-weight: 600; color: #1c2733;">Capital Trust Bank</span><span style="font-size: 12px; color: #64727e;">Suspended · Chat</span></span>
+      </a>
+      
+    </div>
+    <div style="display: flex; align-items: center; gap: 4px; height: 56px; padding: 0 12px; border-radius: 8px;">
+      <a href="#crestview" style="display: flex; align-items: center; gap: 12px; flex: 1 1 auto; min-width: 0; height: 100%; color: #2d3943;">
+        <span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; flex: 0 0 auto; font-weight: 700; width: 32px; height: 32px; border-radius: 8px; font-size: 12px; background: rgba(0,76,151,0.08); color: #004c97;">CB</span>
+        <span style="display: flex; flex-direction: column; min-width: 0;"><span style="font-size: 14px; font-weight: 600; color: #1c2733;">Crestview Bank</span><span style="font-size: 12px; color: #64727e;">Chat, Workflows, Insights, Ingestion</span></span>
+      </a>
+      
+    </div>
+    <div style="display: flex; align-items: center; gap: 4px; height: 56px; padding: 0 12px; border-radius: 8px;">
+      <a href="#fairfield-savings" style="display: flex; align-items: center; gap: 12px; flex: 1 1 auto; min-width: 0; height: 100%; color: #2d3943;">
+        <span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; flex: 0 0 auto; font-weight: 700; width: 32px; height: 32px; border-radius: 8px; font-size: 12px; background: rgba(0,76,151,0.08); color: #004c97;">FS</span>
+        <span style="display: flex; flex-direction: column; min-width: 0;"><span style="font-size: 14px; font-weight: 600; color: #1c2733;">Fairfield Savings</span><span style="font-size: 12px; color: #64727e;">Pending · Chat</span></span>
+      </a>
+      
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px; padding: 8px 12px 4px 12px;">
+      <button type="button" style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 16px; border-radius: 8px; background: #ffffff; border: 1px solid rgba(0,51,101,0.16); font-family: inherit; font-size: 14px; font-weight: 700; color: #1c2733; cursor: pointer;">Load 10 more</button>
+      <span style="font-size: 12px; color: #64727e;">94 more. Searching is usually quicker.</span>
+    </div>
+    <div style="display: flex; align-items: center; margin-top: 6px; padding: 4px 12px 0 12px; border-top: 1px solid rgba(0,51,101,0.10);">
+      <a href="M2Tenants.dc.html" style="display: flex; align-items: center; gap: 4px; height: 44px; font-size: 14px; font-weight: 700; color: #003f7e;">View all tenants <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+    </div>
+  </div>
+
+  <div style="display: flex; flex: 1 1 auto; min-height: 0;">
+  <aside style="display: flex; flex-direction: column; width: 248px; flex: 0 0 auto; padding: 12px; background: #fafbfc; border-right: 1px solid rgba(0,51,101,0.10);">
+    <nav aria-label="Main" style="display: flex; flex-direction: column; gap: 2px; margin-top: 4px;">
+      <a href="M2Home.dc.html" aria-current="page" style="display: flex; align-items: center; gap: 10px; flex: 1 1 auto; min-width: 0; height: 44px; padding: 0 10px; border-radius: 8px; font-size: 14px; background: rgba(0,51,101,0.07); font-weight: 700; color: #1c2733;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1c2733" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h12v-9"/><path d="M10 19v-5h4v5"/></svg>
+        <span style="flex: 1 1 auto;">Home</span>
+      </a>
+      <a href="M2Tasks.dc.html" style="display: flex; align-items: center; gap: 10px; flex: 1 1 auto; min-width: 0; height: 44px; padding: 0 10px; border-radius: 8px; font-size: 14px; font-weight: 500; color: #2d3943;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg>
+        <span style="flex: 1 1 auto;">Tasks</span>
+        <span aria-label="2 waiting" style="display: flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; flex: 0 0 auto; padding: 0 6px; border-radius: 9999px; background: #cb4a11; font-size: 11px; font-weight: 700; color: #ffffff;">2</span>
+      </a>
+      <div style="margin-top: 18px; padding: 0 10px 6px 10px; font-size: 12px; font-weight: 600; color: #64727e;">Spaces</div>
+      <a href="M2Chat.dc.html" style="display: flex; align-items: center; gap: 10px; flex: 1 1 auto; min-width: 0; height: 44px; padding: 0 10px; border-radius: 8px; font-size: 14px; font-weight: 500; color: #2d3943;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4.5 3.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg>
+        <span style="flex: 1 1 auto;">Chat</span>
+      </a>
+      <div style="display: flex; align-items: center;">
+        <a href="M2Workflows.dc.html" style="display: flex; align-items: center; gap: 10px; flex: 1 1 auto; min-width: 0; height: 44px; padding: 0 10px; border-radius: 8px; font-size: 14px; font-weight: 500; color: #2d3943;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="7" height="6" rx="1.5"/><rect x="14" y="14" width="7" height="6" rx="1.5"/><path d="M10 7h4a3 3 0 0 1 3 3v4"/></svg>
+          <span style="flex: 1 1 auto;">Workflows</span>
+        </a>
+        <button type="button" aria-label="Expand Workflows" aria-expanded="false" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex: 0 0 auto; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+      </div>
+      <div style="margin-top: 18px; padding: 0 10px 6px 10px; font-size: 12px; font-weight: 600; color: #64727e;">Data</div>
+      <div style="display: flex; align-items: center;">
+        <a href="#insights" style="display: flex; align-items: center; gap: 10px; flex: 1 1 auto; min-width: 0; height: 44px; padding: 0 10px; border-radius: 8px; font-size: 14px; font-weight: 500; color: #2d3943;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>
+          <span style="flex: 1 1 auto;">Insights</span>
+        </a>
+        <button type="button" aria-label="Expand Insights" aria-expanded="false" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex: 0 0 auto; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+      </div>
+      <div style="display: flex; align-items: center;">
+        <a href="#ingestion" style="display: flex; align-items: center; gap: 10px; flex: 1 1 auto; min-width: 0; height: 44px; padding: 0 10px; border-radius: 8px; font-size: 14px; font-weight: 500; color: #2d3943;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v10M8 10l4 4 4-4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+          <span style="flex: 1 1 auto;">Ingestion</span>
+        </a>
+        <button type="button" aria-label="Collapse Ingestion" aria-expanded="true" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex: 0 0 auto; border: 0; border-radius: 8px; background: transparent; color: #64727e; cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+      </div>
+      <a href="#documents" style="display: flex; align-items: center; gap: 8px; height: 44px; margin-left: 28px; padding: 0 10px; border-radius: 8px; font-size: 14px; font-weight: 500; color: #2d3943;">Documents</a>
+      <a href="#api-sources" style="display: flex; align-items: center; gap: 8px; height: 44px; margin-left: 28px; padding: 0 10px; border-radius: 8px; font-size: 14px; font-weight: 500; color: #2d3943;">API sources</a>
+    </nav>
+  </aside>
+
+  <div style="display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0;">
+    <main style="display: flex; justify-content: center; flex: 1 1 auto; min-height: 0; padding: 24px 40px 0 40px;">
+      <div style="display: flex; flex-direction: column; gap: 22px; width: 100%; max-width: 1000px;">
+
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <h1 style="margin: 0; font-size: 28px; font-weight: 400; line-height: 1.2; letter-spacing: -0.015em; color: #1c2733;">Welcome, John</h1>
+          <p style="margin: 0; font-size: 15px; color: #64727e;">Two runs are waiting on your approval.</p>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <a href="M2Chat.dc.html" style="display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 20px; border-radius: 9999px; background: #004c97; font-size: 14px; font-weight: 700; color: #ffffff;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4.5 3.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg><span>Ask Acme</span></a>
+          <a href="M2Workflows.dc.html" style="display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 18px; border-radius: 9999px; background: #ffffff; border: 1px solid rgba(0,51,101,0.16); font-size: 14px; font-weight: 600; color: #2d3943;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="7" height="6" rx="1.5"/><rect x="14" y="14" width="7" height="6" rx="1.5"/><path d="M10 7h4a3 3 0 0 1 3 3v4"/></svg><span>Start a workflow</span></a>
+          <a href="M2Wizard.dc.html" style="display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 18px; border-radius: 9999px; background: #ffffff; border: 1px solid rgba(0,51,101,0.16); font-size: 14px; font-weight: 600; color: #2d3943;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v10M8 10l4 4 4-4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg><span>Upload documents</span></a>
+          <a href="M2Wizard.dc.html" style="display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 18px; border-radius: 9999px; background: #ffffff; border: 1px solid rgba(0,51,101,0.16); font-size: 14px; font-weight: 600; color: #2d3943;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 7V3M15 7V3M7 7h10v4a5 5 0 0 1-10 0z"/><path d="M12 16v5"/></svg><span>Connect an API</span></a>
+          <span style="flex: 1 1 auto;"></span>
+          <a href="#customize" style="display: flex; align-items: center; gap: 6px; height: 44px; font-size: 14px; font-weight: 600; color: #64727e;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span>Customize</span></a>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px;">
+          <section style="display: flex; flex-direction: column; border-radius: 12px; background: #ffffff; border: 1px solid rgba(0,51,101,0.12); box-shadow: 0 1px 3px rgba(0,25,50,0.05); padding: 18px 20px 4px 20px;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <h2 style="margin: 0; font-size: 15px; font-weight: 600; color: #1c2733;">Waiting on you</h2>
+              <a href="M2Tasks.dc.html" style="display: flex; align-items: center; gap: 2px; height: 32px; font-size: 13px; font-weight: 600; color: #003f7e;">Open Tasks <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+            </div>
+            <div style="display: flex; align-items: baseline; gap: 10px; margin: 6px 0 12px 0;">
+              <span style="font-size: 40px; font-weight: 400; line-height: 1; color: #1c2733;">2</span>
+              <span style="font-size: 14px; color: #64727e;">approvals across Workflows</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; height: 60px; border-top: 1px solid rgba(0,51,101,0.10);">
+              <span style="display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0;"><span style="font-size: 14px; font-weight: 600; color: #1c2733;">Commercial loan review</span><span style="font-size: 12px; color: #64727e;">Approve credit memo · from Dana Whitfield</span></span>
+              <a href="M2Tasks.dc.html" style="display: flex; align-items: center; gap: 6px; height: 44px; padding: 0 18px; border-radius: 9999px; background: rgba(0,76,151,0.08); font-size: 14px; font-weight: 700; color: #004c97;">Review</a>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; height: 60px; border-top: 1px solid rgba(0,51,101,0.10);">
+              <span style="display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0;"><span style="font-size: 14px; font-weight: 600; color: #1c2733;">New hire · Priya Raman</span><span style="font-size: 12px; color: #64727e;">Approve elevated access · from Rachel Okafor</span></span>
+              <a href="M2Tasks.dc.html" style="display: flex; align-items: center; gap: 6px; height: 44px; padding: 0 18px; border-radius: 9999px; background: rgba(0,76,151,0.08); font-size: 14px; font-weight: 700; color: #004c97;">Review</a>
+            </div>
+          </section>
+
+          <section style="display: flex; flex-direction: column; border-radius: 12px; background: #ffffff; border: 1px solid rgba(0,51,101,0.12); box-shadow: 0 1px 3px rgba(0,25,50,0.05); padding: 18px 20px 4px 20px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <h2 style="margin: 0; font-size: 15px; font-weight: 600; color: #1c2733;">Spaces</h2>
+              <span style="font-size: 12px; color: #64727e;">Set by your tenant admin</span>
+            </div>
+            <a href="M2Chat.dc.html" style="display: flex; align-items: center; gap: 12px; height: 52px; color: #2d3943;">
+              <span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex: 0 0 auto; border-radius: 9999px; background: rgba(0,51,101,0.05);"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#004c97" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4.5 3.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg></span>
+              <span style="display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0;"><span style="font-size: 14px; font-weight: 600; color: #1c2733;">Chat</span><span style="font-size: 12px; color: #64727e;">Last used 2 days ago</span></span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+            </a>
+            <a href="M2Workflows.dc.html" style="display: flex; align-items: center; gap: 12px; height: 52px; border-top: 1px solid rgba(0,51,101,0.10); color: #2d3943;">
+              <span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex: 0 0 auto; border-radius: 9999px; background: rgba(0,51,101,0.05);"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#004c97" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="7" height="6" rx="1.5"/><rect x="14" y="14" width="7" height="6" rx="1.5"/><path d="M10 7h4a3 3 0 0 1 3 3v4"/></svg></span>
+              <span style="display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0;"><span style="font-size: 14px; font-weight: 600; color: #1c2733;">Workflows</span><span style="font-size: 12px; color: #64727e;">2 runs need your approval</span></span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+            </a>
+            <a href="#insights" style="display: flex; align-items: center; gap: 12px; height: 52px; border-top: 1px solid rgba(0,51,101,0.10); color: #2d3943;">
+              <span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex: 0 0 auto; border-radius: 9999px; background: rgba(0,51,101,0.05);"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#004c97" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"/></svg></span>
+              <span style="display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0;"><span style="font-size: 14px; font-weight: 600; color: #1c2733;">Insights</span><span style="font-size: 12px; color: #64727e;">Usage and top questions</span></span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+            </a>
+            <a href="#ingestion" style="display: flex; align-items: center; gap: 12px; height: 52px; border-top: 1px solid rgba(0,51,101,0.10); color: #2d3943;">
+              <span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex: 0 0 auto; border-radius: 9999px; background: rgba(0,51,101,0.05);"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#004c97" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v10M8 10l4 4 4-4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg></span>
+              <span style="display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0;"><span style="font-size: 14px; font-weight: 600; color: #1c2733;">Ingestion</span><span style="font-size: 12px; color: #64727e;">Documents and API sources</span></span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+            </a>
+          </section>
+        </div>
+
+        <section style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <h2 style="margin: 0; font-size: 18px; font-weight: 400; color: #1c2733;">Recent activity</h2>
+            <a href="#all-activity" style="display: flex; align-items: center; gap: 2px; height: 32px; font-size: 13px; font-weight: 600; color: #003f7e;">View all <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+          </div>
+          <div style="display: flex; flex-direction: column;">
+          <div style="display: grid; grid-template-columns: 120px minmax(0, 2.4fr) minmax(0, 1fr) 150px; column-gap: 16px; align-items: center; min-height: 52px; padding: 0 12px; min-height: 36px; border-bottom: 1px solid rgba(0,51,101,0.14); font-size: 14px; color: #2d3943;">
+            <span style="font-size: 12px; font-weight: 600; color: #64727e;">Date</span>
+            <span style="font-size: 12px; font-weight: 600; color: #64727e;">Name</span>
+            <span style="font-size: 12px; font-weight: 600; color: #64727e;">Space</span>
+            <span style="font-size: 12px; font-weight: 600; color: #64727e;">Status</span>
+          </div>
+          <a href="M2Tasks.dc.html" style="display: grid; grid-template-columns: 120px minmax(0, 2.4fr) minmax(0, 1fr) 150px; column-gap: 16px; align-items: center; min-height: 52px; padding: 0 12px; font-size: 14px; color: #2d3943;">
+            <span style="color: #64727e;">Today</span>
+            <span style="display: flex; align-items: center; gap: 10px; min-width: 0;"><span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; flex: 0 0 auto; border-radius: 9999px; background: rgba(0,51,101,0.05);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#004c97" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="7" height="6" rx="1.5"/><rect x="14" y="14" width="7" height="6" rx="1.5"/><path d="M10 7h4a3 3 0 0 1 3 3v4"/></svg></span><span style="font-weight: 600; color: #1c2733; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Commercial loan review</span></span>
+            <span>Workflows</span>
+            <span style="display: flex;"><span style="display: flex; align-items: center; height: 24px; flex: 0 0 auto; padding: 0 10px; border-radius: 9999px; background: oklch(92% 0.07 65); font-size: 12px; font-weight: 700; color: oklch(40% 0.13 55);">Needs approval</span></span>
+          </a>
+          <a href="M2Workflows.dc.html" style="display: grid; grid-template-columns: 120px minmax(0, 2.4fr) minmax(0, 1fr) 150px; column-gap: 16px; align-items: center; min-height: 52px; padding: 0 12px; border-top: 1px solid rgba(0,51,101,0.10); font-size: 14px; color: #2d3943;">
+            <span style="color: #64727e;">Today</span>
+            <span style="display: flex; align-items: center; gap: 10px; min-width: 0;"><span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; flex: 0 0 auto; border-radius: 9999px; background: rgba(0,51,101,0.05);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#004c97" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="7" height="6" rx="1.5"/><rect x="14" y="14" width="7" height="6" rx="1.5"/><path d="M10 7h4a3 3 0 0 1 3 3v4"/></svg></span><span style="font-weight: 600; color: #1c2733; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">SEV-2 · checkout p99 latency</span></span>
+            <span>Workflows</span>
+            <span style="display: flex;"><span style="display: flex; align-items: center; height: 24px; flex: 0 0 auto; padding: 0 10px; border-radius: 9999px; background: rgba(0,76,151,0.08); font-size: 12px; font-weight: 700; color: #004c97;">Running</span></span>
+          </a>
+          <a href="M2Chat.dc.html" style="display: grid; grid-template-columns: 120px minmax(0, 2.4fr) minmax(0, 1fr) 150px; column-gap: 16px; align-items: center; min-height: 52px; padding: 0 12px; border-top: 1px solid rgba(0,51,101,0.10); font-size: 14px; color: #2d3943;">
+            <span style="color: #64727e;">Oct 1</span>
+            <span style="display: flex; align-items: center; gap: 10px; min-width: 0;"><span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; flex: 0 0 auto; border-radius: 9999px; background: rgba(0,51,101,0.05);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#004c97" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4.5 3.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg></span><span style="font-weight: 600; color: #1c2733; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Positive pay exceptions</span></span>
+            <span>Chat</span>
+            <span style="display: flex;"><span style="display: flex; align-items: center; height: 24px; flex: 0 0 auto; padding: 0 10px; border-radius: 9999px; background: rgba(0,51,101,0.06); font-size: 12px; font-weight: 700; color: #2d3943;">Conversation</span></span>
+          </a>
+          <a href="M2Chat.dc.html" style="display: grid; grid-template-columns: 120px minmax(0, 2.4fr) minmax(0, 1fr) 150px; column-gap: 16px; align-items: center; min-height: 52px; padding: 0 12px; border-top: 1px solid rgba(0,51,101,0.10); font-size: 14px; color: #2d3943;">
+            <span style="color: #64727e;">Sep 28</span>
+            <span style="display: flex; align-items: center; gap: 10px; min-width: 0;"><span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; flex: 0 0 auto; border-radius: 9999px; background: rgba(0,51,101,0.05);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#004c97" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4.5 3.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg></span><span style="font-weight: 600; color: #1c2733; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Lockbox remittance matching</span></span>
+            <span>Chat</span>
+            <span style="display: flex;"><span style="display: flex; align-items: center; height: 24px; flex: 0 0 auto; padding: 0 10px; border-radius: 9999px; background: rgba(0,51,101,0.06); font-size: 12px; font-weight: 700; color: #2d3943;">Conversation</span></span>
+          </a>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

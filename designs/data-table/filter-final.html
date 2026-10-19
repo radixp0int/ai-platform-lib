@@ -1,0 +1,903 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data table filters, final look</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap">
+<style>
+/* Tokens are the library's own (brand/brand.css, default theme, light). The omnibox, its chips
+   and its dropdown follow src/components/omnibox/omnibox.tsx. Nothing here is new. */
+:root {
+  color-scheme: light;
+  --canvas: #f5f7f9;
+  --panel: #ffffff;
+  --line: rgba(0, 51, 101, 0.10);
+  --line-soft: rgba(0, 51, 101, 0.07);
+  --line-strong: rgba(0, 51, 101, 0.22);
+  --ink-strong: #1c2733;
+  --ink: #2d3943;
+  --ink-soft: #64727e;
+  --brand: #004c97;
+  --brand-fg: #0069aa;
+  --brand-700: #003f7e;
+  --chip: rgba(0, 76, 151, 0.10);
+  --hover: rgba(0, 76, 151, 0.05);
+  --focus: #0069aa;
+  --warn: #b4232a;
+  --radius-check: 4px;
+  --radius-control: 7px;
+  --radius-surface: 10px;
+  --radius-dialog: 14px;
+  --shadow-pop: 0 1px 2px rgba(0, 25, 50, 0.06), 0 8px 20px -4px rgba(0, 25, 50, 0.12), 0 24px 48px -12px rgba(0, 25, 50, 0.18);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; padding: 48px 40px 96px; background: #fbfcfd; color: var(--ink);
+  font-family: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif; font-size: 14px; -webkit-font-smoothing: antialiased;
+}
+main { max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }
+h1 { margin: 0 0 8px; font-size: 26px; line-height: 32px; font-weight: 800; color: var(--ink-strong); letter-spacing: -0.01em; }
+h3 { margin: 0; font-size: 17px; font-weight: 800; color: var(--ink-strong); }
+p { margin: 0; line-height: 1.5; }
+code { font-size: 12.5px; background: var(--chip); padding: 1px 5px; border-radius: 4px; color: var(--brand); }
+.lede { max-width: 72ch; color: var(--ink-soft); font-size: 15px; }
+.head { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; max-width: 78ch; }
+.head .tag { font-size: 10.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--brand-fg); }
+.head p { color: var(--ink-soft); font-size: 14px; }
+.soft { color: var(--ink-soft); }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+svg { flex: none; }
+
+/* ---------- stage: the page area around a table, as on the Tenants page ---------- */
+.stage {
+  container: stg / inline-size; position: relative; min-height: 880px; display: flex; flex-direction: column; gap: 14px;
+  background: var(--canvas); border: 1px solid var(--line); border-radius: var(--radius-dialog); padding: 20px 20px 16px;
+}
+.pgh { display: flex; align-items: baseline; gap: 10px; }
+.pgh h4 { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -0.01em; color: var(--ink-strong); }
+.pgh span { font-size: 12.5px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.bar { display: flex; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+.tcard { display: flex; flex-direction: column; flex: 1; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-surface); overflow: hidden; }
+
+.btn {
+  all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 12px;
+  border-radius: var(--radius-control); border: 1px solid var(--line-strong); background: var(--panel);
+  font-size: 13px; font-weight: 700; color: var(--ink-strong); cursor: pointer; white-space: nowrap; transition: background .12s, border-color .12s;
+}
+.btn:hover { background: var(--hover); }
+.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.btn.lg { height: 42px; padding: 0 14px; }
+.btn.on { background: var(--brand); border-color: var(--brand); color: #fff; }
+.btn.on .count { background: rgba(255, 255, 255, .2); }
+.btn.primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+.btn.primary:hover { background: var(--brand-700); }
+.btn.ghost { border-color: transparent; background: transparent; color: var(--brand-fg); padding: 0 8px; }
+.btn.ghost:hover { background: var(--hover); }
+.btn.sm { height: 28px; font-size: 12.5px; }
+.count {
+  min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--brand); color: #fff;
+  font-size: 11px; font-weight: 800; display: inline-grid; place-items: center; font-variant-numeric: tabular-nums;
+}
+
+/* ---------- the omnibox (src/components/omnibox) ---------- */
+.omni { position: relative; flex: 1 1 320px; min-width: 0; }
+.obox {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; min-height: 42px; padding: 6px 12px;
+  border: 1px solid rgba(0, 51, 101, .16); border-radius: var(--radius-surface); background: var(--panel); transition: border-color .12s, box-shadow .12s;
+}
+.obox:focus-within { border-color: var(--brand-fg); box-shadow: 0 0 0 3px rgba(0, 105, 170, .2); }
+.obox .si { color: var(--ink-soft); }
+.obox input { flex: 1 1 96px; min-width: 64px; border: 0; outline: 0; background: transparent; font: inherit; font-size: 14px; color: var(--ink); padding: 3px 0; }
+.obox input::placeholder { color: var(--ink-soft); }
+.obox .kk { margin-left: auto; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--line); background: var(--canvas); color: var(--ink-soft); }
+.oc { display: inline-flex; align-items: center; gap: 4px; border-radius: var(--radius-control); background: var(--chip); color: var(--brand); padding: 2px 4px 2px 8px; font-size: 12.5px; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.oc .pre { font-weight: 600; opacity: .65; }
+.oc .rs { font-weight: 500; opacity: .62; margin-left: 2px; }
+.oc button { all: unset; box-sizing: border-box; width: 18px; height: 18px; display: inline-grid; place-items: center; border-radius: 4px; cursor: pointer; }
+.oc button:hover { background: rgba(0, 76, 151, .18); }
+.oc button:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+.odrop {
+  position: absolute; top: calc(100% + 6px); left: 0; z-index: 30; width: 100%; max-width: 34rem; background: var(--panel);
+  border: 1px solid var(--line); border-radius: var(--radius-surface); padding: 8px; box-shadow: var(--shadow-pop); animation: pop .14s ease-out;
+}
+.odrop[hidden] { display: none; }
+.og-label { padding: 8px 10px 6px; font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+.oi { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 10px; border-radius: var(--radius-control); cursor: pointer; }
+.oi:hover, .oi[aria-selected="true"] { background: var(--chip); }
+.oi .ic { width: 22px; height: 22px; border-radius: var(--radius-control); background: var(--chip); color: var(--brand); display: grid; place-items: center; font-size: 10px; font-weight: 800; flex: none; }
+.oi .ol { flex: 1; min-width: 0; font-size: 13.5px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.oi .ol strong { font-weight: 800; }
+.oi .oh { flex: none; font-size: 11px; font-weight: 600; color: var(--ink-soft); }
+.ohints { display: flex; align-items: center; gap: 14px; margin-top: 6px; border-top: 1px solid var(--line); padding: 8px 10px 4px; font-size: 11px; color: var(--ink-soft); }
+.ohints kbd { font: inherit; font-weight: 700; color: var(--ink); }
+.ohints .sw { margin-left: auto; all: unset; box-sizing: border-box; cursor: pointer; font-size: 11.5px; font-weight: 700; color: var(--brand-fg); padding: 2px 6px; border-radius: 5px; }
+.ohints .sw:hover { background: var(--hover); }
+.ohints .sw:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+
+/* quick dates, inside the dropdown */
+.qrow { display: flex; align-items: center; gap: 12px; padding: 3px 10px; min-height: 36px; }
+.qrow .ql { flex: none; width: 92px; font-size: 13px; font-weight: 700; color: var(--ink-strong); }
+.qrow .qb { display: flex; flex-wrap: wrap; gap: 5px; }
+.tg.sm { height: 26px; font-size: 12px; padding: 0 9px; }
+
+/* ---------- table ---------- */
+.scroll { overflow-x: auto; }
+table { width: 100%; table-layout: fixed; border-collapse: collapse; text-align: left; }
+thead tr { background: var(--canvas); border-bottom: 1px solid var(--line); }
+th { height: 44px; padding: 0 16px; font-size: 10.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-soft); white-space: nowrap; }
+td { height: 56px; padding: 0 16px; font-size: 13.5px; color: var(--ink); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+tbody tr { border-bottom: 1px solid var(--line-soft); }
+.end { text-align: right; }
+.name { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.name .two { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+.name b { font-weight: 700; color: var(--ink-strong); overflow: hidden; text-overflow: ellipsis; }
+.name small { font-size: 11.5px; color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; }
+.av { flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 800; background: var(--chip); color: var(--brand); }
+.av.tile { width: 32px; height: 32px; background: rgba(0, 76, 151, .06); }
+.pill { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 7px; border: 1px solid; font-size: 11.5px; font-weight: 700; white-space: nowrap; }
+.pill.active, .pill.running { border-color: rgba(0, 76, 151, .4); color: var(--brand); }
+.pill.pending, .pill.waiting { border-color: oklch(55% 0.14 65 / .5); color: oklch(48% 0.15 55); }
+.pill.suspended, .pill.failed { border-color: rgba(220, 38, 38, .4); color: var(--warn); }
+.pill.completed, .pill.approved { border-color: oklch(55% 0.13 145 / .5); color: oklch(40% 0.12 145); }
+.pill.returned { border-color: var(--line-strong); color: var(--ink-soft); }
+.num { font-variant-numeric: tabular-nums; }
+.empty { display: grid; gap: 4px; justify-items: center; padding: 72px 16px; text-align: center; }
+.empty b { color: var(--ink-strong); font-size: 15px; }
+.empty span { color: var(--ink-soft); }
+.foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-top: 1px solid var(--line-soft); font-size: 12.5px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.foot b { color: var(--ink-strong); }
+.foot .note { color: var(--brand); font-weight: 700; margin: 0 auto 0 8px; }
+@container stg (max-width: 900px) { .h-lg { display: none; } }
+@container stg (max-width: 760px) { .h-md { display: none; } }
+@container stg (max-width: 560px) {
+  table th, table th.c-first { width: auto !important; }
+  table th.c-first { width: 38% !important; }
+  th, td { padding: 0 10px; }
+  .h-sm { display: none; }
+}
+
+/* ---------- popovers ---------- */
+.pop {
+  position: absolute; z-index: 20; display: flex; flex-direction: column; background: var(--panel);
+  border: 1px solid var(--line); border-radius: var(--radius-dialog); box-shadow: var(--shadow-pop); animation: pop .14s ease-out;
+}
+.pop[hidden] { display: none; }
+@keyframes pop { from { opacity: 0; transform: translateY(-4px); } }
+@media (prefers-reduced-motion: reduce) { .pop, .odrop { animation: none; } }
+.ph { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 12px 12px 16px; }
+.ttl { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 800; color: var(--ink-strong); }
+.ttl svg { color: var(--ink-soft); }
+.sec { padding: 14px 16px 16px; border-top: 1px solid var(--line-soft); }
+.lab { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin: 0 0 10px; font-size: 10.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-soft); }
+.pf { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--line); background: var(--canvas); border-radius: 0 0 13px 13px; }
+.pf .hint { margin-right: auto; font-size: 12px; color: var(--ink-soft); display: inline-flex; align-items: center; gap: 6px; }
+kbd.k { font: inherit; font-size: 11px; font-weight: 700; padding: 1px 5px; border-radius: 4px; border: 1px solid var(--line-strong); border-bottom-width: 2px; background: var(--panel); color: var(--ink); }
+.nh { margin-top: 10px; font-size: 12px; line-height: 1.4; color: var(--ink-soft); }
+.readout { font-size: 12.5px; color: var(--ink-soft); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.readout b { color: var(--ink-strong); font-weight: 700; }
+
+.tg {
+  all: unset; box-sizing: border-box; height: 32px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 10px;
+  border-radius: var(--radius-control); border: 1px solid var(--line-strong); background: var(--panel);
+  font-size: 12.5px; font-weight: 700; color: var(--ink); cursor: pointer; white-space: nowrap; transition: background .12s, border-color .12s, color .12s;
+}
+.tg:hover { border-color: rgba(0, 76, 151, .45); }
+.tg:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.tg[aria-pressed="true"] { background: var(--chip); border-color: rgba(0, 76, 151, .5); color: var(--brand); }
+.tg .n { font-weight: 600; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.tg[aria-pressed="true"] .n { color: var(--brand-fg); }
+.tg.zero:not([aria-pressed="true"]) { opacity: .5; }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.row { display: flex; flex-wrap: wrap; gap: 6px; }
+.dates { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px; align-items: end; margin-top: 12px; }
+.dates label { display: grid; gap: 4px; min-width: 0; font-size: 11.5px; font-weight: 700; color: var(--ink-soft); }
+.dates .dash { padding-bottom: 8px; color: var(--ink-soft); }
+.dates input {
+  width: 100%; min-width: 0; height: 34px; padding: 0 6px 0 8px; font: inherit; font-size: 12.5px; font-weight: 600; color: var(--ink-strong);
+  border: 1px solid var(--line-strong); border-radius: var(--radius-control); background: var(--panel); font-variant-numeric: tabular-nums;
+}
+.cb { appearance: none; -webkit-appearance: none; width: 16px; height: 16px; margin: 0; border: 1.5px solid rgba(0, 51, 101, .36); border-radius: var(--radius-check); background: #fff; cursor: pointer; display: block; position: relative; flex: none; }
+.cb:checked { background: var(--brand); border-color: var(--brand); }
+.cb:checked::after { content: ''; position: absolute; left: 4px; top: 1px; width: 4px; height: 8px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+.cb:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.opt { display: flex; align-items: center; gap: 10px; height: 36px; padding: 0 8px; border-radius: var(--radius-control); cursor: pointer; font-size: 13.5px; color: var(--ink); }
+.opt:hover { background: var(--hover); }
+.opt .oc2 { margin-left: auto; font-size: 12.5px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.opt.zero .ot, .opt.zero .oc2 { opacity: .5; }
+.pop.range { width: 600px; }
+.pop.one { width: 408px; }
+
+.acc { border: 1px solid var(--line); border-radius: var(--radius-surface); margin-bottom: 6px; overflow: hidden; background: var(--panel); }
+.acc:last-child { margin-bottom: 0; }
+.acc.open { border-color: rgba(0, 76, 151, .35); }
+.ar { all: unset; box-sizing: border-box; display: flex; width: 100%; align-items: center; gap: 8px; height: 40px; padding: 0 12px; cursor: pointer; font-size: 13px; font-weight: 700; color: var(--ink-strong); }
+.ar:hover { background: var(--hover); }
+.ar:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+.ar .av2 { margin-left: auto; font-weight: 600; font-size: 12.5px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.ar .av2.on { color: var(--brand); font-weight: 700; }
+.ar .chev { color: var(--ink-soft); display: grid; transition: transform .15s; }
+.acc.open .chev { transform: rotate(180deg); }
+.acc.open .ar { border-bottom: 1px solid var(--line-soft); }
+.ab { padding: 4px 12px 14px; }
+
+/* calendar */
+.cal { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.cal .mh { display: flex; align-items: center; justify-content: space-between; height: 28px; font-size: 13px; font-weight: 800; color: var(--ink-strong); }
+.cal .mh span { flex: 1; text-align: center; }
+.cal .mh .sp { flex: none; width: 28px; }
+.cal .mh button { all: unset; box-sizing: border-box; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 7px; color: var(--ink-soft); cursor: pointer; }
+.cal .mh button:hover:not(:disabled) { background: var(--hover); color: var(--brand); }
+.cal .mh button:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+.wd, .ds { display: grid; grid-template-columns: repeat(7, 1fr); }
+.wd span { height: 24px; line-height: 24px; text-align: center; font-size: 10.5px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-soft); }
+.ds { min-height: 192px; align-content: start; }
+.d { all: unset; box-sizing: border-box; position: relative; height: 32px; display: grid; place-items: center; font-size: 12.5px; color: var(--ink); cursor: pointer; font-variant-numeric: tabular-nums; }
+.d:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; border-radius: 6px; }
+.d.blank { visibility: hidden; }
+button.d:hover:not(:disabled) { background: rgba(0, 76, 151, .1); border-radius: 6px; }
+button.d.in { background: var(--chip); border-radius: 0; }
+button.d.start, button.d.end { background: var(--brand); color: #fff; font-weight: 700; }
+button.d.start { border-radius: 6px 0 0 6px; }
+button.d.end { border-radius: 0 6px 6px 0; }
+button.d.start.end { border-radius: 6px; }
+.d.today::after { content: ''; position: absolute; bottom: 4px; width: 3px; height: 3px; border-radius: 50%; background: currentColor; }
+
+@container stg (max-width: 720px) {
+  .pop { position: static !important; width: auto !important; margin: 0; }
+  .cal { grid-template-columns: 1fr; }
+  .cal > :nth-child(2) { display: none; }
+  .grid3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .omni { flex-basis: 100%; order: 2; }
+  .obox .kk { display: none; }
+  .qrow { flex-direction: column; align-items: flex-start; gap: 4px; padding: 6px 10px; }
+}
+@media (max-width: 900px) {
+  body { padding: 32px 16px 64px; }
+  .stage { padding: 14px 12px 12px; }
+}
+
+/* ---------- final page ---------- */
+.preview { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding: 10px 14px; border: 1px dashed rgba(0, 51, 101, .28); border-radius: var(--radius-surface); background: var(--panel); }
+.preview .pv { display: inline-flex; align-items: center; gap: 8px; }
+.preview .pl { font-size: 10.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-soft); }
+.preview .grow { flex: 1; }
+.pseg { display: inline-flex; padding: 3px; gap: 2px; border-radius: 9px; background: rgba(0, 76, 151, .07); }
+.pseg button {
+  all: unset; box-sizing: border-box; height: 28px; padding: 0 12px; display: inline-flex; align-items: center; border-radius: var(--radius-control);
+  font-size: 12.5px; font-weight: 700; color: var(--ink-soft); cursor: pointer; white-space: nowrap;
+}
+.pseg button:hover { color: var(--ink-strong); }
+.pseg button:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+.pseg button[aria-pressed="true"] { background: var(--panel); color: var(--brand); box-shadow: 0 0 0 1px var(--line), 0 1px 2px rgba(0, 25, 50, .08); }
+.try { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 13px; color: var(--ink-soft); }
+.try li { display: inline-flex; align-items: center; gap: 8px; }
+.try li::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--brand-fg); }
+.try kbd { font: inherit; font-size: 11px; font-weight: 700; padding: 1px 5px; border-radius: 4px; border: 1px solid var(--line-strong); border-bottom-width: 2px; background: var(--panel); color: var(--ink); }
+.odrop.q { max-width: 40rem; }
+.qrow .qr { margin-left: auto; flex: none; font-size: 11.5px; color: var(--ink-soft); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.qrow .qb { flex: 1; min-width: 0; }
+tbody tr:hover { background: rgba(0, 76, 151, .035); }
+.empty .btn { margin-top: 10px; }
+.build { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: var(--radius-surface); background: var(--panel); overflow: hidden; }
+.build > div { padding: 18px 20px; font-size: 13.5px; color: var(--ink-soft); }
+.build > div + div { border-left: 1px solid var(--line-soft); }
+.build h4 { margin: 0 0 4px; font-size: 14px; font-weight: 800; color: var(--ink-strong); }
+.build .tag { display: block; margin-bottom: 8px; font-size: 10.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--brand-fg); }
+.build ul { margin: 8px 0 0; padding-left: 18px; display: grid; gap: 6px; }
+.build li::marker { color: var(--brand-fg); }
+@media (max-width: 900px) {
+  .build { grid-template-columns: 1fr; }
+  .build > div + div { border-left: 0; border-top: 1px solid var(--line-soft); }
+}
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <h1>Data table filters, final look</h1>
+  <p class="lede">One omnibox, one panel, two styles. <b>Simple</b> is the Filters button and panel, plus an omnibox that suggests dates and values as you type. <b>Advanced</b> keeps all of that and adds quick dates inside the omnibox: click it and pick a preset for any date, or a value for any filter. Every active filter is a chip inside the omnibox in both styles, and switching never loses a filter.</p>
+</header>
+
+<section aria-label="Interactive preview">
+  <div class="preview" role="group" aria-label="Preview controls">
+    <span class="pv"><span class="pl">Table</span><span class="pseg"><button data-pv-table="tenants" aria-pressed="true">Tenants</button><button data-pv-table="runs" aria-pressed="false">Runs</button><button data-pv-table="tasks" aria-pressed="false">Tasks</button></span></span>
+    <span class="pv"><span class="pl">Filter style</span><span class="pseg"><button data-pv-mode="simple" aria-pressed="false">Simple</button><button data-pv-mode="advanced" aria-pressed="true">Advanced</button></span></span>
+    <span class="grow"></span>
+    <button class="btn sm ghost" id="pv-reset">Reset preview</button>
+  </div>
+  <ul class="try" style="margin:14px 0 14px">
+    <li>Click the omnibox</li>
+    <li><span>Type <b>renew</b>, <b>30</b> or <b>act</b></span></li>
+    <li><span><kbd>⌘K</kbd> or <kbd>Ctrl K</kbd> focuses it, <kbd>⌫</kbd> removes the last chip</span></li>
+    <li>Open Filters for the full panel</li>
+  </ul>
+  <div class="stage" id="stage"></div>
+</section>
+
+<section aria-labelledby="b-h">
+  <div class="build" id="b-h">
+    <div>
+      <span class="tag">Ship first: Simple</span>
+      <h4>The minimum, and already complete</h4>
+      <ul>
+        <li><b>Omnibox:</b> chips wrap to a second line, and after the two search groups it lists matching <code>Dates</code> and <code>Filters</code>. Each date suggestion names its field.</li>
+        <li><b>Filter panel:</b> a Dates section with one row per date, each with presets and a From/To range, then the status and plan toggles.</li>
+        <li><b>Chips:</b> every filter is an omnibox chip, dates included, with a dimmed field name in front: <code>started: Last 90 days</code>.</li>
+      </ul>
+    </div>
+    <div>
+      <span class="tag">Then: Advanced</span>
+      <h4>One addition, and a setting</h4>
+      <ul>
+        <li><b>Omnibox:</b> a <code>quick</code> slot, shown when the field is empty and focused, with a row of presets per date and a row of values per filter. The dropdown is wider (40rem) for it.</li>
+        <li><b>Date fields:</b> each carries a direction, past or future, so presets read correctly: Due says Overdue and Next 7D, Created says 7D and 30D.</li>
+        <li><b>Setting:</b> "Filter style" per person, on every table. The switch lives in the panel footer and the quick dropdown.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+const PREF = { mode: 'advanced' };
+
+/* ---------- helpers ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const TODAY = (() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; })();
+const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const parse = (s) => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const day = (n) => iso(addDays(TODAY, n));
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTH = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const fmt = (s, year = true) => { const d = parse(s); return `${MON[d.getMonth()]} ${d.getDate()}${year ? `, ${d.getFullYear()}` : ''}`; };
+function fmtRange({ from, to }, short = false) {
+  if (!from && !to) return 'Any time';
+  if (!from) return `Up to ${fmt(to, !short)}`;
+  if (!to) return `From ${fmt(from, !short)}`;
+  if (from === to) return fmt(from, !short);
+  const sameYear = parse(from).getFullYear() === parse(to).getFullYear();
+  const here = parse(to).getFullYear() === TODAY.getFullYear();
+  return `${fmt(from, !sameYear)} – ${fmt(to, !(short && here))}`;
+}
+const dayCount = ({ from, to }) => (from && to ? Math.round((parse(to) - parse(from)) / 864e5) + 1 : 0);
+const plural = (n, one, many) => `${n.toLocaleString()} ${n === 1 ? one : many}`;
+const svg = (d, s = 15, w = 1.8) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const sm = (h) => h.replace(/width="\d+" height="\d+"/, 'width="12" height="12"');
+const I = {
+  search: svg('<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/>', 16, 2),
+  filter: svg('<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>', 15, 1.9),
+  cal: svg('<rect x="4" y="5.5" width="16" height="14.5" rx="2.5"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/>', 14),
+  x: svg('<path d="M6 6l12 12M18 6 6 18"/>', 10, 2.6),
+  prev: svg('<path d="m14.5 6-6 6 6 6"/>', 14, 2.2),
+  next: svg('<path d="m9.5 6 6 6-6 6"/>', 14, 2.2),
+  chev: svg('<path d="m6.5 9.5 5.5 5.5 5.5-5.5"/>', 13, 2.2),
+  check: svg('<path d="m5 12.5 4.5 4.5L19 7.5"/>', 14, 2.4),
+  back: svg('<path d="M14.5 6 8.5 12l6 6"/>', 13, 2.2),
+  status: svg('<circle cx="12" cy="12" r="8"/><path d="m8.5 12 2.5 2.5L15.5 9.5"/>', 16),
+  plan: svg('<path d="m12 4 8 4.5-8 4.5-8-4.5z"/><path d="m4 12.5 8 4.5 8-4.5"/>', 16),
+  flow: svg('<circle cx="6" cy="6" r="2.2"/><circle cx="18" cy="18" r="2.2"/><path d="M8.2 6H13a3 3 0 0 1 3 3v6.8"/>', 16),
+  type: svg('<path d="M5 6h14M5 12h14M5 18h9"/>', 16),
+};
+
+/* ---------- sample data. Every date is relative to today, so presets always hit rows. ---------- */
+const rngOf = (seed) => () => (seed = (seed * 1664525 + 1013904223) % 4294967296) / 4294967296;
+const pickR = (r, a) => a[Math.floor(r() * a.length)];
+const skew = (r, max, p) => Math.floor(max * Math.pow(r(), p));
+const cap = (s) => s[0].toUpperCase() + s.slice(1);
+
+const PEOPLE = ['Priya Raman', 'Marcus Bell', 'Elena Torres', 'Wei Zhang', 'Tom Alvarez', 'Aisha Khan'];
+const CLIENTS = ['Northwind Foods', 'Harbor Freight Lines', 'Delta Marine', 'Orchard Health', 'Brightline Energy', 'Kestrel Logistics'];
+const VENDORS = ['Cloudvault', 'Ledgerline', 'Pavo Analytics', 'Tessera Systems'];
+const SERVICES = ['checkout', 'search', 'payments', 'auth'];
+const STARTERS = [['Dana Whitfield', 'Credit analyst'], ['Rachel Okafor', 'Hiring manager'], ['Sam Raines', 'On call, checkout'], ['Chidi Eze', 'Compliance'], ['Mei Lin', 'Procurement']];
+const FLOWS = [
+  { flow: 'Loan review', title: (r) => `Commercial loan review · ${pickR(r, CLIENTS)}`, steps: ['Approve credit memo', 'Collect financials', 'Spread covenants'] },
+  { flow: 'Onboarding', title: (r) => `New hire · ${pickR(r, PEOPLE)}`, steps: ['Approve elevated access', 'Provision accounts', 'Send welcome'] },
+  { flow: 'Incident', title: (r) => `SEV-${pickR(r, [2, 3])} · ${pickR(r, SERVICES)} latency`, steps: ['Detect', 'Triage', 'Mitigate', 'Postmortem'] },
+  { flow: 'KYC refresh', title: (r) => `KYC refresh · ${pickR(r, CLIENTS)}`, steps: ['Verify beneficial owners', 'Screen watchlists'] },
+  { flow: 'Vendor', title: (r) => `Vendor onboarding · ${pickR(r, VENDORS)}`, steps: ['Collect W-9', 'Security review'] },
+];
+
+function genRuns() {
+  const r = rngOf(5), rows = [];
+  for (let i = 0; i < 170; i++) {
+    const f = pickR(r, FLOWS), [by] = pickR(r, STARTERS);
+    const roll = r();
+    const status = roll < 0.18 ? 'running' : roll < 0.3 ? 'waiting' : roll < 0.9 ? 'completed' : 'failed';
+    const active = status === 'running' || status === 'waiting';
+    const startedAge = active ? skew(r, 21, 1.1) : skew(r, 170, 1.1);
+    const finishedAge = active ? null : Math.max(0, startedAge - (1 + Math.floor(r() * 9)));
+    const updatedAge = active ? Math.min(startedAge, Math.floor(r() * 4)) : finishedAge;
+    rows.push({ title: f.title(r), step: pickR(r, f.steps), status, flow: f.flow, by, d: { started: day(-startedAge), updated: day(-updatedAge), finished: finishedAge == null ? null : day(-finishedAge) } });
+  }
+  return rows.sort((a, b) => b.d.started.localeCompare(a.d.started));
+}
+function genTasks() {
+  const r = rngOf(9), rows = [];
+  const TITLES = [['Approve credit memo', 'Approval'], ['Approve elevated access', 'Approval'], ['Confirm mitigation plan', 'Sign-off'], ['Sign off covenant waiver', 'Sign-off'], ['Review beneficiary match', 'Review'], ['Review vendor risk rating', 'Review']];
+  for (let i = 0; i < 120; i++) {
+    const [title, type] = pickR(r, TITLES), f = pickR(r, FLOWS);
+    const roll = r();
+    const status = roll < 0.5 ? 'waiting' : roll < 0.82 ? 'approved' : 'returned';
+    let reqAge, due, decided = null;
+    if (status === 'waiting') { reqAge = skew(r, 26, 1.1); due = day(Math.floor(r() * 34) - 7); }
+    else { reqAge = 4 + skew(r, 80, 1.2); decided = day(-Math.max(0, reqAge - (1 + Math.floor(r() * 6)))); due = day(-reqAge + 5 + Math.floor(r() * 5)); }
+    rows.push({ title, run: f.title(r), type, status, d: { requested: day(-reqAge), due, decided } });
+  }
+  return rows.sort((a, b) => b.d.requested.localeCompare(a.d.requested));
+}
+function genTenants() {
+  const r = rngOf(21), rows = [], used = new Set();
+  const PRE = ['Crestview', 'Prosperity', 'Liberty', 'Horizon', 'Capital Trust', 'Integrity', 'Harbor', 'Summit', 'Keystone', 'Pinnacle', 'Granite', 'Meridian', 'Cedar Ridge', 'Lakeshore', 'Redwood', 'Beacon', 'Evergreen', 'Sterling', 'Northgate', 'Ironwood'];
+  const SUF = ['Bank', 'Savings & Loan', 'National Bank', 'Financial Corp.', 'Credit Union', 'Bancorp'];
+  const SEATS = { Enterprise: [500, 1000], Growth: [120, 250], Starter: [25, 50] };
+  while (rows.length < 110) {
+    const name = `${pickR(r, PRE)} ${pickR(r, SUF)}`;
+    if (used.has(name)) continue;
+    used.add(name);
+    let x = r();
+    const status = x < 0.68 ? 'active' : x < 0.86 ? 'pending' : 'suspended';
+    x = r();
+    const tier = x < 0.25 ? 'Enterprise' : x < 0.65 ? 'Growth' : 'Starter';
+    const total = pickR(r, SEATS[tier]);
+    const seatsUsed = status === 'suspended' ? 0 : status === 'pending' ? Math.floor(total * 0.1 * r()) : Math.floor(total * (0.35 + 0.6 * r()));
+    const lastAge = status === 'pending' ? null : status === 'suspended' ? 20 + Math.floor(r() * 100) : skew(r, 30, 1.6);
+    const contact = pickR(r, PEOPLE);
+    rows.push({ name, contact, email: `${contact.toLowerCase().replace(' ', '.')}@example.com`, ini: name.split(' ').slice(0, 2).map((w) => w[0]).join(''), status, tier, seats: [seatsUsed, total], d: { created: day(-skew(r, 400, 1.2)), renewal: day(Math.floor(r() * 360) - 25), lastActive: lastAge == null ? null : day(-lastAge) } });
+  }
+  return rows.sort((a, b) => b.d.created.localeCompare(a.d.created));
+}
+
+const pill = (cls, label) => `<span class="pill ${cls}">${esc(label)}</span>`;
+const STATUS_LABEL = { running: 'Running', waiting: 'Needs approval', completed: 'Completed', failed: 'Failed', approved: 'Approved', returned: 'Sent back', active: 'Active', pending: 'Pending', suspended: 'Suspended' };
+const dateCell = (f) => (r) => (r.d[f] ? `<span class="num">${fmt(r.d[f])}</span>` : '<span class="soft">–</span>');
+
+const TABLES = {
+  runs: {
+    noun: ['run', 'runs'], title: 'Runs', rows: genRuns(),
+    textFields: [
+      { key: 'title', label: 'Run', glyph: 'Aa', param: 'title__icontains', get: (r) => r.title },
+      { key: 'by', label: 'Started by', glyph: '◔', param: 'started_by__icontains', get: (r) => r.by },
+    ],
+    dates: [
+      { id: 'started', label: 'Started', dir: 'past' },
+      { id: 'updated', label: 'Last updated', dir: 'past' },
+      { id: 'finished', label: 'Finished', dir: 'past', hint: 'Runs that are still going have no finish date, so they are left out.' },
+    ],
+    facets: {
+      status: { label: 'Status', icon: I.status, values: [['running', 'Running'], ['waiting', 'Needs approval'], ['completed', 'Completed'], ['failed', 'Failed']] },
+      flow: { label: 'Workflow', icon: I.flow, values: ['Loan review', 'Onboarding', 'Incident', 'KYC refresh', 'Vendor'].map((v) => [v, v]) },
+    },
+    cols: [
+      { label: 'Run', w: '30%', first: true, cell: (r) => `<span class="name"><span class="av tile">${I.flow}</span><span class="two"><b>${esc(r.title)}</b><small>${esc(r.step)}</small></span></span>` },
+      { label: 'Status', w: '13%', cell: (r) => pill(r.status, STATUS_LABEL[r.status]) },
+      { label: 'Started by', w: '13%', cls: 'h-lg', cell: (r) => esc(r.by) },
+      { label: 'Started', w: '15%', cell: dateCell('started') },
+      { label: 'Last updated', w: '15%', cls: 'h-md', cell: dateCell('updated') },
+      { label: 'Finished', w: '14%', cls: 'h-sm', cell: dateCell('finished') },
+    ],
+  },
+  tasks: {
+    noun: ['task', 'tasks'], title: 'Tasks', rows: genTasks(),
+    textFields: [
+      { key: 'title', label: 'Task', glyph: 'Aa', param: 'title__icontains', get: (r) => r.title },
+      { key: 'run', label: 'Run', glyph: '↳', param: 'run__icontains', get: (r) => r.run },
+    ],
+    dates: [
+      { id: 'requested', label: 'Requested', dir: 'past' },
+      { id: 'due', label: 'Due', dir: 'future' },
+      { id: 'decided', label: 'Decided', dir: 'past', hint: 'Tasks still waiting have no decision date, so they are left out.' },
+    ],
+    facets: {
+      status: { label: 'Status', icon: I.status, values: [['waiting', 'Needs approval'], ['approved', 'Approved'], ['returned', 'Sent back']] },
+      type: { label: 'Type', icon: I.type, values: ['Approval', 'Review', 'Sign-off'].map((v) => [v, v]) },
+    },
+    cols: [
+      { label: 'Task', w: '32%', first: true, cell: (r) => `<span class="name"><span class="av tile">${I.flow}</span><span class="two"><b>${esc(r.title)}</b><small>${esc(r.run)}</small></span></span>` },
+      { label: 'Type', w: '11%', cls: 'h-lg', cell: (r) => esc(r.type) },
+      { label: 'Status', w: '14%', cell: (r) => pill(r.status, STATUS_LABEL[r.status]) },
+      { label: 'Requested', w: '15%', cls: 'h-md', cell: dateCell('requested') },
+      { label: 'Due', w: '14%', cell: dateCell('due') },
+      { label: 'Decided', w: '14%', cls: 'h-sm', cell: dateCell('decided') },
+    ],
+  },
+  tenants: {
+    noun: ['tenant', 'tenants'], title: 'Tenants', rows: genTenants(),
+    textFields: [
+      { key: 'name', label: 'Name', glyph: 'Aa', param: 'name__icontains', get: (r) => r.name },
+      { key: 'email', label: 'Email', glyph: '@', param: 'email__icontains', get: (r) => r.email },
+      { key: 'contact', label: 'Primary contact', glyph: '◔', param: 'contact__icontains', get: (r) => r.contact },
+    ],
+    dates: [
+      { id: 'created', label: 'Created', dir: 'past' },
+      { id: 'renewal', label: 'Renewal', dir: 'future' },
+      { id: 'lastActive', label: 'Last active', dir: 'past', hint: 'Tenants that have not signed in yet are left out.' },
+    ],
+    facets: {
+      status: { label: 'Status', icon: I.status, values: [['active', 'Active'], ['pending', 'Pending'], ['suspended', 'Suspended']] },
+      tier: { label: 'Plan', icon: I.plan, values: ['Enterprise', 'Growth', 'Starter'].map((v) => [v, v]) },
+    },
+    cols: [
+      { label: 'Name', w: '26%', first: true, cell: (r) => `<span class="name"><span class="av" aria-hidden="true">${esc(r.ini)}</span><b>${esc(r.name)}</b></span>` },
+      { label: 'Status', w: '12%', cell: (r) => pill(r.status, STATUS_LABEL[r.status]) },
+      { label: 'Plan', w: '11%', cls: 'h-lg', cell: (r) => esc(r.tier) },
+      { label: 'Seats', w: '11%', cls: 'h-md end', cell: (r) => `<span class="num">${r.seats[0].toLocaleString()} / ${r.seats[1].toLocaleString()}</span>` },
+      { label: 'Created', w: '14%', cell: dateCell('created') },
+      { label: 'Renewal', w: '14%', cls: 'h-md', cell: dateCell('renewal') },
+      { label: 'Last active', w: '12%', cls: 'h-sm', cell: dateCell('lastActive') },
+    ],
+  },
+};
+Object.values(TABLES).forEach((T) => { T.fkeys = Object.keys(T.facets); });
+
+/* ---------- date presets. Past fields look back, future fields look ahead. ---------- */
+const Y = TODAY.getFullYear(), M = TODAY.getMonth(), Q = Math.floor(M / 3) * 3;
+const PAST = [
+  { id: '7d', label: 'Last 7 days', short: '7D', get: () => ({ from: day(-6), to: day(0) }) },
+  { id: '30d', label: 'Last 30 days', short: '30D', get: () => ({ from: day(-29), to: day(0) }) },
+  { id: '90d', label: 'Last 90 days', short: '90D', get: () => ({ from: day(-89), to: day(0) }) },
+  { id: 'mtd', label: 'This month', get: () => ({ from: iso(new Date(Y, M, 1)), to: day(0) }) },
+  { id: 'qtd', label: 'This quarter', get: () => ({ from: iso(new Date(Y, Q, 1)), to: day(0) }) },
+  { id: 'ytd', label: 'Year to date', short: 'YTD', get: () => ({ from: iso(new Date(Y, 0, 1)), to: day(0) }) },
+];
+const FUTURE = [
+  { id: 'over', label: 'Overdue', short: 'Overdue', get: () => ({ from: null, to: day(-1) }) },
+  { id: 'today', label: 'Today', get: () => ({ from: day(0), to: day(0) }) },
+  { id: 'n7', label: 'Next 7 days', short: 'Next 7D', get: () => ({ from: day(0), to: day(6) }) },
+  { id: 'n30', label: 'Next 30 days', short: 'Next 30D', get: () => ({ from: day(0), to: day(29) }) },
+  { id: 'fmo', label: 'This month', get: () => ({ from: iso(new Date(Y, M, 1)), to: iso(new Date(Y, M + 1, 0)) }) },
+  { id: 'fqt', label: 'This quarter', short: 'Quarter', get: () => ({ from: iso(new Date(Y, Q, 1)), to: iso(new Date(Y, Q + 3, 0)) }) },
+];
+
+/* ---------- filter model ---------- */
+const field = (s, id) => s.T.dates.find((f) => f.id === id);
+const presetsFor = (s, id) => (field(s, id).dir === 'future' ? FUTURE : PAST);
+const presetOf = (s, id, pid) => presetsFor(s, id).find((p) => p.id === pid);
+const rangeOf = (s, id) => { const d = s.dates[id]; return d.preset ? presetOf(s, id, d.preset).get() : { from: d.from, to: d.to }; };
+const hasRange = (s, id) => { const r = rangeOf(s, id); return !!(r.from || r.to); };
+const dateLabel = (s, id) => (s.dates[id].preset ? presetOf(s, id, s.dates[id].preset).label : fmtRange(rangeOf(s, id)));
+const activeDates = (s) => s.T.dates.filter((f) => hasRange(s, f.id));
+const textField = (s, key) => s.T.textFields.find((f) => f.key === key);
+function match(s, row, ignore) {
+  for (const f of s.T.dates) {
+    if (ignore === `d:${f.id}`) continue;
+    const r = rangeOf(s, f.id);
+    if (!r.from && !r.to) continue;
+    const v = row.d[f.id];
+    if (!v || (r.from && v < r.from) || (r.to && v > r.to)) return false;
+  }
+  for (const t of s.text) {
+    const needle = t.value.toLowerCase();
+    const hit = t.kind === 'search' ? s.T.textFields.some((f) => f.get(row).toLowerCase().includes(needle)) : textField(s, t.field).get(row).toLowerCase().includes(needle);
+    if (!hit) return false;
+  }
+  return s.T.fkeys.every((k) => k === ignore || !s.f[k].size || s.f[k].has(row[k]));
+}
+const rowsFor = (s) => s.T.rows.filter((r) => match(s, r));
+const countFor = (s, k, v) => s.T.rows.filter((r) => match(s, r, k) && r[k] === v).length;
+const activeCount = (s) => activeDates(s).length + s.T.fkeys.filter((k) => s.f[k].size).length;
+
+/* every active filter, as one omnibox chip */
+function chipList(s) {
+  const out = [];
+  s.text.forEach((t) => out.push({ id: `t:${t.id}`, prefix: `${t.kind === 'search' ? 'search' : textField(s, t.field).label.toLowerCase()}:`, label: esc(t.value), plain: t.value }));
+  activeDates(s).forEach((f) => out.push({ id: `d:${f.id}`, prefix: `${f.label.toLowerCase()}:`, label: `${esc(dateLabel(s, f.id))}${s.dates[f.id].preset ? ` <span class="rs">${esc(fmtRange(rangeOf(s, f.id), true))}</span>` : ''}`, plain: dateLabel(s, f.id) }));
+  s.T.fkeys.forEach((k) => s.T.facets[k].values.forEach(([v, l]) => { if (s.f[k].has(v)) out.push({ id: `f:${k}:${v}`, prefix: `${s.T.facets[k].label.toLowerCase()}:`, label: esc(l), plain: l }); }));
+  return out;
+}
+
+/* ---------- fragments ---------- */
+function tableHTML(s, rows) {
+  const T = s.T;
+  if (!rows.length) return `<div class="empty"><b>No ${T.noun[1]} match these filters</b><span>Widen a date range or remove a chip.</span></div>`;
+  const th = T.cols.map((c) => `<th class="${c.first ? 'c-first ' : ''}${c.cls || ''}" style="width:${c.w}">${esc(c.label)}</th>`).join('');
+  return `<table><caption style="position:absolute;left:-9999px">${esc(cap(T.noun[1]))}</caption><thead><tr>${th}</tr></thead><tbody>${rows.map((r) => `<tr>${T.cols.map((c) => `<td class="${c.cls || ''}">${c.cell(r)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+}
+function optionsHTML(s, k) {
+  return s.T.facets[k].values.map(([v, l]) => {
+    const n = countFor(s, k, v), on = s.f[k].has(v);
+    return `<label class="opt${n === 0 && !on ? ' zero' : ''}"><input class="cb" type="checkbox" data-act="fv" data-f="${k}" data-v="${esc(v)}" data-k="o-${k}-${esc(v)}" ${on ? 'checked' : ''}><span class="ot">${esc(l)}</span><span class="oc2">${n}</span></label>`;
+  }).join('');
+}
+const pillsHTML = (s, k, cls = '') => s.T.facets[k].values.map(([v, l]) => {
+  const n = countFor(s, k, v), on = s.f[k].has(v);
+  return `<button class="tg${cls}${n === 0 && !on ? ' zero' : ''}" aria-pressed="${on}" data-act="fv" data-f="${k}" data-v="${esc(v)}" data-k="t-${k}-${esc(v)}">${esc(l)}<span class="n">${n}</span></button>`;
+}).join('');
+const presetGrid = (s, id) => `<div class="grid3" role="group" aria-label="${esc(field(s, id).label)} presets">${presetsFor(s, id).map((p) => `<button class="tg" aria-pressed="${s.dates[id].preset === p.id}" data-act="preset" data-f="${id}" data-id="${p.id}" data-k="p-${id}-${p.id}">${p.label}</button>`).join('')}</div>`;
+function dateInputs(s, id) {
+  const r = rangeOf(s, id);
+  return `<div class="dates"><label>From<input type="date" value="${r.from || ''}" data-act="from" data-f="${id}" data-k="from-${id}"></label><span class="dash" aria-hidden="true">–</span><label>To<input type="date" value="${r.to || ''}" data-act="to" data-f="${id}" data-k="to-${id}"></label></div>`;
+}
+const defaultView = () => { const d = new Date(Y, M - 1, 1); return { y: d.getFullYear(), m: d.getMonth() }; };
+function calHTML(s) {
+  const r = rangeOf(s, s.ui.field);
+  const v = s.ui.view || defaultView();
+  const next = { y: v.m === 11 ? v.y + 1 : v.y, m: (v.m + 1) % 12 };
+  const todayIso = iso(TODAY), endKey = r.to || r.from;
+  const month = (mo, i) => {
+    const lead = new Date(mo.y, mo.m, 1).getDay(), dim = new Date(mo.y, mo.m + 1, 0).getDate();
+    let cells = '<span class="d blank"></span>'.repeat(lead);
+    for (let d = 1; d <= dim; d++) {
+      const key = iso(new Date(mo.y, mo.m, d));
+      const inR = r.from && key >= r.from && key <= endKey;
+      const cls = ['d', inR ? 'in' : '', key === r.from ? 'start' : '', key === endKey && r.from ? 'end' : '', key === todayIso ? 'today' : ''].join(' ');
+      cells += `<button class="${cls}" data-act="day" data-d="${key}" data-k="d-${key}" aria-label="${fmt(key)}" aria-pressed="${!!inR}">${d}</button>`;
+    }
+    const prev = i === 0 ? `<button data-act="cal" data-n="-1" data-k="cal-prev" aria-label="Previous month">${I.prev}</button>` : '<span class="sp"></span>';
+    const nxt = i === 1 ? `<button data-act="cal" data-n="1" data-k="cal-next" aria-label="Next month">${I.next}</button>` : '<span class="sp"></span>';
+    return `<div><div class="mh">${prev}<span>${MONTH[mo.m]} ${mo.y}</span>${nxt}</div><div class="wd">${'SMTWTFS'.split('').map((c) => `<span>${c}</span>`).join('')}</div><div class="ds">${cells}</div></div>`;
+  };
+  return `<div class="cal">${month(v, 0)}${month(next, 1)}</div>`;
+}
+
+/* ---------- popovers. Each returns { cls, html }. ---------- */
+const nounCount = (s, c) => plural(c.n, s.T.noun[0], s.T.noun[1]);
+const POPS = {
+  /* the simple panel: dates are an accordion, one row per date field */
+  filters: (s, c) => {
+    const T = s.T;
+    const acc = T.dates.map((f) => {
+      const open = s.ui.field === f.id, on = hasRange(s, f.id);
+      return `<div class="acc${open ? ' open' : ''}"><button class="ar" aria-expanded="${open}" data-act="accopen" data-f="${f.id}" data-k="acc-${f.id}"><span>${esc(f.label)}</span><span class="av2${on ? ' on' : ''}">${esc(dateLabel(s, f.id))}</span><span class="chev">${I.chev}</span></button>${open ? `<div class="ab">${presetGrid(s, f.id)}${dateInputs(s, f.id)}${f.hint ? `<p class="nh">${esc(f.hint)}</p>` : ''}</div>` : ''}</div>`;
+    }).join('');
+    const left = PREF.mode === 'simple'
+      ? `<button class="btn ghost sm" data-act="mode" data-v="advanced" data-k="to-adv" style="margin-right:auto">Switch to advanced</button>`
+      : `<button class="btn ghost sm" data-act="mode" data-v="simple" data-k="to-simple" style="margin-right:auto">Use simple filters</button>`;
+    return { cls: 'one', html: `<div class="ph"><span class="ttl">Filters${c.active ? `<span class="count">${c.active}</span>` : ''}</span><button class="btn ghost sm" data-act="clear" data-k="clear">Clear all</button></div>
+      <div class="sec"><div class="lab"><span>Dates</span></div>${acc}</div>
+      ${T.fkeys.map((k) => `<div class="sec"><div class="lab"><span>${esc(T.facets[k].label)}</span></div><div class="row">${pillsHTML(s, k)}</div></div>`).join('')}
+      <div class="pf">${left}<button class="btn primary" data-act="close" data-k="done">Show ${nounCount(s, c)}</button></div>` };
+  },
+  custom: (s) => {
+    const f = field(s, s.ui.field), r = rangeOf(s, f.id);
+    return { cls: 'range', html: `<div class="ph"><span class="ttl">${I.cal}${esc(f.label)}, custom range</span><span class="readout"><b>${esc(fmtRange(r))}</b>${r.from && r.to ? ` · ${plural(dayCount(r), 'day', 'days')}` : ''}</span></div>
+      <div class="sec">${calHTML(s)}${f.hint ? `<p class="nh">${esc(f.hint)}</p>` : ''}</div>
+      <div class="pf"><span class="hint">${s.ui.pick ? 'Now pick the last day' : 'Pick the first day, then the last'}</span><button class="btn ghost sm" data-act="any" data-f="${f.id}" data-k="clear">Clear</button><button class="btn primary sm" data-act="close" data-k="done">Done</button></div>` };
+  },
+};
+
+
+
+/* ---------- the page ---------- */
+const STAGE = $('#stage');
+const INITS = {
+  tenants: { dates: { created: '90d' }, f: { status: ['active'] } },
+  runs: { dates: { started: '30d' }, f: { status: ['waiting', 'running'] } },
+  tasks: { dates: { due: 'n7' }, f: { status: ['waiting'] }, field: 'due' },
+};
+const states = {};
+let s = null, input = null, tableKey = 'tenants', skipOpen = false;
+const $$ = (sel, r = document) => [...r.querySelectorAll(sel)];
+const quick = () => PREF.mode === 'advanced';
+
+function newState(key) {
+  const T = TABLES[key], init = INITS[key];
+  const st = { T, popOpen: false, note: '', dates: {}, f: {}, text: [], om: { open: false, active: 0, value: '', flat: [] }, ui: { open: 'filters', anchor: 'filters', field: init.field || T.dates[0].id, fk: T.fkeys[0], view: null, pick: false } };
+  T.dates.forEach((f) => { st.dates[f.id] = { preset: init.dates?.[f.id] || null, from: null, to: null }; });
+  T.fkeys.forEach((k) => { st.f[k] = new Set(init.f?.[k] || []); });
+  return st;
+}
+const slot = (n) => $(`[data-slot=${n}]`, STAGE);
+
+/* ----- omnibox suggestions: search first, then the dates and values that match what was typed ----- */
+function suggestions() {
+  const T = s.T, q = s.om.value.trim(), ql = q.toLowerCase(), toks = ql.split(/\s+/);
+  const groups = [
+    { label: 'Search every field', items: [{ icon: '⌕', label: `Search for <strong>“${esc(q)}”</strong>`, hint: `?search=${q}`, run: () => addText('search', null, q) }] },
+    { label: 'Narrow to a field', items: T.textFields.map((f) => ({ icon: f.glyph, label: `${esc(f.label)} contains <strong>${esc(q)}</strong>`, hint: f.param, run: () => addText('field', f.key, q) })) },
+  ];
+  const di = [];
+  T.dates.forEach((f) => presetsFor(s, f.id).forEach((p) => {
+    if (toks.every((t) => `${f.label} ${p.label}`.toLowerCase().includes(t))) di.push({ f, p, score: f.label.toLowerCase().includes(ql) ? 0 : 1 });
+  }));
+  di.sort((x, y) => x.score - y.score);
+  const dateGroup = di.length ? { label: 'Dates', items: di.slice(0, 4).map(({ f, p }) => ({ icon: sm(I.cal), label: `${esc(f.label)} · <strong>${esc(p.label)}</strong>`, hint: `${f.id}=${p.id}`, run: () => { s.dates[f.id] = { preset: p.id, from: null, to: null }; s.ui.field = f.id; } })) } : null;
+  const fi = [];
+  T.fkeys.forEach((k) => T.facets[k].values.forEach(([v, l]) => { if (toks.every((t) => `${T.facets[k].label} ${l}`.toLowerCase().includes(t))) fi.push({ k, v, l }); }));
+  const valueGroup = fi.length ? { label: 'Filters', items: fi.slice(0, 3).map(({ k, v, l }) => ({ icon: sm(T.facets[k].icon), label: `${esc(T.facets[k].label)} · <strong>${esc(l)}</strong>`, hint: `${k}=${v}`, run: () => s.f[k].add(v) })) } : null;
+  /* a value that starts with what was typed ("act" is Active) is the stronger match, so it goes first */
+  const valueFirst = fi.some(({ l }) => l.toLowerCase().startsWith(ql));
+  return groups.concat(valueFirst ? [valueGroup, dateGroup] : [dateGroup, valueGroup]).filter(Boolean);
+}
+const HINTS = `<span><kbd>↑↓</kbd> move</span><span><kbd>↵</kbd> apply</span><span><kbd>⌫</kbd> remove last chip</span>`;
+const miniCal = I.cal.replace('width="14" height="14"', 'width="12" height="12"');
+function quickHTML() {
+  const T = s.T;
+  const dates = T.dates.map((f) => {
+    const on = hasRange(s, f.id);
+    return `<div class="qrow"><span class="ql">${esc(f.label)}</span><div class="qb" role="group" aria-label="${esc(f.label)} presets">${presetsFor(s, f.id).filter((p) => p.short).map((p) => `<button class="tg sm" aria-pressed="${s.dates[f.id].preset === p.id}" data-act="preset" data-f="${f.id}" data-id="${p.id}" data-k="q-${f.id}-${p.id}" title="${p.label}">${p.short}</button>`).join('')}<button class="tg sm" aria-pressed="${!s.dates[f.id].preset && on}" data-act="custom" data-f="${f.id}" data-k="q-${f.id}-custom">${miniCal}Custom</button></div>${on ? `<span class="qr">${esc(fmtRange(rangeOf(s, f.id), true))}</span>` : ''}</div>`;
+  }).join('');
+  const facets = T.fkeys.map((k) => `<div class="qrow"><span class="ql">${esc(T.facets[k].label)}</span><div class="qb" role="group" aria-label="${esc(T.facets[k].label)}">${pillsHTML(s, k, ' sm')}</div></div>`).join('');
+  return `<div class="og-label">Dates</div>${dates}<div class="og-label">Filters</div>${facets}<div class="ohints"><span>Type to search or narrow to a field</span><span><kbd>⌫</kbd> remove last chip</span><button class="sw" data-act="mode" data-v="simple" data-k="to-simple">Use simple filters</button></div>`;
+}
+function renderOmni() {
+  const chips = chipList(s);
+  slot('ochips').innerHTML = chips.map((ch) => `<span class="oc"><span class="pre">${esc(ch.prefix)}</span>${ch.label}<button data-act="orm" data-id="${esc(ch.id)}" data-k="orm-${esc(ch.id)}" aria-label="Remove ${esc(ch.prefix)}${esc(ch.plain)}">${I.x}</button></span>`).join('');
+  input.placeholder = chips.length ? '' : (quick() ? 'Search, or pick a date or filter…' : 'Search, or type to narrow to a field…');
+  const val = s.om.value.trim(), drop = slot('odrop');
+  let html = '', q = false;
+  s.om.flat = [];
+  if (s.om.open && val) {
+    const groups = suggestions();
+    s.om.flat = groups.flatMap((g) => g.items);
+    s.om.active = Math.min(s.om.active, s.om.flat.length - 1);
+    let i = -1;
+    html = groups.map((g) => `<div><div class="og-label">${g.label}</div>${g.items.map((it) => { i += 1; return `<button class="oi" role="option" aria-selected="${i === s.om.active}" data-act="osel" data-i="${i}" data-k="oi-${i}"><span class="ic">${it.icon}</span><span class="ol">${it.label}</span>${it.hint ? `<span class="oh">${esc(it.hint)}</span>` : ''}</button>`; }).join('')}</div>`).join('') + `<div class="ohints">${HINTS}</div>`;
+  } else if (s.om.open && quick()) { html = quickHTML(); q = true; }
+  drop.hidden = !html; drop.className = `odrop${q ? ' q' : ''}`; drop.innerHTML = html;
+  input.setAttribute('aria-expanded', String(!!html));
+}
+
+function place() {
+  const pop = slot('pop');
+  if (pop.hidden) return;
+  const a = $(`[data-k="${CSS.escape(s.ui.anchor)}"]`, STAGE) || $('[data-k=filters]', STAGE);
+  if (!a) return;
+  const sr = STAGE.getBoundingClientRect(), ar = a.getBoundingClientRect();
+  pop.style.left = `${Math.max(12, Math.min(ar.left - sr.left, STAGE.clientWidth - pop.offsetWidth - 12))}px`;
+  pop.style.top = `${ar.bottom - sr.top + 8}px`;
+}
+
+function render() {
+  const T = s.T;
+  const k = document.activeElement && STAGE.contains(document.activeElement) ? document.activeElement.dataset.k : null;
+  const rows = rowsFor(s);
+  const c = { n: rows.length, active: activeCount(s) };
+  const open = s.popOpen && s.ui.open === 'filters';
+  slot('lead').innerHTML = `<button class="btn lg${open ? ' on' : ''}" data-act="open" data-kind="filters" data-k="filters" aria-haspopup="dialog" aria-expanded="${open}">${I.filter}Filters${c.active ? `<span class="count">${c.active}</span>` : ''}</button>`;
+  slot('count').textContent = `${rows.length.toLocaleString()} match${rows.length === 1 ? '' : 'es'}`;
+  renderOmni();
+  const pop = slot('pop');
+  const def = POPS[s.ui.open] ? POPS[s.ui.open](s, c) : null;
+  pop.hidden = !(s.popOpen && def);
+  if (def) { pop.className = `pop ${def.cls}`; pop.innerHTML = def.html; }
+  slot('tbl').innerHTML = rows.length ? tableHTML(s, rows.slice(0, 8)) : `<div class="empty"><b>No ${T.noun[1]} match these filters</b><span>Widen a date range or remove a chip.</span><button class="btn" data-act="clear" data-k="empty-clear">Clear all filters</button></div>`;
+  slot('foot').innerHTML = `<span>Showing <b>${Math.min(8, rows.length)}</b> of <b>${rows.length.toLocaleString()}</b> ${rows.length === 1 ? T.noun[0] : T.noun[1]}</span>${s.note ? `<span class="note" role="status">${esc(s.note)}</span>` : ''}<span>Page 1</span>`;
+  $$('[data-pv-mode]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.pvMode === PREF.mode)));
+  $$('[data-pv-table]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.pvTable === tableKey)));
+  place();
+  if (k) { const el = STAGE.querySelector(`[data-k="${CSS.escape(k)}"]`); if (el && !el.disabled) el.focus(); }
+}
+
+const openPop = (kind, anchor) => {
+  const same = s.popOpen && s.ui.open === kind && s.ui.anchor === anchor;
+  s.popOpen = !same; s.ui.open = kind; s.ui.anchor = anchor;
+  if (s.popOpen) s.om.open = false;
+};
+const clearDate = (id) => { s.dates[id] = { preset: null, from: null, to: null }; };
+const addText = (kind, fieldKey, value) => s.text.push({ id: `x${Date.now()}${s.text.length}`, kind, field: fieldKey, value });
+function removeChip(id) {
+  const [kind, a, b] = id.split(':');
+  if (kind === 't') s.text = s.text.filter((t) => t.id !== a);
+  else if (kind === 'd') clearDate(a);
+  else s.f[a].delete(b);
+}
+function setMode(v, { focus = false } = {}) {
+  if (PREF.mode === v) return;
+  PREF.mode = v;
+  Object.values(states).forEach((st) => { st.popOpen = false; st.om.open = false; });
+  const n = chipList(s).length;
+  s.note = `${v === 'advanced' ? 'Advanced' : 'Simple'} filters on. ${n ? `${plural(n, 'filter', 'filters')} came with you.` : ''}`.trim();
+  if (activeDates(s).length && !hasRange(s, s.ui.field)) s.ui.field = activeDates(s)[0].id;
+  render();
+  if (focus && v === 'advanced') input.focus();
+}
+
+function act(a, el, val) {
+  const f = el.dataset.f, v = el.dataset.v, kk = el.dataset.k;
+  if (a !== 'mode') s.note = '';
+  switch (a) {
+    case 'open': openPop(el.dataset.kind, kk); break;
+    case 'close': s.popOpen = false; break;
+    case 'accopen': s.ui.field = f; break;
+    case 'preset': s.dates[f].preset = s.dates[f].preset === el.dataset.id ? null : el.dataset.id; s.dates[f].from = s.dates[f].to = null; s.ui.pick = false; s.ui.field = f; break;
+    case 'any': clearDate(f); s.ui.pick = false; break;
+    case 'from': case 'to': {
+      let { from, to } = rangeOf(s, f);
+      if (a === 'from') from = val || null; else to = val || null;
+      if (from && to && from > to) { if (a === 'from') to = from; else from = to; }
+      s.dates[f] = { preset: null, from, to }; s.ui.field = f; break;
+    }
+    case 'fv': s.f[f].has(v) ? s.f[f].delete(v) : s.f[f].add(v); break;
+    case 'fclear': s.f[f].clear(); break;
+    case 'clear': s.T.dates.forEach((d) => clearDate(d.id)); s.T.fkeys.forEach((k2) => s.f[k2].clear()); s.text = []; break;
+    case 'custom': s.ui.field = f; s.ui.view = null; s.om.open = false; s.ui.open = 'custom'; s.ui.anchor = 'omni'; s.popOpen = true; break;
+    case 'cal': { const cur = s.ui.view || defaultView(); const d = new Date(cur.y, cur.m + Number(el.dataset.n), 1); s.ui.view = { y: d.getFullYear(), m: d.getMonth() }; break; }
+    case 'day': {
+      const d = el.dataset.d, id = s.ui.field;
+      if (!s.ui.pick) { s.dates[id] = { preset: null, from: d, to: d }; s.ui.pick = true; }
+      else { let [x, y] = [s.dates[id].from, d]; if (y < x) [x, y] = [y, x]; s.dates[id] = { preset: null, from: x, to: y }; s.ui.pick = false; }
+      break;
+    }
+    case 'osel': { const it = s.om.flat[Number(el.dataset.i)]; if (it) { it.run(); s.om.value = ''; input.value = ''; s.om.active = 0; } break; }
+    case 'orm': removeChip(el.dataset.id); break;
+    case 'mode': setMode(v); return;
+  }
+  render();
+}
+
+function build(key) {
+  tableKey = key;
+  if (!states[key]) states[key] = newState(key);
+  s = states[key];
+  const T = s.T;
+  STAGE.innerHTML = `<div class="pgh"><h4>${esc(T.title)}</h4><span data-slot="count"></span></div>
+    <div class="bar"><span data-slot="lead" style="display:contents"></span>
+      <div class="omni" data-k="omni"><div class="obox">${I.search}<span data-slot="ochips" style="display:contents"></span><input type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" autocomplete="off" aria-label="Search and filter ${T.noun[1]}" value="${esc(s.om.value)}"><span class="kk" aria-hidden="true">⌘K</span></div><div class="odrop" role="listbox" aria-label="Search and filter ${T.noun[1]}" data-slot="odrop" hidden></div></div></div>
+    <div class="pop" data-slot="pop" role="dialog" aria-label="Filters" hidden></div>
+    <div class="tcard"><div class="scroll" data-slot="tbl"></div><div class="foot" data-slot="foot"></div></div>`;
+  input = $('.obox input', STAGE);
+  slot('odrop').addEventListener('pointerdown', (e) => e.preventDefault());
+  input.addEventListener('input', () => { s.om.value = input.value; s.om.open = true; s.om.active = 0; s.popOpen = false; render(); });
+  input.addEventListener('focus', () => { if (skipOpen) { skipOpen = false; return; } s.om.open = true; if (s.om.value.trim() || quick()) s.popOpen = false; render(); });
+  input.addEventListener('keydown', (e) => {
+    const n = s.om.flat.length;
+    if (e.key === 'ArrowDown' && !input.value.trim() && quick() && s.om.open) { e.preventDefault(); $('.odrop button', STAGE)?.focus(); return; }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      if (!n) { s.om.open = true; render(); return; }
+      e.preventDefault();
+      s.om.active = e.key === 'ArrowDown' ? (s.om.active + 1) % n : (s.om.active - 1 + n) % n;
+      render();
+    } else if (e.key === 'Enter' && n && s.om.flat[s.om.active]) {
+      e.preventDefault();
+      act('osel', { dataset: { i: String(s.om.active) } });
+    } else if (e.key === 'Escape' && s.om.open) {
+      e.preventDefault(); e.stopPropagation(); s.om.open = false; render();
+    } else if (e.key === 'Backspace' && input.value === '') {
+      const chips = chipList(s);
+      if (chips.length) { removeChip(chips[chips.length - 1].id); render(); }
+    }
+  });
+  render();
+}
+
+/* ----- events that live as long as the page ----- */
+STAGE.addEventListener('click', (e) => {
+  const el = e.target.closest('[data-act]');
+  if (!el || el.tagName === 'INPUT') return;
+  act(el.dataset.act, el);
+});
+STAGE.addEventListener('change', (e) => {
+  const el = e.target.closest('input[data-act]');
+  if (el) act(el.dataset.act, el, el.type === 'checkbox' ? undefined : el.value);
+});
+STAGE.addEventListener('keydown', (e) => {
+  if (e.target === input) return;
+  const drop = e.target.closest('.odrop');
+  if (drop) {
+    if (e.key === 'Escape') { e.preventDefault(); s.om.open = false; render(); skipOpen = true; input.focus(); return; }
+    if (['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft'].includes(e.key)) {
+      const btns = [...drop.querySelectorAll('button')], i = btns.indexOf(e.target.closest('button'));
+      e.preventDefault();
+      const back = e.key === 'ArrowUp' || e.key === 'ArrowLeft';
+      if (back && i <= 0) { skipOpen = true; input.focus(); } else btns[back ? i - 1 : Math.min(btns.length - 1, i + 1)].focus();
+    }
+    return;
+  }
+  if (e.key === 'Escape' && s.popOpen) {
+    const a = s.ui.anchor;
+    s.popOpen = false; render();
+    $(`[data-k="${CSS.escape(a)}"]`, STAGE)?.focus();
+  }
+});
+document.addEventListener('pointerdown', (e) => { if (s && s.om.open && !$('.omni', STAGE).contains(e.target)) { s.om.open = false; renderOmni(); } });
+document.addEventListener('keydown', (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); input.focus(); } });
+addEventListener('resize', place);
+
+/* ----- preview controls (not part of the product) ----- */
+$$('[data-pv-table]').forEach((b) => b.addEventListener('click', () => { if (b.dataset.pvTable !== tableKey) build(b.dataset.pvTable); }));
+$$('[data-pv-mode]').forEach((b) => b.addEventListener('click', () => setMode(b.dataset.pvMode, { focus: true })));
+$('#pv-reset').addEventListener('click', () => { Object.keys(states).forEach((k) => delete states[k]); PREF.mode = 'advanced'; build(tableKey); });
+
+build('tenants');
+s.om.open = true; render();   /* open on the quick dates, the part to look at first */
+
+</script>
+</body>
+</html>

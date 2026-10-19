@@ -1,0 +1,163 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap">
+  <style>
+    body { margin: 0; font-family: 'Nunito', 'Avenir Next', 'Trebuchet MS', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #f58025; text-decoration: none; }
+    a:hover { color: #ffb27a; }
+    * { box-sizing: border-box; }
+  </style>
+</helmet>
+
+<!-- Direction B · "Spotlight" — no chrome, dark canvas, everything that is not
+     asking for you is dimmed out of the way. -->
+<div style="position: relative; width: 1200px; height: 760px; overflow: hidden; background: #001932; color: #e5ebf2; background-image: radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px); background-size: 24px 24px;">
+
+  <div style="position: absolute; inset: 0; pointer-events: none; background: radial-gradient(60rem 40rem at 80% -10%, rgba(0,105,170,0.16), transparent 60%), radial-gradient(50rem 35rem at -10% 110%, rgba(239,106,0,0.10), transparent 60%);"></div>
+
+  <!-- edges -->
+  <svg width="1200" height="760" style="position: absolute; left: 0; top: 0; pointer-events: none;">
+    <defs>
+      <marker id="bDone" markerWidth="7" markerHeight="7" refX="5.2" refY="3.5" orient="auto"><path d="M0.6 0.9 L5.4 3.5 L0.6 6.1 Z" fill="rgba(255,255,255,0.45)"/></marker>
+      <marker id="bPend" markerWidth="7" markerHeight="7" refX="5.2" refY="3.5" orient="auto"><path d="M0.6 0.9 L5.4 3.5 L0.6 6.1 Z" fill="rgba(255,255,255,0.24)"/></marker>
+      <linearGradient id="bFray" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="oklch(70.4% 0.191 22.216)"/>
+        <stop offset="100%" stop-color="oklch(70.4% 0.191 22.216 / 0)"/>
+      </linearGradient>
+    </defs>
+    <path d="M252 332 L294 332" stroke="rgba(255,255,255,0.30)" stroke-width="2" fill="none" marker-end="url(#bDone)"/>
+    <path d="M480 332 C506 332, 502 228, 522 228" stroke="rgba(255,255,255,0.30)" stroke-width="2" fill="none" marker-end="url(#bDone)"/>
+    <path d="M480 332 C500 332, 502 342, 522 342" stroke="rgba(255,255,255,0.30)" stroke-width="2" fill="none" marker-end="url(#bDone)"/>
+    <path d="M480 332 C506 332, 502 458, 522 458" stroke="rgba(255,255,255,0.30)" stroke-width="2" fill="none" marker-end="url(#bDone)"/>
+    <path d="M708 228 C742 228, 744 338, 774 338" stroke="rgba(255,255,255,0.45)" stroke-width="2" fill="none" marker-end="url(#bDone)"/>
+    <path d="M708 342 L760 342" stroke="url(#bFray)" stroke-width="2" fill="none"/>
+    <path d="M708 458 C742 458, 744 348, 774 338" stroke="rgba(255,255,255,0.24)" stroke-width="2" stroke-dasharray="5 5" fill="none" marker-end="url(#bPend)"/>
+    <path d="M960 338 L994 338" stroke="rgba(255,255,255,0.20)" stroke-width="2" stroke-dasharray="5 5" fill="none" marker-end="url(#bPend)"/>
+  </svg>
+
+  <!-- n1 done · dimmed -->
+  <div style="position: absolute; left: 72px; top: 300px; width: 180px; height: 64px; display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 16px; background: rgba(0,42,82,0.55); border: 1px solid rgba(174,203,233,0.14); opacity: 0.45;">
+    <span style="display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; flex: 0 0 auto; border-radius: 8px; background: rgba(125,171,219,0.15); color: #aecbe9;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13h4l2 3h4l2-3h4"/><path d="M5.5 5h13l2.5 8v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4z"/></svg></span>
+    <div style="display: flex; flex-direction: column; gap: 2px; flex: 1 1 auto; min-width: 0;">
+      <span style="font-size: 13px; font-weight: 700; color: #f2f6fa;">Intake received</span>
+      <span style="font-size: 11px; color: #93a5b6; font-variant-numeric: tabular-nums;">0.4s</span>
+    </div>
+  </div>
+
+  <!-- n2 done · dimmed -->
+  <div style="position: absolute; left: 300px; top: 300px; width: 180px; height: 64px; display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 16px; background: rgba(0,42,82,0.55); border: 1px solid rgba(174,203,233,0.14); opacity: 0.45;">
+    <span style="display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; flex: 0 0 auto; border-radius: 8px; background: rgba(125,171,219,0.15); color: #aecbe9;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v5h5"/><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M9 13h6M9 17h4"/></svg></span>
+    <div style="display: flex; flex-direction: column; gap: 2px; flex: 1 1 auto; min-width: 0;">
+      <span style="font-size: 13px; font-weight: 700; color: #f2f6fa;">Extract docs</span>
+      <span style="font-size: 11px; color: #93a5b6; font-variant-numeric: tabular-nums;">12.8s · 9 files</span>
+    </div>
+  </div>
+
+  <!-- n3a done · dimmed -->
+  <div style="position: absolute; left: 528px; top: 196px; width: 180px; height: 64px; display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 16px; background: rgba(0,42,82,0.55); border: 1px solid rgba(174,203,233,0.14); opacity: 0.45;">
+    <span style="display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; flex: 0 0 auto; border-radius: 8px; background: rgba(125,171,219,0.15); color: #aecbe9;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v6c0 4.2 2.9 7.6 7 9 4.1-1.4 7-4.8 7-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span>
+    <div style="display: flex; flex-direction: column; gap: 2px; flex: 1 1 auto; min-width: 0;">
+      <span style="font-size: 13px; font-weight: 700; color: #f2f6fa;">KYC screening</span>
+      <span style="font-size: 11px; color: #93a5b6; font-variant-numeric: tabular-nums;">4.1s · cleared</span>
+    </div>
+  </div>
+
+  <!-- n3b failed · never dimmed, a problem is always the reader's business -->
+  <div style="position: absolute; left: 528px; top: 300px; width: 180px; height: 84px; display: flex; flex-direction: column; gap: 5px; padding: 11px 14px; border-radius: 16px; background: oklch(63.7% 0.237 25.331 / 0.14); border: 1px solid oklch(70.4% 0.191 22.216 / 0.45);">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; flex: 0 0 auto; border-radius: 8px; background: oklch(63.7% 0.237 25.331 / 0.18); color: oklch(80.8% 0.114 19.571);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M4 12h16M12 4c2.5 2.6 2.5 12.4 0 16-2.5-3.6-2.5-13.4 0-16z"/></svg></span>
+      <span style="flex: 1 1 auto; min-width: 0; font-size: 13px; font-weight: 700; color: #f2f6fa;">Sanctions check</span>
+    </div>
+    <span style="font-size: 11px; font-weight: 700; color: oklch(80.8% 0.114 19.571); font-variant-numeric: tabular-nums;">Failed · 3 attempts</span>
+    <span style="font-size: 11px; line-height: 1.3; color: rgba(255,162,162,0.85);">Vendor 504 — screen unavailable</span>
+  </div>
+
+  <!-- n3c waiting · half-dimmed -->
+  <div style="position: absolute; left: 528px; top: 420px; width: 180px; height: 76px; display: flex; flex-direction: column; gap: 5px; padding: 11px 14px; border-radius: 16px; background: rgba(0,42,82,0.55); border: 1px dashed rgba(174,203,233,0.32); opacity: 0.82;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; flex: 0 0 auto; border-radius: 8px; background: rgba(125,171,219,0.12); color: #93a5b6;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.2"/><path d="M12 7.5V12l3 2"/></svg></span>
+      <span style="flex: 1 1 auto; min-width: 0; font-size: 13px; font-weight: 700; color: #e5ebf2;">Beneficial owners</span>
+    </div>
+    <span style="font-size: 11px; color: #93a5b6; font-variant-numeric: tabular-nums;">Waiting 14m · retry 3 of 5</span>
+  </div>
+
+  <!-- n4 needs review · spotlit -->
+  <div style="position: absolute; left: 780px; top: 282px; width: 180px; height: 112px; display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-radius: 16px; background: rgba(239,106,0,0.12); border: 2px solid #f58025; box-shadow: 0 0 0 6px rgba(239,106,0,0.14), 0 18px 50px rgba(239,106,0,0.35);">
+    <span style="position: absolute; top: -11px; right: 10px; padding: 3px 9px; border-radius: 9999px; background: #ef6a00; color: #ffffff; font-size: 10px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;">Review</span>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span style="display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; flex: 0 0 auto; border-radius: 8px; background: rgba(239,106,0,0.22); color: #ffb27a;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16a8 8 0 1 1 15 0"/><path d="m12 15 4-4"/></svg></span>
+      <span style="flex: 1 1 auto; min-width: 0; font-size: 13px; font-weight: 800; color: #ffffff;">Risk tier decision</span>
+    </div>
+    <span style="font-size: 11px; font-weight: 700; color: #ffb27a; font-variant-numeric: tabular-nums;">Held 18m for a human</span>
+    <button type="button" style="display: flex; align-items: center; justify-content: center; height: 30px; width: 100%; border: 0; border-radius: 9999px; background: #ef6a00; color: #ffffff; font-family: inherit; font-size: 12px; font-weight: 800; cursor: pointer;">Open review</button>
+  </div>
+
+  <!-- n5 queued · heavily dimmed -->
+  <div style="position: absolute; left: 1000px; top: 310px; width: 160px; height: 56px; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 16px; border: 1px dashed rgba(174,203,233,0.22); opacity: 0.34;">
+    <span style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; flex: 0 0 auto; border-radius: 8px; background: rgba(125,171,219,0.10); color: #93a5b6;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M3 10h18"/></svg></span>
+    <div style="display: flex; flex-direction: column; gap: 1px; flex: 1 1 auto; min-width: 0;">
+      <span style="font-size: 12px; font-weight: 700; color: #e5ebf2;">Provision</span>
+      <span style="font-size: 10px; color: #93a5b6;">+2 queued</span>
+    </div>
+  </div>
+
+  <!-- floating run header -->
+  <div style="position: absolute; left: 24px; top: 24px; display: flex; align-items: center; gap: 12px; height: 48px; padding: 0 16px 0 12px; border-radius: 9999px; background: rgba(0,42,82,0.55); border: 1px solid rgba(174,203,233,0.14); backdrop-filter: blur(18px) saturate(1.3); -webkit-backdrop-filter: blur(18px) saturate(1.3);">
+    <span style="display: block; width: 24px; height: 24px; flex: 0 0 auto; border-radius: 9999px; background: radial-gradient(circle at 32% 28%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 34%), radial-gradient(circle at 70% 25%, #ffb27a 0%, rgba(255,178,122,0) 45%), radial-gradient(circle at 28% 70%, #ef6a00 0%, rgba(239,106,0,0) 55%), radial-gradient(circle at 75% 78%, #0069aa 0%, rgba(0,105,170,0) 62%), radial-gradient(circle at 50% 50%, #7dabdb 0%, #004c97 78%); box-shadow: inset 0 -6px 14px rgba(0,25,50,0.35), inset 0 4px 10px rgba(255,255,255,0.5);"></span>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span style="font-size: 14px; font-weight: 800; color: #ffffff;">F-Onboarding</span>
+      <span style="font-size: 13px; color: #93a5b6;">Meridian Freight Co.</span>
+    </div>
+    <span style="width: 1px; height: 18px; background: rgba(174,203,233,0.14);"></span>
+    <span style="padding: 3px 8px; border-radius: 9999px; background: rgba(125,171,219,0.15); font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 700; color: #aecbe9;">run-4821</span>
+    <span style="font-size: 12px; color: #93a5b6; font-variant-numeric: tabular-nums;">6m 12s</span>
+  </div>
+
+  <!-- floating triage cluster -->
+  <div style="position: absolute; right: 24px; top: 24px; display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 9999px; background: rgba(0,42,82,0.55); border: 1px solid rgba(174,203,233,0.14); backdrop-filter: blur(18px) saturate(1.3); -webkit-backdrop-filter: blur(18px) saturate(1.3);">
+    <span style="display: flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 9999px; background: rgba(239,106,0,0.18); border: 1px solid rgba(245,128,37,0.45); font-size: 12px; font-weight: 800; color: #ffb27a;">
+      <span style="display: block; width: 6px; height: 6px; border-radius: 9999px; background: #ef6a00;"></span>1 review
+    </span>
+    <span style="display: flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 9999px; background: oklch(63.7% 0.237 25.331 / 0.16); border: 1px solid oklch(70.4% 0.191 22.216 / 0.40); font-size: 12px; font-weight: 800; color: oklch(80.8% 0.114 19.571);">1 failed</span>
+    <span style="display: flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 9999px; border: 1px dashed rgba(174,203,233,0.32); font-size: 12px; font-weight: 500; color: #93a5b6;">1 waiting</span>
+  </div>
+
+  <!-- floating inspector, anchored to the selection -->
+  <div style="position: absolute; left: 756px; top: 480px; width: 420px; display: flex; flex-direction: column; gap: 12px; padding: 18px; border-radius: 24px; background: rgba(0,42,82,0.55); border: 1px solid rgba(174,203,233,0.14); backdrop-filter: blur(18px) saturate(1.3); -webkit-backdrop-filter: blur(18px) saturate(1.3); box-shadow: 0 24px 60px rgba(0,25,50,0.45);">
+    <div style="display: flex; align-items: flex-start; gap: 12px;">
+      <div style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px;">
+        <h2 style="margin: 0; font-size: 16px; font-weight: 800; letter-spacing: -0.015em; color: #ffffff;">Risk tier decision</h2>
+        <span style="font-size: 11px; color: #93a5b6;">Step 8 of 11 · held 18m · blocks 3 steps</span>
+      </div>
+      <button type="button" style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; flex: 0 0 auto; border: 0; border-radius: 8px; background: transparent; color: #93a5b6; cursor: pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+    </div>
+    <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #e5ebf2;">Sanctions screening never returned, so the agent will not clear tier 2 on its own. It proposes <strong style="font-weight: 800; color: #ffffff;">tier 3 with enhanced due diligence</strong>.</p>
+    <div style="margin-left: 7px; padding-left: 16px; border-left: 2px solid rgba(255,255,255,0.45);">
+      <pre style="margin: 0; font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 12px; line-height: 1.5; color: #93a5b6; white-space: pre-wrap;">{ "tier": 3, "confidence": 0.61, "edd_required": true }</pre>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button type="button" style="display: flex; align-items: center; justify-content: center; height: 36px; padding: 0 18px; border: 0; border-radius: 9999px; background: #ef6a00; color: #ffffff; font-family: inherit; font-size: 13px; font-weight: 800; cursor: pointer;">Approve tier 3</button>
+      <button type="button" style="display: flex; align-items: center; justify-content: center; height: 36px; padding: 0 18px; border-radius: 9999px; background: transparent; border: 1px solid rgba(174,203,233,0.14); color: #e5ebf2; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer;">Send back</button>
+    </div>
+  </div>
+
+  <!-- canvas controls -->
+  <div style="position: absolute; left: 24px; bottom: 24px; display: flex; align-items: center; gap: 2px; padding: 4px; border-radius: 9999px; background: rgba(0,42,82,0.55); border: 1px solid rgba(174,203,233,0.14); backdrop-filter: blur(18px) saturate(1.3); -webkit-backdrop-filter: blur(18px) saturate(1.3);">
+    <button type="button" style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border: 0; border-radius: 9999px; background: transparent; color: #93a5b6; cursor: pointer;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg></button>
+    <button type="button" style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border: 0; border-radius: 9999px; background: transparent; color: #93a5b6; cursor: pointer;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></button>
+    <span style="width: 1px; height: 16px; background: rgba(174,203,233,0.14);"></span>
+    <button type="button" style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border: 0; border-radius: 9999px; background: transparent; color: #93a5b6; cursor: pointer;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4H4v5M15 20h5v-5M4 15v5h5M20 9V4h-5"/></svg></button>
+    <span style="width: 1px; height: 16px; background: rgba(174,203,233,0.14);"></span>
+    <button type="button" style="display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border: 0; border-radius: 9999px; background: transparent; color: #aecbe9; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer;">Dim settled steps</button>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

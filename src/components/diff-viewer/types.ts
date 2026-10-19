@@ -1,0 +1,79 @@
+import type { ReactNode } from 'react'
+import type { CodeLanguage, EditorLabels } from '../code-editor'
+import type { EditorOptions } from '../code-editor/editor-options'
+
+export type DiffView = 'split' | 'unified'
+
+/** Which sides take typing: neither, one, or both. */
+export type DiffEditable = 'none' | 'original' | 'modified' | 'both'
+
+export type DiffViewerLabels = EditorLabels & {
+  added: string
+  removed: string
+  previousChange: string
+  nextChange: string
+  formatEditable: string
+  rawView: string
+  formatView: string
+  layout: string
+  split: string
+  unified: string
+  hideUnchanged: string
+  editable: string
+  readOnly: string
+  changes: (current: number, total: number) => string
+  unchanged: (count: number) => string
+  copy: (label: string) => string
+  copied: (label: string) => string
+}
+
+export type DiffViewerProps = {
+  labels?: Partial<DiffViewerLabels>
+  original: string
+  modified: string
+  /** Controlled language used to colour both sides. */
+  language?: CodeLanguage
+  /** Initial language used when `language` is not provided. */
+  defaultLanguage?: CodeLanguage
+  /** Disables editing and all built-in controls while preserving the comparison. */
+  disabled?: boolean
+  /** Header content on the left — usually the file name. */
+  title?: ReactNode
+  originalLabel?: string
+  modifiedLabel?: string
+  /** Controlled layout. Leave unset and pass `defaultView` to let the toolbar own it. */
+  view?: DiffView
+  defaultView?: DiffView
+  onViewChange?: (view: DiffView) => void
+  /** Collapse long unchanged runs to a "Show N unchanged lines" row. */
+  defaultHideUnchanged?: boolean
+  /** Monaco-style display options. Each setting can also be changed from the built-in menu. */
+  options?: EditorOptions
+  /** Unchanged lines kept visible either side of a change when collapsing. */
+  context?: number
+  /**
+   * Hides the layout switch, collapse switch, change navigation and built-in
+   * JSON/CSV formatting control.
+   */
+  hideControls?: boolean
+  /**
+   * Which sides can be typed in — `'none'` (the default), `'original'`,
+   * `'modified'` or `'both'`. A side also needs its change handler; without
+   * one it stays read-only. Any editable side turns wrapping and "Hide
+   * unchanged" off. Unified view edits one side: the modified one, unless
+   * only the original is editable.
+   */
+  editable?: DiffEditable
+  onOriginalChange?: (value: string) => void
+  onModifiedChange?: (value: string) => void
+  /**
+   * Each shows a copy button on that side's label, and is called with the
+   * text that was copied — the side as it is now, edits included.
+   */
+  onCopyOriginal?: (value: string) => void
+  onCopyModified?: (value: string) => void
+  /** Spaces per indent step in an editable side. */
+  tabSize?: number
+  /** On the outer box. Give it a height; the diff scrolls inside it. */
+  className?: string
+}

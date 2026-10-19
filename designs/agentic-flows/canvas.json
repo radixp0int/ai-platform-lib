@@ -1,0 +1,181 @@
+{
+  "pages": [
+    {
+      "id": "page-4",
+      "name": "Horizontal"
+    },
+    {
+      "id": "page-1",
+      "name": "Flow console"
+    },
+    {
+      "id": "page-2",
+      "name": "Directions"
+    },
+    {
+      "id": "page-3",
+      "name": "Node kit"
+    }
+  ],
+  "artboards": [
+    {
+      "file": "HorizFull.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900,
+      "page": "page-4",
+      "title": "H3 \u00b7 Full width \u2014 at rest"
+    },
+    {
+      "file": "HorizFullDrawer.dc.html",
+      "x": 1560,
+      "y": 0,
+      "w": 1440,
+      "h": 900,
+      "page": "page-4",
+      "title": "H3 \u00b7 Full width \u2014 inspecting"
+    },
+    {
+      "file": "HorizConsole.dc.html",
+      "x": 0,
+      "y": 1300,
+      "w": 1440,
+      "h": 900,
+      "page": "page-4",
+      "title": "H1 \u00b7 Horizontal console"
+    },
+    {
+      "file": "HorizLanes.dc.html",
+      "x": 1560,
+      "y": 1300,
+      "w": 1440,
+      "h": 900,
+      "page": "page-4",
+      "title": "H2 \u00b7 Lanes"
+    },
+    {
+      "file": "Main.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900,
+      "page": "page-1",
+      "title": "A \u00b7 Console \u2014 multi-step run"
+    },
+    {
+      "file": "ShortRun.dc.html",
+      "x": 1560,
+      "y": 0,
+      "w": 1440,
+      "h": 900,
+      "page": "page-1",
+      "title": "A \u00b7 Console \u2014 5-step run"
+    },
+    {
+      "file": "DirectionB.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 1200,
+      "h": 760,
+      "page": "page-2",
+      "title": "B \u00b7 Spotlight"
+    },
+    {
+      "file": "DirectionC.dc.html",
+      "x": 1320,
+      "y": 0,
+      "w": 1200,
+      "h": 760,
+      "page": "page-2",
+      "title": "C \u00b7 Trace + shape"
+    },
+    {
+      "file": "NodeKit.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 1100,
+      "h": 1360,
+      "page": "page-3",
+      "title": "Node kit"
+    }
+  ],
+  "annotations": [
+    {
+      "id": "h3-rest",
+      "page": "page-4",
+      "x": 0,
+      "y": -300,
+      "w": 640,
+      "text": "H3 \u00b7 Full width, at rest \u2014 the third cut, and the one that actually resolves the squeeze.\n\nThe lane rail stays, because 132px buys meaning. The inspector does not, because it only earns its 320-400px while you are reading one step. So at rest the canvas gets 1275px: six columns, nine steps, no run strip, no edge fade, nothing cut off. The whole run is one glance.\n\nThat is the right trade for the primary task. Triage is scanning \u2014 you want the shape and the three trouble spots at once \u2014 and this is the only layout that gives you all of it, including the fan back out of the human lane into two parallel provisioning steps."
+    },
+    {
+      "id": "h3-open",
+      "page": "page-4",
+      "x": 1560,
+      "y": -300,
+      "w": 640,
+      "text": "H3 \u00b7 The same canvas, inspecting.\n\nThe drawer overlays rather than taking a column, so the graph does not reflow \u2014 nothing you were looking at moves under you. It is the app's own glass at a higher opacity, which means the two queued steps it covers still read underneath instead of vanishing, and a tail on its left edge points at the node it belongs to. The selected step wears a heavier halo than its resting review ring.\n\nTradeoff: it does cover the right third while open, so a node selected far right needs the canvas to pan to it. Worth it \u2014 that is a focused task, and closing the drawer is one click back to the full run."
+    },
+    {
+      "id": "horiz-1",
+      "page": "page-4",
+      "x": 0,
+      "y": 1010,
+      "w": 620,
+      "text": "H1 \u00b7 Horizontal console \u2014 the first cut. A's chrome turned on its side, both side panels kept.\n\nFour columns of node fit at 1440, so the run strip along the bottom carries all eleven steps in order and colour, with the accent window showing what the canvas is looking at.\n\nTradeoff: 148px nodes, two-line titles, one detail line. Superseded by H3 above unless you want the tenant rail permanently visible."
+    },
+    {
+      "id": "horiz-2",
+      "page": "page-4",
+      "x": 1560,
+      "y": 1010,
+      "w": 620,
+      "text": "H2 \u00b7 Lanes \u2014 where the lane idea came from. The left column stops being navigation and starts being meaning: agent on top, external systems in the middle, human review at the bottom.\n\nH3 above keeps this rail and spends the reclaimed inspector column on the graph instead."
+    },
+    {
+      "id": "dir-a",
+      "page": "page-1",
+      "x": 0,
+      "y": -250,
+      "w": 620,
+      "text": "Direction A \u00b7 Console \u2014 the vertical original.\n\nWhy: the tenant, the flow and the run all stay on screen, so switching runs is one click and the triage strip answers \"is anything broken\" before you look at the graph. The inspector has real room for a payload, a retry history and the tool calls.\n\nTradeoff: the most chrome of the three. At 1280 and below the rail has to collapse and the inspector has to become an overlay, or the canvas gets squeezed to nothing."
+    },
+    {
+      "id": "dir-a-short",
+      "page": "page-1",
+      "x": 1560,
+      "y": -250,
+      "w": 620,
+      "text": "The same console holding a 5-step linear run \u2014 and the reason waiting is not a colour.\n\nNothing here failed. The step is polling an ACH processor with two retries left, so it gets a dashed border, a clock and two secondary buttons. Compare the inspector to the one on the left: no accent anywhere, because nobody has to do anything yet."
+    },
+    {
+      "id": "dir-b",
+      "page": "page-2",
+      "x": 0,
+      "y": -250,
+      "w": 560,
+      "text": "Direction B \u00b7 Spotlight.\n\nWhy: no chrome at all. Everything that has settled dims to 45%, so what is left at full strength IS the answer \u2014 the failed step and the one holding for you. The header, triage and inspector float as glass over the canvas, which is the demo's own visual language taken to its end.\n\nTradeoff: the floating inspector covers graph you might want to see, and there is nowhere to switch tenants or runs without leaving the view."
+    },
+    {
+      "id": "dir-c",
+      "page": "page-2",
+      "x": 1320,
+      "y": -250,
+      "w": 560,
+      "text": "Direction C \u00b7 Trace + shape.\n\nWhy: it reuses the chat's turn trace verbatim. The left column is the run as a story \u2014 rail alongside what ran, frayed where the sanctions call died, then back out flush for the sentence that speaks to you. The graph on the right carries shape only, so it never has to hold detail.\n\nTradeoff: two representations of one run means two things to keep in sync, and the trace column degrades on a wide fan-out where order stops meaning much."
+    },
+    {
+      "id": "kit",
+      "page": "page-3",
+      "x": 0,
+      "y": -250,
+      "w": 560,
+      "text": "The vocabulary all the directions share, plus what the Nunito swap actually costs.\n\nEvery value on this sheet already exists as a token in brand.css. The flow viewer adds no new colours \u2014 the one new idea is that a node which needs a human is the only node that carries a button."
+    }
+  ],
+  "launch": {
+    "view": "canvas",
+    "page": "page-4"
+  }
+}

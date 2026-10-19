@@ -1,0 +1,68 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Docs/Introduction" />
+
+# ai-platform-lib
+
+The AI platform's component library, its brand and its designs, in one repo and
+one Storybook. Every module is shown in every state worth looking at, from a
+single button to a full screen.
+
+```sh
+npm install
+npm run storybook          # dev server on :6006
+```
+
+## What is where
+
+The sidebar mirrors the folders.
+
+| Sidebar                    | Folder                      | What it holds                                                              |
+| -------------------------- | --------------------------- | -------------------------------------------------------------------------- |
+| **Brand**                  | `brand/`                    | The palettes, the type, shape and motion, and the rules for using colour   |
+| **Primitives**             | `src/primitives/`           | One control or one visual atom each: buttons, inputs, pills, overlays      |
+| **Components**             | `src/components/`           | Primitives assembled around a data contract: the data table, facet filters |
+| **Recipes**                | `src/recipes/`              | Whole screens built from components, on sample data                        |
+| **Chat / Components**      | `src/chat/components/`      | What only makes sense in a conversation: composer, message, citations      |
+| **Chat / Recipes**         | `src/chat/recipes/`         | A live conversation, the full chat page, the embeddable widget             |
+| **Workflows / Components** | `src/workflows/components/` | The run canvas, its nodes and its panels                                   |
+| **Workflows / Recipes**    | `src/workflows/recipes/`    | A whole run on the canvas, the runs list                                   |
+
+The saved design canvases are in `designs/`; see [Designs](?path=/docs/docs-designs--docs).
+
+## The toolbar
+
+Four globals, applied to `<html>` so portals follow them:
+
+- **Mode** — `light` / `dark`
+- **Palette** — the `chat-theme-*` class (Navy, Classic, Deep, Graphite)
+- **Highlight** — the `chat-highlight-*` colour behind cited passages
+- **Density** — `UiSizeProvider`; `compact` is what the embedded widget runs
+
+## Using the library in an app
+
+The package is source-only: the app's own Vite compiles it. There are three
+entry points, so an app that never draws a workflow never loads the canvas.
+
+```ts
+import { Button, DataTable } from 'ai-platform-lib'
+import { Composer, useChat } from 'ai-platform-lib/chat'
+import { WorkflowCanvas } from 'ai-platform-lib/workflows'
+```
+
+```css
+@import 'tailwindcss';
+@import 'ai-platform-lib/brand/tokens.css';
+@import 'ai-platform-lib/styles.css';
+@import 'ai-platform-lib/chat.css'; /* only if the app uses chat */
+@import 'ai-platform-lib/workflows.css'; /* only if the app uses workflows */
+```
+
+## Lazy by default
+
+Storybook indexes story files without executing them and loads each one as its
+own chunk when you open it. Heavy dependencies — `beautiful-mermaid`,
+`react-pdf`, `@xyflow/react` — are fetched only by the stories that import them.
+
+Next: [Structure](?path=/docs/docs-structure--docs) — the tiers, the shape every
+folder follows, and how to add a story to one.

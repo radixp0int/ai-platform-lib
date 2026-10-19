@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home — menu expanded</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+a{color:#003f7e;text-decoration:none}a:hover{color:#004c97}
+</style>
+</helmet>
+<div style="position: relative; width: 1440px; height: 900px; overflow: hidden; display: flex; flex-direction: column; background: #f5f7f9; color: #2d3943; font-family: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing: antialiased;">
+
+  <header style="display: flex; align-items: center; height: 60px; flex: 0 0 auto; padding: 0 12px 0 10px; background: #002a52; color: #ffffff;">
+    <a href="HomeCollapsed.dc.html" aria-label="Collapse menu" aria-expanded="true" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 7px; color: #d9e6f5;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"></rect><path d="M9.5 4.5v15"></path></svg>
+    </a>
+    <a href="Main.dc.html" aria-label="Acme, go to Home" style="display: flex; align-items: center; gap: 10px; height: 44px; margin-left: 10px; padding: 0 8px; border-radius: 7px; color: #ffffff;">
+      <span aria-hidden="true" style="display: block; width: 24px; height: 24px; flex: 0 0 auto; border-radius: 9999px; background: radial-gradient(circle at 32% 28%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 34%), radial-gradient(circle at 70% 25%, #ffb27a 0%, rgba(255,178,122,0) 45%), radial-gradient(circle at 28% 70%, #ef6a00 0%, rgba(239,106,0,0) 55%), radial-gradient(circle at 75% 78%, #0069aa 0%, rgba(0,105,170,0) 62%), radial-gradient(circle at 50% 50%, #7dabdb 0%, #004c97 78%); box-shadow: inset 0 -3px 6px rgba(0,25,50,0.35), inset 0 2px 4px rgba(255,255,255,0.5);"></span>
+      <span style="font-size: 17px; font-weight: 700; letter-spacing: -0.01em; color: #ffffff;">Acme</span>
+    </a>
+    <span aria-hidden="true" style="width: 1px; height: 24px; margin: 0 12px; background: rgba(255,255,255,0.20);"></span>
+    <nav aria-label="Open spaces" style="display: flex; align-self: stretch; gap: 2px;">
+      <a href="ChatSpace.dc.html" style="display: flex; align-items: center; gap: 8px; padding: 0 14px; font-size: 14px; color: #aecbe9;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4.5 3.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"></path></svg>
+        <span style="font-weight: 700;">Chat</span>
+        <span style="font-size: 13px;">New chat</span>
+      </a>
+      <a href="WorkflowsSpace.dc.html" style="display: flex; align-items: center; gap: 8px; padding: 0 14px; font-size: 14px; color: #aecbe9;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="7" height="6" rx="1.5"></rect><rect x="14" y="14" width="7" height="6" rx="1.5"></rect><path d="M10 7h4a3 3 0 0 1 3 3v4"></path></svg>
+        <span style="font-weight: 700;">Workflows</span>
+        <span style="font-size: 13px;">Runs</span>
+      </a>
+    </nav>
+    <span style="flex: 1 1 auto;"></span>
+    <a href="TenantSwitcher.dc.html" aria-label="Switch tenant. Current tenant: Alderfinch Treasury" style="display: flex; align-items: center; gap: 10px; width: 256px; height: 44px; margin: 0 4px; padding: 0 10px 0 8px; border-radius: 7px; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.20); color: #ffffff;">
+      <span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; flex: 0 0 auto; border-radius: 6px; background: #ffffff; color: #002a52; font-size: 11px; font-weight: 700;">AT</span>
+      <span style="flex: 1 1 auto; min-width: 0; font-size: 14px; font-weight: 700; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Alderfinch Treasury</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d9e6f5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+    </a>
+    <button type="button" aria-label="Search this tenant" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: 0; border-radius: 7px; background: transparent; color: #d9e6f5; cursor: pointer;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg>
+    </button>
+    <button type="button" aria-label="Help" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: 0; border-radius: 7px; background: transparent; color: #d9e6f5; cursor: pointer;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M9.6 9.5a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.2 1-1.2 1.8"></path><path d="M12 16.6h.01"></path></svg>
+    </button>
+    <button type="button" aria-label="Notifications" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: 0; border-radius: 7px; background: transparent; color: #d9e6f5; cursor: pointer;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15z"></path><path d="M10 20a2 2 0 0 0 4 0"></path></svg>
+    </button>
+    <button type="button" aria-label="Account: John Ozzo" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: 0; background: transparent; cursor: pointer;">
+      <span style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 9999px; background: #eef4fb; font-family: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif; font-size: 12px; font-weight: 700; color: #002a52;">JO</span>
+    </button>
+  </header>
+
+  <div style="display: flex; flex: 1 1 auto; min-height: 0;">
+
+    <aside style="display: flex; flex-direction: column; width: 264px; flex: 0 0 auto; padding: 12px; background: #ffffff; border-right: 1px solid rgba(0,51,101,0.12);">
+      <nav aria-label="Spaces" style="display: flex; flex-direction: column; gap: 2px;">
+        <a href="Main.dc.html" aria-current="page" style="display: flex; align-items: center; gap: 12px; flex: 1 1 auto; min-width: 0; height: 44px; padding: 0 12px; border-radius: 7px; background: rgba(0,76,151,0.10); font-size: 14px; font-weight: 700; color: #004c97;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11.5 12 4l8 7.5"></path><path d="M6 10v9h12v-9"></path><path d="M10 19v-5h4v5"></path></svg>
+          <span style="flex: 1 1 auto;">Home</span>
+        </a>
+        <div style="display: flex; align-items: center;">
+          <a href="ChatSpace.dc.html" style="display: flex; align-items: center; gap: 12px; flex: 1 1 auto; min-width: 0; height: 44px; padding: 0 12px; border-radius: 7px; font-size: 14px; font-weight: 500; color: #2d3943;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4.5 3.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"></path></svg>
+            <span style="flex: 1 1 auto;">Chat</span>
+          </a>
+          <button type="button" aria-label="Expand Chat" aria-expanded="false" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex: 0 0 auto; border: 0; border-radius: 7px; background: transparent; color: #64727e; cursor: pointer;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
+          </button>
+        </div>
+        <div style="display: flex; align-items: center;">
+          <a href="WorkflowsSpace.dc.html" style="display: flex; align-items: center; gap: 12px; flex: 1 1 auto; min-width: 0; height: 44px; padding: 0 12px; border-radius: 7px; font-size: 14px; font-weight: 500; color: #2d3943;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="7" height="6" rx="1.5"></rect><rect x="14" y="14" width="7" height="6" rx="1.5"></rect><path d="M10 7h4a3 3 0 0 1 3 3v4"></path></svg>
+            <span style="flex: 1 1 auto;">Workflows</span>
+          </a>
+          <button type="button" aria-label="Collapse Workflows" aria-expanded="true" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex: 0 0 auto; border: 0; border-radius: 7px; background: transparent; color: #64727e; cursor: pointer;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+          </button>
+        </div>
+        <a href="WorkflowsSpace.dc.html" style="display: flex; align-items: center; gap: 8px; height: 44px; margin-left: 32px; padding: 0 12px; border-radius: 7px; font-size: 14px; font-weight: 500; color: #2d3943;">
+          <span style="flex: 1 1 auto;">Runs</span>
+        </a>
+        <a href="#approvals" style="display: flex; align-items: center; gap: 8px; height: 44px; margin-left: 32px; padding: 0 12px; border-radius: 7px; font-size: 14px; font-weight: 500; color: #2d3943;">
+          <span style="flex: 1 1 auto;">Approvals</span>
+          <span aria-label="2 runs need approval" style="display: flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; flex: 0 0 auto; padding: 0 6px; border-radius: 9999px; background: #cb4a11; font-size: 11px; font-weight: 700; color: #ffffff;">2</span>
+        </a>
+        <div style="display: flex; align-items: center;">
+          <a href="#insights" style="display: flex; align-items: center; gap: 12px; flex: 1 1 auto; min-width: 0; height: 44px; padding: 0 12px; border-radius: 7px; font-size: 14px; font-weight: 500; color: #2d3943;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"></path></svg>
+            <span style="flex: 1 1 auto;">Insights</span>
+          </a>
+          <button type="button" aria-label="Expand Insights" aria-expanded="false" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex: 0 0 auto; border: 0; border-radius: 7px; background: transparent; color: #64727e; cursor: pointer;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
+          </button>
+        </div>
+        <div style="display: flex; align-items: center;">
+          <a href="#ingestion" style="display: flex; align-items: center; gap: 12px; flex: 1 1 auto; min-width: 0; height: 44px; padding: 0 12px; border-radius: 7px; font-size: 14px; font-weight: 500; color: #2d3943;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v10M8 10l4 4 4-4"></path><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"></path></svg>
+            <span style="flex: 1 1 auto;">Ingestion</span>
+          </a>
+          <button type="button" aria-label="Collapse Ingestion" aria-expanded="true" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex: 0 0 auto; border: 0; border-radius: 7px; background: transparent; color: #64727e; cursor: pointer;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+          </button>
+        </div>
+        <a href="#documents" style="display: flex; align-items: center; gap: 8px; height: 44px; margin-left: 32px; padding: 0 12px; border-radius: 7px; font-size: 14px; font-weight: 500; color: #2d3943;">
+          <span style="flex: 1 1 auto;">Documents</span>
+        </a>
+        <a href="#api-sources" style="display: flex; align-items: center; gap: 8px; height: 44px; margin-left: 32px; padding: 0 12px; border-radius: 7px; font-size: 14px; font-weight: 500; color: #2d3943;">
+          <span style="flex: 1 1 auto;">API sources</span>
+        </a>
+      </nav>
+    </aside>
+
+    <main style="display: flex; flex-direction: column; gap: 24px; flex: 1 1 auto; min-width: 0; padding: 28px 40px 0 40px;">
+
+      <div style="display: flex; flex-direction: column; gap: 2px;">
+        <h1 style="margin: 0; font-size: 26px; font-weight: 700; line-height: 1.2; letter-spacing: -0.015em; color: #1c2733;">Home</h1>
+        <p style="margin: 0; font-size: 14px; color: #64727e;">Alderfinch Treasury</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px;">
+        <a href="ChatSpace.dc.html" style="display: flex; flex-direction: column; gap: 6px; padding: 16px 18px; border-radius: 10px; background: #ffffff; border: 1px solid rgba(0,51,101,0.12); box-shadow: 0 1px 2px rgba(0,25,50,0.04); color: #2d3943;">
+          <span style="display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; color: #1c2733;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0069aa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4.5 3.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"></path></svg>
+            <span>Ask a question</span>
+          </span>
+          <span style="font-size: 13px; line-height: 1.5; color: #64727e;">Start a conversation. Answers come with citations you can check.</span>
+        </a>
+        <a href="WorkflowsSpace.dc.html" style="display: flex; flex-direction: column; gap: 6px; padding: 16px 18px; border-radius: 10px; background: #ffffff; border: 1px solid rgba(0,51,101,0.12); box-shadow: 0 1px 2px rgba(0,25,50,0.04); color: #2d3943;">
+          <span style="display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; color: #1c2733;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0069aa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="7" height="6" rx="1.5"></rect><rect x="14" y="14" width="7" height="6" rx="1.5"></rect><path d="M10 7h4a3 3 0 0 1 3 3v4"></path></svg>
+            <span style="flex: 1 1 auto;">Review approvals</span>
+            <span style="display: flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 9999px; background: oklch(92% 0.07 65); border: 1px solid oklch(65% 0.16 55); font-size: 12px; font-weight: 700; color: oklch(40% 0.13 55);">2 waiting</span>
+          </span>
+          <span style="font-size: 13px; line-height: 1.5; color: #64727e;">Two workflow runs are paused until you decide.</span>
+        </a>
+        <a href="Wizard.dc.html" style="display: flex; flex-direction: column; gap: 6px; padding: 16px 18px; border-radius: 10px; background: #ffffff; border: 1px solid rgba(0,51,101,0.12); box-shadow: 0 1px 2px rgba(0,25,50,0.04); color: #2d3943;">
+          <span style="display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; color: #1c2733;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0069aa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v10M8 10l4 4 4-4"></path><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"></path></svg>
+            <span>Add documents</span>
+          </span>
+          <span style="font-size: 13px; line-height: 1.5; color: #64727e;">Upload files or connect an API source for ingestion.</span>
+        </a>
+        <a href="#insights" style="display: flex; flex-direction: column; gap: 6px; padding: 16px 18px; border-radius: 10px; background: #ffffff; border: 1px solid rgba(0,51,101,0.12); box-shadow: 0 1px 2px rgba(0,25,50,0.04); color: #2d3943;">
+          <span style="display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; color: #1c2733;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0069aa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"></path></svg>
+            <span>See insights</span>
+          </span>
+          <span style="font-size: 13px; line-height: 1.5; color: #64727e;">Usage and the questions asked most in this tenant.</span>
+        </a>
+      </div>
+
+      <section style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
+        <h2 style="margin: 0; font-size: 15px; font-weight: 700; color: #1c2733;">Recently opened</h2>
+
+        <div style="display: flex; flex-direction: column;">
+          <div style="display: grid; grid-template-columns: minmax(0, 2.6fr) minmax(0, 1fr) minmax(0, 1fr); column-gap: 16px; align-items: center; height: 36px; padding: 0 8px; border-bottom: 1px solid rgba(0,51,101,0.16); font-size: 12px; font-weight: 600; color: #64727e;">
+            <span>Name</span>
+            <span>Space</span>
+            <span>Last opened</span>
+          </div>
+
+          <div style="display: flex; align-items: flex-end; height: 32px; padding: 0 8px 6px 8px; font-size: 12px; font-weight: 600; color: #64727e;">Today</div>
+          <a href="WorkflowsSpace.dc.html" style="display: grid; grid-template-columns: minmax(0, 2.6fr) minmax(0, 1fr) minmax(0, 1fr); column-gap: 16px; align-items: center; height: 44px; padding: 0 8px; font-size: 14px; color: #2d3943;">
+            <span style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0069aa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: 0 0 auto;"><rect x="3" y="4" width="7" height="6" rx="1.5"></rect><rect x="14" y="14" width="7" height="6" rx="1.5"></rect><path d="M10 7h4a3 3 0 0 1 3 3v4"></path></svg>
+              <span style="font-weight: 600; color: #1c2733; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Commercial loan review</span>
+              <span style="display: flex; align-items: center; height: 22px; flex: 0 0 auto; padding: 0 9px; border-radius: 9999px; background: oklch(92% 0.07 65); border: 1px solid oklch(65% 0.16 55); font-size: 12px; font-weight: 700; color: oklch(40% 0.13 55);">Needs approval</span>
+            </span>
+            <span style="color: #64727e;">Workflows</span>
+            <span style="color: #64727e;">Today</span>
+          </a>
+          <a href="WorkflowsSpace.dc.html" style="display: grid; grid-template-columns: minmax(0, 2.6fr) minmax(0, 1fr) minmax(0, 1fr); column-gap: 16px; align-items: center; height: 44px; padding: 0 8px; border-top: 1px solid rgba(0,51,101,0.10); font-size: 14px; color: #2d3943;">
+            <span style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0069aa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: 0 0 auto;"><rect x="3" y="4" width="7" height="6" rx="1.5"></rect><rect x="14" y="14" width="7" height="6" rx="1.5"></rect><path d="M10 7h4a3 3 0 0 1 3 3v4"></path></svg>
+              <span style="font-weight: 600; color: #1c2733; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">New hire · Priya Raman</span>
+              <span style="display: flex; align-items: center; height: 22px; flex: 0 0 auto; padding: 0 9px; border-radius: 9999px; background: oklch(92% 0.07 65); border: 1px solid oklch(65% 0.16 55); font-size: 12px; font-weight: 700; color: oklch(40% 0.13 55);">Needs approval</span>
+            </span>
+            <span style="color: #64727e;">Workflows</span>
+            <span style="color: #64727e;">Today</span>
+          </a>
+
+          <div style="display: flex; align-items: flex-end; height: 32px; padding: 0 8px 6px 8px; font-size: 12px; font-weight: 600; color: #64727e;">Past 7 days</div>
+          <a href="ChatSpace.dc.html" style="display: grid; grid-template-columns: minmax(0, 2.6fr) minmax(0, 1fr) minmax(0, 1fr); column-gap: 16px; align-items: center; height: 44px; padding: 0 8px; font-size: 14px; color: #2d3943;">
+            <span style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0069aa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: 0 0 auto;"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4.5 3.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"></path></svg>
+              <span style="font-weight: 600; color: #1c2733; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Positive pay exceptions</span>
+            </span>
+            <span style="color: #64727e;">Chat</span>
+            <span style="color: #64727e;">2 days ago</span>
+          </a>
+          <a href="ChatSpace.dc.html" style="display: grid; grid-template-columns: minmax(0, 2.6fr) minmax(0, 1fr) minmax(0, 1fr); column-gap: 16px; align-items: center; height: 44px; padding: 0 8px; border-top: 1px solid rgba(0,51,101,0.10); font-size: 14px; color: #2d3943;">
+            <span style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0069aa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: 0 0 auto;"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4.5 3.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"></path></svg>
+              <span style="font-weight: 600; color: #1c2733; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Lockbox remittance matching</span>
+            </span>
+            <span style="color: #64727e;">Chat</span>
+            <span style="color: #64727e;">5 days ago</span>
+          </a>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>
