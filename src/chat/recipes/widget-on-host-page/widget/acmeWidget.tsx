@@ -51,11 +51,11 @@ function buildSidePanels(): SidePanel[] {
 // Assemble the Acme-specific content that makes the library widget concrete.
 function buildContent(
   responder: Responder = createCannedResponder(cannedTurns),
-  superAdmin = false,
+  humanized = false,
 ): WidgetContent {
   return {
     responder,
-    assistantAvatar: assistantAvatarFor({ superAdmin }),
+    assistantAvatar: assistantAvatarFor({ humanized }),
     branding: acmeBranding,
     suggestions: todaysSuggestions,
     typeaheadPool,
@@ -73,14 +73,14 @@ function buildContent(
 export type AcmeChatOptions = Omit<MountOptions, 'cssText'> & {
   /** Where answers come from. Defaults to the canned turns, replayed locally. */
   responder?: Responder
-  /** The signed-in user is a super admin, so the assistant is the marble bust. */
-  superAdmin?: boolean
+  /** Show the humanized assistant, the marble bust — for super admins. */
+  humanized?: boolean
 }
 export type AcmeChatHandle = WidgetHandle
 
 /** Mount the Acme chat widget. Returns a handle to control or remove it. */
-export function init({ responder, superAdmin, ...options }: AcmeChatOptions = {}): AcmeChatHandle {
-  return mountWidget(buildContent(responder, superAdmin), { ...options, cssText })
+export function init({ responder, humanized, ...options }: AcmeChatOptions = {}): AcmeChatHandle {
+  return mountWidget(buildContent(responder, humanized), { ...options, cssText })
 }
 
 // Auto-init when loaded via a classic script tag carrying data-auto-init:

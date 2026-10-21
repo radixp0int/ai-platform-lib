@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react'
-import type { AssistantAvatarKind, AssistantAvatarViewer } from './types'
+import type { AssistantAvatarKind, AssistantAvatarOptions } from './types'
 
 const AssistantAvatarContext = createContext<AssistantAvatarKind>('orb')
 
@@ -15,9 +15,12 @@ export function useAssistantAvatarKind(): AssistantAvatarKind {
 }
 
 /**
- * The rule, written once so every app applies it the same way: super admins
- * see Aristotle as a marble bust, everyone else sees the Orb.
+ * The mark for a humanized assistant or a plain one: humanized is Aristotle
+ * as a marble bust, otherwise the Orb. Who is shown the humanized assistant
+ * is the app's call — today, super admins.
  */
-export function assistantAvatarFor(viewer: AssistantAvatarViewer): AssistantAvatarKind {
-  return viewer.superAdmin ? 'marble-bust' : 'orb'
+export function assistantAvatarFor({
+  humanized = false,
+}: AssistantAvatarOptions): AssistantAvatarKind {
+  return humanized ? 'marble-bust' : 'orb'
 }

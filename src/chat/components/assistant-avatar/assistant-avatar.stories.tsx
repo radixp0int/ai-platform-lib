@@ -11,7 +11,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'The assistant’s mark, with what it is doing: idle, thinking or talking. Everyone sees the Orb; super admins see Aristotle as a marble bust. The host picks the mark with `AssistantAvatarProvider` (and `assistantAvatarFor`), and every surface that shows the assistant goes through it.',
+          'The assistant’s mark, with what it is doing: idle, thinking or talking. The Orb by default; humanized, Aristotle as a marble bust (today the app gives that to super admins). The host picks the mark with `AssistantAvatarProvider` (and `assistantAvatarFor`), and every surface that shows the assistant goes through it.',
       },
     },
   },
@@ -28,7 +28,7 @@ export const Thinking: Story = { args: { state: 'thinking' } }
 /** A gentle pulse, while it types — in the composer, or as an answer streams. */
 export const Talking: Story = { args: { state: 'talking' } }
 
-/** Aristotle as a marble bust, the super admins’ mark. Blinks at rest. */
+/** The humanized assistant: Aristotle as a marble bust. Blinks at rest. */
 export const MarbleBust: Story = { args: { kind: 'marble-bust', size: 96 } }
 
 /** Tilts his head and raises his brows while an answer is being worked out. */

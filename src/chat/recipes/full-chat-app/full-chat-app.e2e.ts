@@ -53,19 +53,19 @@ test.describe('Full chat app on canned turns', () => {
   })
 })
 
-test.describe('The assistant mark by role', () => {
-  test('a regular user sees the Orb beside the composer', async ({ story, page }) => {
+test.describe('The assistant mark, plain or humanized', () => {
+  test('by default the Orb is beside the composer', async ({ story, page }) => {
     await story.open('chat-recipes-full-chat-app--acme')
     await expect(page.locator('[data-avatar="orb"]').first()).toBeVisible()
     await expect(page.locator('[data-avatar="marble-bust"]')).toHaveCount(0)
   })
 
-  test('a super admin sees the marble bust, beside the composer and the answer', async ({
+  test('humanized, the marble bust is beside the composer and the answer', async ({
     story,
     page,
   }) => {
     await page.clock.install()
-    await story.open('chat-recipes-full-chat-app--super-admin')
+    await story.open('chat-recipes-full-chat-app--humanized')
     await expect(page.locator('[data-avatar="marble-bust"]')).toHaveCount(1)
     await ask(page, 'How big should my emergency fund be?')
     await page.clock.runFor(60_000)

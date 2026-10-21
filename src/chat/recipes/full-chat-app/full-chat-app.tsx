@@ -259,17 +259,17 @@ export function Chat({
  *  behind the sidebar's account menu. Both are modal, so at most one is ever
  *  open — opening either closes the other.
  *
- *  `superAdmin` stands in for what a real app reads from the signed-in user:
- *  it picks the assistant's mark through `assistantAvatarFor`. */
+ *  `humanized` shows the assistant as Aristotle, the marble bust. A real app
+ *  turns it on for super admins, from the signed-in user. */
 function App({
   responder,
-  superAdmin = false,
-}: Pick<ChatProps, 'responder'> & { superAdmin?: boolean }) {
+  humanized = false,
+}: Pick<ChatProps, 'responder'> & { humanized?: boolean }) {
   const demo = useDemoFeatureState()
   const [dialog, setDialog] = useState<'user' | 'features' | null>(null)
   return (
     <BrandingProvider value={acmeBranding}>
-      <AssistantAvatarProvider value={assistantAvatarFor({ superAdmin })}>
+      <AssistantAvatarProvider value={assistantAvatarFor({ humanized })}>
         <DemoFeaturesProvider value={demo}>
           <Chat
             responder={responder}

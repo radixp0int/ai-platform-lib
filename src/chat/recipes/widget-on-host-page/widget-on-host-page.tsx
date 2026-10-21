@@ -38,17 +38,17 @@ const field =
 
 export function WidgetDemoPage({
   responder,
-  superAdmin = false,
+  humanized = false,
 }: {
   responder?: Responder
-  superAdmin?: boolean
+  humanized?: boolean
 }) {
   // Mount the widget exactly the way an embedding site would — same init()
   // the script tag calls — and tear it down when leaving the route.
   useEffect(() => {
-    const handle = init({ theme: 'auto', themeClass: THEME, responder, superAdmin })
+    const handle = init({ theme: 'auto', themeClass: THEME, responder, humanized })
     return () => handle.destroy()
-  }, [responder, superAdmin])
+  }, [responder, humanized])
 
   return (
     <div className={`${THEME} min-h-dvh bg-canvas text-ink-strong`} style={displayFace}>

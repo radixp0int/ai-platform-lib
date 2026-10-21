@@ -2,9 +2,9 @@
 export type AssistantAvatarState = 'idle' | 'thinking' | 'talking'
 
 /**
- * Which mark represents the assistant. `orb` is everyone's; `marble-bust` is
- * Aristotle, for super admins. More are planned, one per agent, so this is a
- * list of names rather than a flag.
+ * Which mark represents the assistant. `orb` is the default; `marble-bust` is
+ * the humanized assistant, Aristotle. More are planned, one per agent, so this
+ * is a list of names rather than a flag.
  */
 export type AssistantAvatarKind = 'orb' | 'marble-bust'
 
@@ -18,5 +18,6 @@ export type AssistantAvatarProps = {
   className?: string
 }
 
-/** Who is looking: what the host knows about the viewer that picks the mark. */
-export type AssistantAvatarViewer = { superAdmin?: boolean }
+/** What picks the mark. `humanized` asks for the assistant with a face — the
+ *  host decides who gets it (today, super admins). */
+export type AssistantAvatarOptions = { humanized?: boolean }
