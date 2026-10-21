@@ -1,0 +1,1056 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<title>Greeting A+B Variants</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Nunito+Sans:wght@400;600;700;800&display=swap">
+<style>
+/* Layout: a quiet review board. Each variant is a live product frame with a note on what it keeps from A and from B. */
+:root {
+  --ground: #eef2f6;
+  --panel: #ffffff;
+  --ink: #12202e;
+  --muted: #586774;
+  --line: #d5dde5;
+  --accent: #004c97;
+  --accent-ink: #ffffff;
+  --font-ui: 'Nunito Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Product tokens. The frames show the product's light theme in both board themes. */
+  --p-bg: #f7f9fb;
+  --p-card: #ffffff;
+  --p-ink: #12202e;
+  --p-sub: #3d5266;
+  --p-quiet: #586774;
+  --p-ghost: #66788a;
+  --p-hint: #8b99a7;
+  --p-line: #d5dde5;
+  --p-rule: #dde3ea;
+  --p-brand: #004c97;
+  --p-brand-soft: #d4e2f1;
+  --p-tint: #eef3f8;
+  --p-pos: #1b7a44;
+  --p-warm: #ef6a00;
+  --p-alert: #c24e00;
+  --p-warn-bg: #fff5e8;
+  --p-warn-line: #f2c48d;
+  --p-warn-ink: #8a4600;
+  --p-bad-bg: #fdeeed;
+  --p-bad-line: #f1b5b0;
+  --p-bad-ink: #a3221a;
+  --p-ok-bg: #eaf6ef;
+  --p-ok-line: #a9d8bb;
+  --p-white: #ffffff;
+  --p-shadow: rgba(10, 36, 64, 0.25);
+
+  --av-brand: #004c97;
+  --av-warm: #ef6a00;
+  --av-ink: #ffffff;
+  --av-marble: #f3f6f9;
+  --av-shade: #c5d1dd;
+  --av-deep: #12202e;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #0b1520; --panel: #12202e; --ink: #e7eef5; --muted: #93a3b3; --line: #253748;
+    --accent: #8db8e8; --accent-ink: #0b1520; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #0b1520; --panel: #12202e; --ink: #e7eef5; --muted: #93a3b3; --line: #253748;
+  --accent: #8db8e8; --accent-ink: #0b1520; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font: 15px/1.5 var(--font-ui);
+  padding-block: 48px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px; }
+button, input { font: inherit; color: inherit; }
+button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+[hidden] { display: none !important; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Board header */
+.top { display: flex; flex-direction: column; gap: 20px; }
+.eyebrow { font: 500 11px/1.4 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0; }
+.top h1 { margin: 0; font-size: clamp(28px, 4vw, 36px); line-height: 1.1; font-weight: 800; letter-spacing: -0.015em; text-wrap: balance; }
+.top p.lede { margin: 0; max-width: 64ch; color: var(--muted); font-size: 16px; }
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+.picker { display: flex; flex-wrap: wrap; gap: 6px; padding: 4px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+.picker button { display: flex; align-items: center; gap: 8px; border: 0; background: transparent; border-radius: 8px; padding: 5px 10px 5px 6px; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; }
+.picker button[aria-pressed="true"] { background: var(--ground); color: var(--ink); }
+.ctl-label { font: 500 11px/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.ghost-btn { border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 8px 14px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; gap: 8px; align-items: center; }
+.ghost-btn:hover { border-color: var(--accent); }
+.jump { font-size: 14px; font-weight: 700; color: var(--accent); text-decoration: none; }
+.jump:hover { text-decoration: underline; }
+
+/* Variant sections */
+.variant { display: flex; flex-direction: column; gap: 16px; }
+.variant-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 8px 40px; align-items: end; }
+.variant-head h2 { margin: 4px 0 0; font-size: 22px; font-weight: 800; letter-spacing: -0.01em; }
+.variant-head .notes { display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: var(--muted); }
+.notes b { font: 500 11px/1 var(--font-mono); letter-spacing: 0.06em; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 2px 5px; margin-right: 8px; vertical-align: 1px; }
+@media (max-width: 760px) { .variant-head { grid-template-columns: minmax(0, 1fr); } }
+
+/* Product frame */
+.frame {
+  position: relative; height: 720px; display: flex; flex-direction: column; overflow: hidden;
+  background: var(--p-bg); color: var(--p-ink); font-family: var(--font-ui);
+  border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+@media (max-width: 600px) { .frame { height: 680px; } }
+.pad { padding-left: clamp(18px, 13%, 150px); padding-right: clamp(18px, 13%, 150px); }
+@media (max-width: 600px) { .pad { padding-left: 16px; padding-right: 16px; } .row .tag { display: none; } .tab-hint { display: none !important; } }
+.frame .scroll { flex: 1; min-height: 0; overflow-y: auto; }
+.avslot { display: inline-flex; flex-shrink: 0; }
+
+/* Shared product pieces */
+.hl { margin: 0; font-size: clamp(30px, 4.6vw, 50px); line-height: 1.08; font-weight: 800; letter-spacing: -0.025em; text-wrap: balance; }
+.hl .two { color: var(--p-ghost); }
+.caret { display: inline-block; width: 0.08em; height: 0.9em; margin-left: 0.06em; vertical-align: -0.08em; background: var(--p-brand); border-radius: 2px; animation: caret 1s steps(1) infinite; }
+.caret.off { visibility: hidden; animation: none; }
+@keyframes caret { 50% { opacity: 0; } }
+.date { margin: 0; font-size: 15px; color: var(--p-quiet); }
+
+.composer { background: var(--p-card); border: 1px solid var(--p-line); border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 22px; box-shadow: 0 8px 24px -16px var(--p-shadow); }
+.c-row { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.c-field { position: relative; flex: 1; min-width: 0; display: flex; }
+.c-field input { flex: 1; min-width: 0; border: 0; background: transparent; padding: 0; font-size: 17px; color: var(--p-ink); outline-offset: 4px; }
+.c-field input::placeholder { color: var(--p-hint); }
+.c-ghost { position: absolute; inset: 0; display: flex; align-items: center; font-size: 17px; color: var(--p-hint); pointer-events: auto; cursor: text; white-space: nowrap; overflow: hidden; }
+.c-ghost .caret { height: 1.1em; width: 2px; }
+.tab-hint { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--p-quiet); white-space: nowrap; }
+.tab-hint kbd { font: 500 11px/1 var(--font-mono); border: 1px solid var(--p-line); border-bottom-width: 2px; border-radius: 5px; padding: 3px 6px; background: var(--p-bg); color: var(--p-sub); }
+.c-tools { display: flex; align-items: center; justify-content: space-between; }
+.c-icons { display: flex; gap: 18px; color: var(--p-sub); }
+.send { width: 36px; height: 36px; border: 0; padding: 0; border-radius: 50%; background: var(--p-brand-soft); color: var(--p-brand); display: grid; place-items: center; cursor: pointer; transition: background-color .15s, color .15s; }
+.send.ready { background: var(--p-brand); color: var(--p-white); }
+.disclaimer { margin: 0; font-size: 13px; color: var(--p-quiet); text-align: center; }
+
+.label { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--p-sub); }
+.rows { border-bottom: 1px solid var(--p-rule); }
+.row { width: 100%; display: flex; align-items: center; gap: 16px; padding: 12px 8px; text-align: left; background: transparent; border: 0; border-top: 1px solid var(--p-rule); cursor: pointer; transition: background-color .15s; }
+.row:hover { background: var(--p-tint); }
+.row .q { flex: 1; min-width: 0; font-size: 16px; }
+.row .tag { font-size: 13px; color: var(--p-quiet); white-space: nowrap; }
+.row .arrow { flex-shrink: 0; color: var(--p-quiet); transition: transform .15s; }
+.row:hover .arrow { transform: translateX(3px); }
+
+/* V3 Ghost prompt */
+.v3 { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 28px; padding-block: 40px; }
+.v3 .composer { padding: 14px 18px 14px 14px; }
+.row.on .arrow { color: var(--p-brand); }
+
+/* Conversation (shared) */
+.restart { position: absolute; top: 18px; right: 20px; font-size: 13px; font-weight: 700; color: var(--p-sub); background: var(--p-card); border: 1px solid var(--p-line); border-radius: 8px; padding: 6px 12px; cursor: pointer; z-index: 2; }
+.log { padding-block: 40px 16px; display: flex; flex-direction: column; gap: 28px; }
+.log-head { display: flex; align-items: center; gap: 10px; color: var(--p-quiet); font-size: 14px; }
+.log-head b { color: var(--p-ink); }
+.turn { display: flex; flex-direction: column; gap: 16px; animation: fade .4s ease-out both; }
+.turn .ask { align-self: flex-end; max-width: 70%; background: var(--p-brand); color: var(--p-white); padding: 10px 16px; border-radius: 14px 14px 4px 14px; font-size: 15px; line-height: 1.5; }
+.turn .ans { display: flex; gap: 14px; align-items: flex-start; }
+.turn .ans-body { flex: 1; min-width: 0; padding-top: 4px; }
+.turn .ans-text { margin: 0; font-size: 16px; line-height: 1.65; max-width: 640px; }
+.shimmer { margin: 0; font-size: 15px; font-weight: 600; background: linear-gradient(90deg, var(--p-quiet) 35%, #c3ccd5 50%, var(--p-quiet) 65%); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 1.6s linear infinite; }
+@keyframes shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+@keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.dock { padding-block: 8px 24px; display: flex; flex-direction: column; gap: 10px; }
+
+/* ---------- Variant 3 in compact spaces ---------- */
+.sub { display: flex; flex-direction: column; gap: 12px; }
+.sub-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 4px 40px; align-items: baseline; }
+.sub-head h3 { margin: 0; font-size: 17px; font-weight: 800; }
+.sub-head h3 span { font: 500 11px/1 var(--font-mono); letter-spacing: 0.06em; color: var(--muted); margin-right: 10px; vertical-align: 2px; }
+.sub-head p { margin: 0; font-size: 14px; color: var(--muted); }
+@media (max-width: 760px) { .sub-head { grid-template-columns: minmax(0, 1fr); } }
+.cframe { height: 600px; flex-direction: row; }
+#fb { height: 740px; }
+.sub + .sub { margin-top: 28px; }
+
+/* A quiet stand-in for the product page behind the assistant */
+.app { flex: 1; min-width: 0; display: flex; flex-direction: column; background: var(--p-bg); }
+.app-nav { position: relative; z-index: 3; flex-shrink: 0; display: flex; align-items: center; gap: 20px; height: 56px; padding: 0 16px 0 20px; background: var(--p-card); border-bottom: 1px solid var(--p-line); }
+.app-logo { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; }
+.app-logo i { width: 24px; height: 24px; border-radius: 7px; background: var(--p-brand); }
+.app-tabs { display: flex; gap: 18px; font-size: 14px; font-weight: 600; color: var(--p-quiet); }
+.app-tabs .on { color: var(--p-brand); }
+.app-sp { flex: 1; }
+.app-me { width: 30px; height: 30px; flex-shrink: 0; border-radius: 50%; background: var(--p-tint); color: var(--p-sub); font-size: 12px; font-weight: 800; display: grid; place-items: center; }
+.app-main { flex: 1; min-height: 0; overflow: hidden; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+.app-head h4 { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -0.01em; }
+.app-head p { margin: 2px 0 0; font-size: 13px; color: var(--p-quiet); }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.kpi, .app-card { background: var(--p-card); border: 1px solid var(--p-line); border-radius: 12px; }
+.kpi { padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; }
+.kpi span { font-size: 12px; font-weight: 600; color: var(--p-quiet); }
+.kpi b { font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.kpi em { font-style: normal; font-size: 12px; color: var(--p-quiet); }
+.kpi em.pos { color: var(--p-pos); } .kpi em.warn { color: #b35000; }
+.app-card { padding: 14px 16px; }
+.app-card .label { display: block; margin-bottom: 8px; }
+.chart svg { display: block; width: 100%; height: 110px; }
+.tbl-row { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 12px; padding: 9px 0; border-top: 1px solid var(--p-rule); font-size: 13px; color: var(--p-sub); }
+.tbl-row b { font-weight: 700; color: var(--p-ink); font-variant-numeric: tabular-nums; }
+.tbl-row b.pos { color: var(--p-pos); }
+
+/* Widget chrome */
+.w-head { flex-shrink: 0; display: flex; align-items: center; gap: 4px; height: 52px; padding: 0 8px 0 16px; background: var(--p-card); border-bottom: 1px solid var(--p-line); }
+.w-title { margin-right: auto; font-size: 15px; font-weight: 800; }
+.w-btn { width: 32px; height: 32px; border: 0; padding: 0; border-radius: 8px; background: transparent; color: var(--p-sub); display: grid; place-items: center; cursor: pointer; }
+.w-btn:hover { background: var(--p-tint); }
+.w-body { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+
+/* Compact type and spacing, shared by the panel, the widget and the bar */
+.compact .pad { padding-left: 16px; padding-right: 16px; }
+.compact .composer { padding: 12px 12px 10px; gap: 10px; border-radius: 12px; }
+.compact .c-row { align-items: flex-start; gap: 10px; }
+.compact .c-field { display: grid; padding-top: 3px; }
+.compact .c-field > input, .compact .c-ghost { grid-area: 1 / 1; font-size: 15px; line-height: 1.45; }
+.compact .c-field > input { align-self: start; }
+.compact .c-ghost { position: static; display: block; white-space: normal; }
+.c-right { display: flex; align-items: center; gap: 10px; }
+.compact .c-icons { gap: 14px; }
+.compact .c-icons svg { width: 18px; height: 18px; }
+.compact .send { width: 32px; height: 32px; }
+.compact .disclaimer { font-size: 12px; }
+.compact .dock { padding-block: 8px 12px; gap: 8px; }
+.compact .log { padding-block: 20px 12px; gap: 22px; }
+.compact .log-head { font-size: 13px; }
+.compact .turn { gap: 12px; }
+.compact .turn .ask { max-width: 85%; font-size: 14px; padding: 8px 13px; }
+.compact .turn .ans { gap: 10px; }
+.compact .turn .ans-text { font-size: 14.5px; line-height: 1.6; }
+.compact .shimmer { font-size: 14px; }
+.compact .row { padding: 10px 6px; gap: 10px; }
+.compact .row .q { font-size: 14px; }
+.row.on .q { color: var(--p-brand); }
+.cp { min-height: 100%; display: flex; flex-direction: column; justify-content: flex-end; gap: 22px; padding-block: 24px 8px; }
+.hl-s { margin: 0; font-size: 26px; line-height: 1.15; font-weight: 800; letter-spacing: -0.02em; text-wrap: balance; }
+.hl-s .two { color: var(--p-ghost); }
+@media (max-width: 600px) { .hl-s { font-size: 22px; } }
+
+
+/* 3b Floating widget */
+.pop { position: absolute; z-index: 4; right: 24px; bottom: 96px; width: min(372px, calc(100% - 32px)); height: min(572px, calc(100% - 168px)); display: flex; flex-direction: column; overflow: hidden; background: var(--p-bg); border: 1px solid var(--p-line); border-radius: 16px; box-shadow: 0 28px 56px -24px var(--p-shadow), 0 2px 6px rgba(10, 36, 64, 0.08); transform-origin: calc(100% - 28px) calc(100% + 44px); transition: opacity .2s ease-out, transform .2s ease-out; }
+.pop.closed { opacity: 0; transform: scale(.94) translateY(8px); visibility: hidden; pointer-events: none; transition: opacity .15s ease-in, transform .15s ease-in, visibility 0s .15s; }
+.launcher { position: absolute; z-index: 4; right: 24px; bottom: 24px; width: 56px; height: 56px; border: 0; padding: 0; background: transparent; border-radius: 19px; cursor: pointer; box-shadow: 0 12px 24px -10px var(--p-shadow); display: grid; place-items: center; transition: transform .15s; }
+.launcher:hover { transform: translateY(-2px); }
+/* Start-from questions, on hover of the closed launcher */
+.hover-sugg { position: absolute; z-index: 4; right: 92px; bottom: 18px; width: min(300px, calc(100% - 116px)); padding: 10px 6px 6px; background: var(--p-card); border: 1px solid var(--p-line); border-radius: 14px 14px 4px 14px; box-shadow: 0 16px 32px -18px var(--p-shadow); animation: fade .2s ease-out both; }
+.hover-sugg .label { display: block; padding: 0 10px 6px; }
+.hs-row { width: 100%; display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 0; background: transparent; border-radius: 8px; text-align: left; font-size: 14px; color: var(--p-ink); cursor: pointer; }
+.hs-row:hover, .hs-row:focus-visible { background: var(--p-tint); color: var(--p-brand); }
+.hs-row .arrow { margin-left: auto; flex-shrink: 0; color: var(--p-quiet); }
+.demo-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; font-size: 13px; color: var(--muted); }
+.rules { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px 24px; font-size: 13px; color: var(--muted); }
+.rules b { display: block; font-size: 13px; color: var(--ink); }
+@media (max-width: 1000px) { .rules { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .rules { grid-template-columns: minmax(0, 1fr); } }
+
+/* Background task: the card in the chat */
+.task { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; background: var(--p-card); border: 1px solid var(--p-line); border-radius: 12px; }
+.task-top { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; }
+.task-title { flex: 1; min-width: 0; }
+.task-pct { font-size: 13px; font-weight: 600; color: var(--p-quiet); font-variant-numeric: tabular-nums; }
+.task-spin { width: 14px; height: 14px; flex-shrink: 0; border: 2px solid var(--p-brand-soft); border-top-color: var(--p-brand); border-radius: 50%; animation: spin .8s linear infinite; }
+.task-ok { display: none; width: 18px; height: 18px; flex-shrink: 0; border-radius: 50%; background: var(--p-pos); color: var(--p-white); place-items: center; }
+.task.done .task-spin { display: none; }
+.task.done .task-ok { display: grid; }
+.task-bar { height: 6px; border-radius: 3px; background: var(--p-tint); overflow: hidden; }
+.task-bar i { display: block; width: 0; height: 100%; border-radius: 3px; background: var(--p-brand); transition: width .5s ease-out, background-color .3s; }
+.task.done .task-bar i { background: var(--p-pos); }
+.task-sub { font-size: 13px; color: var(--p-quiet); font-variant-numeric: tabular-nums; }
+.task-btn { align-self: flex-start; border: 1px solid var(--p-line); background: var(--p-card); border-radius: 8px; padding: 6px 12px; font-size: 13px; font-weight: 700; color: var(--p-brand); cursor: pointer; }
+.task-btn:hover { border-color: var(--p-brand); background: var(--p-tint); }
+@keyframes spin { to { transform: rotate(360deg); } }
+.row-task .q { font-weight: 700; }
+.row-task .t-note { flex-shrink: 0; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: var(--p-sub); background: var(--p-tint); border-radius: 999px; padding: 3px 8px; }
+
+/* Dropped connection while streaming */
+.ans-text.cut { color: var(--p-sub); }
+.ans-text.cut::after { content: '…'; }
+.err { margin-top: 10px; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: 8px 10px; padding: 10px 12px; font-size: 13px; line-height: 1.45; color: var(--p-warn-ink); background: var(--p-warn-bg); border: 1px solid var(--p-warn-line); border-radius: 10px; animation: fade .25s ease-out both; }
+.err b { font-weight: 800; }
+.err-msg { flex: 1; min-width: 0; }
+.err-spin { width: 14px; height: 14px; margin-top: 2px; flex-shrink: 0; border: 2px solid var(--p-warn-line); border-top-color: var(--p-warn-ink); border-radius: 50%; animation: spin .8s linear infinite; }
+.err-icon { display: grid; place-items: center; width: 18px; height: 18px; flex-shrink: 0; }
+.err.failed { color: var(--p-bad-ink); background: var(--p-bad-bg); border-color: var(--p-bad-line); }
+.err.stopped { color: var(--p-quiet); background: var(--p-tint); border-color: var(--p-line); }
+.err.ok { color: var(--p-pos); background: var(--p-ok-bg); border-color: var(--p-ok-line); }
+.err.ok .err-icon { border-radius: 50%; background: var(--p-pos); color: var(--p-white); }
+.err-retry { grid-column: 2; justify-self: start; border: 0; background: var(--p-bad-ink); color: var(--p-white); border-radius: 8px; padding: 6px 14px; font-size: 13px; font-weight: 700; cursor: pointer; }
+
+/* Background task: the launcher */
+.l-ring { position: absolute; left: -10px; top: -10px; width: 76px; height: 76px; transform: rotate(-90deg); opacity: 0; transition: opacity .25s; pointer-events: none; }
+.launcher.running .l-ring { opacity: 1; }
+.l-ring circle { fill: none; stroke-width: 3; }
+.l-track { stroke: var(--p-line); }
+.l-bar { stroke: var(--p-brand); stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 100; transition: stroke-dashoffset .5s ease-out, stroke .3s; }
+.launcher.finished .l-bar { stroke: var(--p-pos); }
+.l-check { position: absolute; right: -5px; bottom: -5px; width: 24px; height: 24px; border-radius: 50%; background: var(--p-pos); color: var(--p-white); border: 2px solid var(--p-white); display: grid; place-items: center; animation: pop .45s cubic-bezier(.3, 1.6, .5, 1) both; }
+.l-badge { position: absolute; right: -3px; top: -3px; width: 16px; height: 16px; border-radius: 50%; background: var(--p-alert); border: 2px solid var(--p-white); animation: pop .45s cubic-bezier(.3, 1.6, .5, 1) both; }
+@keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
+.l-badge.bad { width: 20px; height: 20px; right: -5px; top: -5px; display: grid; place-items: center; background: var(--p-bad-ink); color: var(--p-white); font-size: 12px; font-weight: 900; line-height: 1; }
+/* Reconnecting: an amber arc circles the launcher */
+.launcher.retrying .l-ring { opacity: 1; animation: spin 1.1s linear infinite; }
+.launcher.retrying .l-track { stroke: var(--p-warn-line); }
+.launcher.retrying .l-bar { stroke: #d9822b; stroke-dashoffset: 72; transition: none; }
+
+@media (max-width: 600px) { .pop { right: 16px; } .launcher { right: 16px; } .hover-sugg { right: 84px; } }
+
+/* 3c Command bar */
+.cbar-slot { position: relative; width: min(440px, 46%); height: 40px; flex-shrink: 1; }
+.cbar { position: absolute; top: 0; left: 0; right: 0; background: var(--p-card); border: 1px solid var(--p-line); border-radius: 12px; transition: box-shadow .15s, border-color .15s; }
+.cbar:hover { border-color: #b9c6d3; }
+.cbar.open { border-color: var(--p-brand); box-shadow: 0 28px 56px -24px var(--p-shadow); }
+.cbar-line { display: flex; align-items: center; gap: 10px; height: 38px; padding: 0 5px 0 7px; }
+.cbar .c-field input { font-size: 14px; }
+.cbar .c-field input:focus-visible { outline: none; } /* the bar's border shows focus */
+.cbar .c-ghost { font-size: 14px; }
+.cbar .send { width: 28px; height: 28px; }
+.cbar .send svg { width: 15px; height: 15px; }
+.cbar .tab-hint kbd { padding: 2px 5px; }
+.cbar-body { display: none; flex-direction: column; border-top: 1px solid var(--p-rule); }
+.cbar.open .cbar-body { display: flex; }
+.cbar-hello { padding: 16px 16px 10px; font-size: 18px; font-weight: 800; line-height: 1.25; letter-spacing: -0.01em; }
+.cbar-hello span { color: var(--p-ghost); }
+.cbar .rows { border-bottom: 0; padding: 0 8px; }
+.cbar .disclaimer { padding: 10px 16px 12px; text-align: left; border-top: 1px solid var(--p-rule); }
+.cbar-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 10px 10px 16px; font-size: 13px; color: var(--p-quiet); border-bottom: 1px solid var(--p-rule); }
+.cbar-top b { color: var(--p-ink); }
+.cbar-clear { border: 0; background: transparent; font-size: 13px; font-weight: 700; color: var(--p-brand); border-radius: 6px; padding: 4px 8px; cursor: pointer; }
+.cbar-clear:hover { background: var(--p-tint); }
+.cbar .scroll { max-height: 340px; overflow-y: auto; }
+.cbar .log { padding: 16px; }
+.cbar-dim { position: absolute; inset: 56px 0 0; z-index: 2; background: rgba(18, 32, 46, 0.08); opacity: 0; pointer-events: none; transition: opacity .15s; }
+.cframe.bar-open .cbar-dim { opacity: 1; }
+@media (max-width: 760px) { .app-tabs, .app-logo b { display: none; } .cbar-slot { width: auto; flex: 1; } .app-sp { display: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .pop, .pop.closed, .launcher, .cbar, .cbar-dim { transition: none; }
+  .hover-sugg, .l-check, .l-badge, .launcher.retrying .l-ring { animation: none; }
+  .task-spin, .err-spin, .err { animation: none; }
+  .l-bar, .task-bar i { transition: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .turn { animation: none; }
+  .caret { animation: none; }
+  .shimmer { animation: none; color: var(--p-quiet); background: none; }
+  .row .arrow { transition: none; }
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <p class="eyebrow">Assistant · Greeting</p>
+    <h1>Ghost prompt</h1>
+    <p class="lede">The big two-tone headline and the composer up front, from Greeting B. The assistant speaking first from inside the composer, from Greeting A. Below it is shown full page, then in a floating widget and a command bar. It is live, so pick a suggestion or type to see the conversation.</p>
+    <div class="controls">
+      <span class="ctl-label" id="pick-label">Avatar</span>
+      <div class="picker" id="picker" role="group" aria-labelledby="pick-label"></div>
+      <button type="button" class="ghost-btn" id="replay">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+        Replay all
+      </button>
+      <a class="jump" href="#vc-title">Jump to the compact views ↓</a>
+    </div>
+  </header>
+
+  <section class="variant" aria-labelledby="v3-title">
+    <div class="variant-head">
+      <div><p class="eyebrow">Full page</p><h2 id="v3-title">As its own page</h2></div>
+      <div class="notes">
+        <span><b>B</b>The two-tone headline with the composer as the centre of the page.</span>
+        <span><b>A</b>The assistant speaks from inside the composer, typing a suggested question as placeholder text. Press Tab to use it.</span>
+        <span><b>New</b>Suggested for today rows with the reason behind each one. The row being typed is highlighted.</span>
+      </div>
+    </div>
+    <div class="frame" id="f3"></div>
+  </section>
+
+  <section class="variant" aria-labelledby="vc-title">
+    <div class="variant-head">
+      <div><p class="eyebrow">Compact</p><h2 id="vc-title">Ghost prompt in small spaces</h2></div>
+      <div class="notes">
+        <span>The same pieces as the full page: the two-tone hello, the assistant typing a question into the composer, and Tab to use it. Suggestions get shorter to fit, and the hello moves down beside the composer. Two places it could live:</span>
+      </div>
+    </div>
+
+    <div class="sub">
+      <div class="sub-head"><h3><span>3A</span>Floating widget</h3><p>Opens from a launcher in the corner. When it is closed, hover the launcher for start-from questions. The two demos show how the minimized launcher reports a finished task and a dropped connection.</p></div>
+      <div class="demo-bar">
+        <button type="button" class="ghost-btn" id="demo">
+          <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8z" fill="currentColor"/></svg>
+          Play the task demo
+        </button>
+        <button type="button" class="ghost-btn" id="demo-err">
+          <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8z" fill="currentColor"/></svg>
+          Play the error demo
+        </button>
+        <span>The task demo starts a reconciliation and closes the widget. The error demo closes the widget while a reply streams, then drops the connection. Timings are sped up.</span>
+      </div>
+      <div class="frame cframe" id="fb"></div>
+      <ul class="rules">
+        <li><b>While it runs</b>The launcher shows a progress ring and the avatar keeps thinking.</li>
+        <li><b>When it’s done</b>The ring turns green, the avatar hops with a happy squint and shows a check, then a dot stays until you open the widget.</li>
+        <li><b>Start-from on hover</b>Hover the closed launcher to see the questions. They stay hidden while something is running or a result is waiting.</li>
+        <li><b>If the connection drops</b>The partial reply stays and it retries three times. Minimized, the launcher shows an amber ring while it retries, then a red ! until you open it.</li>
+      </ul>
+    </div>
+
+    <div class="sub">
+      <div class="sub-head"><h3><span>3B</span>Command bar</h3><p>The composer folded into the top bar. The assistant types suggestions into it while you work. Click the bar or press Tab and it opens into the full greeting.</p></div>
+      <div class="frame cframe" id="fc"></div>
+    </div>
+  </section>
+</div>
+
+<script src="avatars.js"></script>
+<script>
+(function () {
+  var SUGG = [
+    { q: 'What changed in our cash position since Friday?', short: 'What changed in cash since Friday?', tag: 'Monday check-in', name: 'Cash position', detail: 'Two customer receipts landed this morning', fig: '+$182,400', kind: 'pos' },
+    { q: 'Which invoices are due this week?', short: 'Which invoices are due this week?', tag: 'Popular in your org', name: 'Invoices due', detail: '7 invoices, 5 still need sign-off', fig: '$48,210', kind: '' },
+    { q: 'Summarize policy updates from the last 7 days', short: 'Summarize this week’s policy updates', tag: 'New this week', name: 'Policy updates', detail: 'Wire approvals and travel card limits', fig: '2 changes', kind: '' },
+    { q: 'Show accounts with unusual activity today', short: 'Any unusual account activity today?', tag: 'Trending today', name: 'Unusual activity', detail: 'Operating, Alderfinch', fig: '1 account', kind: 'flag' }
+  ];
+  var ANSWERS = {};
+  ANSWERS[SUGG[0].q] = 'Operating cash is up $182,400 since Friday’s close, mostly from two customer receipts that landed Monday morning. Thursday’s payroll will draw about $96,000, so you still finish the week ahead. Want the account-by-account breakdown?';
+  ANSWERS[SUGG[1].q] = 'Seven invoices totaling $48,210 are due by Friday. The largest is Northwind Freight at $18,900, due Wednesday. Two are approved and scheduled; the other five still need a sign-off.';
+  ANSWERS[SUGG[2].q] = 'Two policies changed this week. Wires over $250,000 now need a second approver from a different team, and the travel card limit rose to $7,500 per trip. Both took effect Monday.';
+  ANSWERS[SUGG[3].q] = 'One account stands out: Operating, Alderfinch made three outbound transfers within an hour, about four times its usual pace. All three went to known vendors, so it is likely a batch run, but it is worth a look.';
+  SUGG.forEach(function (s) { ANSWERS[s.short] = ANSWERS[s.q]; });
+  // A background task for the floating widget demo.
+  var TASK_Q = 'Reconcile last week’s receipts';
+  var REVIEW_Q = 'Show me the 2 receipts that need a look';
+  ANSWERS[REVIEW_Q] = 'Two receipts did not match. Harbor & Pine Co. paid $121,000 against an invoice for $121,400, so they are $400 short. Meridian Labs sent $3,250 that has no invoice yet. Want me to draft a note to each?';
+  var ICON_WARN = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>';
+  var ICON_CHECK = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  var FALLBACK = 'Here is a first pass at that. In the real app this answer would draw on the accounts and documents in scope, with sources you can open beside the chat.';
+
+  var now = new Date(), hr = now.getHours();
+  var SALUTE = hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening';
+  var TODAY = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+
+  // Round 2: the Marble bust and its four variants.
+  var PICKS = Avatars.list.filter(function (a) { return a.id === 'bust' || a.base === 'bust'; });
+  var CUR = 'bust';
+  try { var saved = localStorage.getItem('greeting-avatar'); if (saved && PICKS.some(function (a) { return a.id === saved; })) CUR = saved; } catch (e) {}
+
+  var ICON_PLUS = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+  var ICON_MIC = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
+  var ICON_UP = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>';
+  var ICON_NEW = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
+  var ICON_X = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  var ICON_EXPAND = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>';
+  var ICON_ARROW = '<svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function slot(size, state) {
+    return '<span class="avslot" data-size="' + size + '" data-state="' + state + '">' + Avatars.svg(CUR, { size: size, state: state }) + '</span>';
+  }
+  function setAv(el, state) {
+    if (!el) return;
+    el.setAttribute('data-state', state);
+    var svg = el.querySelector('svg');
+    if (svg) Avatars.setState(svg, state);
+  }
+  function repaintAll() {
+    document.querySelectorAll('.avslot').forEach(function (el) {
+      el.innerHTML = Avatars.svg(CUR, { size: +el.getAttribute('data-size'), state: el.getAttribute('data-state') });
+    });
+  }
+
+  function composer(id, placeholder, opts) {
+    opts = opts || {};
+    return '<div class="composer">' +
+      '<div class="c-row">' + (opts.avatar ? slot(28, 'idle') : '') +
+      '<div class="c-field"><label class="sr" for="' + id + '">Message Assistant</label>' +
+      '<input id="' + id + '" type="text" autocomplete="off" placeholder="' + esc(placeholder) + '">' +
+      (opts.ghost ? '<span class="c-ghost" hidden><span class="g-text"></span><span class="caret"></span></span>' : '') +
+      '</div>' + (opts.ghost && !opts.compact ? '<span class="tab-hint" hidden><kbd>Tab</kbd>to use</span>' : '') + '</div>' +
+      '<div class="c-tools"><div class="c-icons">' + ICON_PLUS + ICON_MIC + '</div><div class="c-right">' +
+      (opts.ghost && opts.compact ? '<span class="tab-hint" hidden><kbd>Tab</kbd>to use</span>' : '') +
+      '<button type="button" class="send" aria-label="Send">' + ICON_UP + '</button></div></div></div>';
+  }
+
+  function rowsHTML(key, withTag) {
+    return '<div class="rows">' + SUGG.map(function (s, i) {
+      return '<button type="button" class="row" data-i="' + i + '"><span class="q">' + esc(s[key]) + '</span>' + (withTag ? '<span class="tag">' + esc(s.tag) + '</span>' : '') + ICON_ARROW + '</button>';
+    }).join('') + '</div>';
+  }
+
+  function Frame(root, kind, opts) { this.root = root; this.kind = kind; this.gen = 0; this.opts = opts || {}; }
+  Frame.prototype.emit = function (state) { if (this.opts.onState) this.opts.onState(state); };
+  Frame.prototype.later = function (ms, fn) {
+    var g = this.gen, self = this;
+    setTimeout(function () { if (g === self.gen) fn(); }, ms);
+  };
+  Frame.prototype.reset = function () {
+    this.gen++;
+    this.turns = 0;
+    this.busy = false;
+    this.convoHook = null;
+    this.emit('reset');
+    VIEWS[this.kind].call(this);
+  };
+  Frame.prototype.bindComposer = function (wrap) {
+    var self = this, input = wrap.querySelector('input'), send = wrap.querySelector('.send');
+    function sync() { send.classList.toggle('ready', !!input.value.trim() && !self.busy); if (self.onDraft) self.onDraft(input.value); }
+    input.addEventListener('input', sync);
+    input.addEventListener('keydown', function (e) {
+      if (self.onKey && self.onKey(e, input)) { sync(); return; }
+      if (e.key === 'Enter') { e.preventDefault(); self.send(input.value); }
+    });
+    send.addEventListener('click', function () { self.send(input.value); });
+    this.input = input;
+    this.sync = sync;
+  };
+  Frame.prototype.bindPicks = function (sel, key) {
+    var self = this;
+    this.root.querySelectorAll(sel).forEach(function (b) {
+      b.addEventListener('click', function () { self.send(SUGG[+b.getAttribute('data-i')][key || 'q']); });
+    });
+  };
+
+  // The assistant types each suggestion into the empty composer as ghost text. Tab, ArrowRight or a click uses it.
+  Frame.prototype.ghostify = function (o) {
+    var self = this, input = this.input, av = o.av, list = o.list, chips = o.chips || [];
+    var ghost = this.root.querySelector('.c-ghost'), gText = ghost.querySelector('.g-text'), hint = this.root.querySelector('.tab-hint');
+    var current = -1, full = '';
+    function showGhost(on) { ghost.hidden = !on; hint.hidden = !on || !full; }
+    function accept() {
+      if (!full || input.value) return false;
+      input.value = full;
+      showGhost(false);
+      input.focus();
+      self.sync();
+      return true;
+    }
+    this.onDraft = function (v) { showGhost(!v); };
+    this.onKey = function (e) {
+      if ((e.key === 'Tab' && !e.shiftKey) || (e.key === 'ArrowRight' && !input.value)) {
+        if (!input.value && full) { e.preventDefault(); return accept(); }
+      }
+      return false;
+    };
+    ghost.addEventListener('click', function () { if (!accept()) input.focus(); });
+
+    function cycle() {
+      current = (current + 1) % list.length;
+      var q = list[current], n = 0;
+      chips.forEach(function (c, i) { c.classList.toggle('on', i === current); });
+      full = '';
+      if (!input.value) showGhost(true);
+      setAv(av, 'talk');
+      (function typeChar() {
+        n++;
+        gText.textContent = q.slice(0, n);
+        if (n < q.length) { self.later(26, typeChar); return; }
+        full = q;
+        setAv(av, 'idle');
+        if (!input.value) showGhost(true);
+        self.later(3200, function erase() {
+          full = '';
+          hint.hidden = true;
+          n = gText.textContent.length;
+          (function back() {
+            n = Math.max(0, n - 3);
+            gText.textContent = q.slice(0, n);
+            if (n > 0) self.later(16, back); else self.later(350, cycle);
+          })();
+        });
+      })();
+    }
+    setAv(av, 'idle');
+    this.later(o.delay || 900, cycle);
+  };
+  // Type words into el one at a time, keeping the avatar talking until done.
+  Frame.prototype.typeWords = function (el, text, av, ms, done) {
+    var self = this, words = text.split(' '), n = 0;
+    setAv(av, 'talk');
+    (function step() {
+      n++;
+      el.textContent = words.slice(0, n).join(' ');
+      if (n < words.length) self.later(ms, step);
+      else { setAv(av, 'idle'); if (done) done(); }
+    })();
+  };
+
+  Frame.prototype.send = function (q, o) {
+    q = (q || '').trim();
+    if (!q || this.busy) return;
+    // Asking something new gives up on a reply that failed.
+    this.root.querySelectorAll('.err.failed').forEach(function (e) {
+      var b = e.querySelector('.err-retry');
+      if (b) b.remove();
+      e.querySelector('.err-msg').innerHTML = '<b>Reply stopped.</b> The connection dropped before it finished.';
+      e.className = 'err stopped';
+    });
+    if (this.input && this.input.placeholder === 'Retry the reply to keep going') this.input.placeholder = 'Ask a follow-up…';
+    if (this.opts.task && q === TASK_Q) { this.startTask(); return; }
+    if (!this.turns) (this.convoHook || this.convo).call(this);
+    this.turns++;
+    this.busy = true;
+    var self = this, log = this.root.querySelector('.log');
+    var turn = document.createElement('div');
+    turn.className = 'turn';
+    turn.innerHTML = '<div class="ask">' + esc(q) + '</div><div class="ans">' + slot(this.opts.compact ? 24 : 30, 'think') +
+      '<div class="ans-body"><p class="shimmer">Thinking it through…</p><p class="ans-text"></p></div></div>';
+    log.appendChild(turn);
+    this.input.value = '';
+    this.sync();
+    this.emit('think');
+    var scroller = this.root.querySelector('.scroll');
+    scroller.scrollTop = scroller.scrollHeight;
+    this.later(1100, function () {
+      turn.querySelector('.shimmer').remove();
+      self.stream(turn, q, o && o.failAt);
+    });
+  };
+
+  // Stream the answer word by word. With failAt, the connection drops after that many words.
+  Frame.prototype.stream = function (turn, q, failAt) {
+    var self = this, av = turn.querySelector('.avslot'), text = turn.querySelector('.ans-text'), scroller = this.root.querySelector('.scroll');
+    var words = (ANSWERS[q] || FALLBACK).split(' '), n = 0;
+    text.classList.remove('cut');
+    setAv(av, 'talk');
+    this.emit('stream');
+    (function step() {
+      n++;
+      text.textContent = words.slice(0, n).join(' ');
+      scroller.scrollTop = scroller.scrollHeight;
+      if (failAt && n === failAt) { setAv(av, 'idle'); self.dropped(turn, q); }
+      else if (n < words.length) self.later(55, step);
+      else { setAv(av, 'idle'); self.busy = false; self.sync(); self.emit('done'); }
+    })();
+  };
+
+  // The socket closed mid-reply: keep the partial text, retry three times, then hand the retry to the user.
+  Frame.prototype.dropped = function (turn, q) {
+    var self = this, text = turn.querySelector('.ans-text'), body = turn.querySelector('.ans-body'), scroller = this.root.querySelector('.scroll');
+    var SPIN = '<span class="err-spin" aria-hidden="true"></span>';
+    text.classList.add('cut');
+    body.insertAdjacentHTML('beforeend', '<div class="err" role="status">' + SPIN + '<span class="err-msg"></span></div>');
+    var err = body.querySelector('.err'), attempt = 0;
+    this.input.placeholder = 'Waiting for the connection…';
+    scroller.scrollTop = scroller.scrollHeight;
+    this.emit('retrying');
+    (function reconnect() {
+      attempt++;
+      err.querySelector('.err-msg').innerHTML = '<b>Connection lost.</b> Reconnecting, attempt ' + attempt + ' of 3…';
+      if (attempt < 3) { self.later(1300, reconnect); return; }
+      self.later(1300, function () {
+        err.className = 'err failed';
+        err.innerHTML = '<span class="err-icon" aria-hidden="true">' + ICON_WARN + '</span>' +
+          '<span class="err-msg"><b>Couldn’t reconnect.</b> The reply stopped partway. Check your connection, then try again.</span>' +
+          '<button type="button" class="err-retry">Retry</button>';
+        self.input.placeholder = 'Retry the reply to keep going';
+        scroller.scrollTop = scroller.scrollHeight;
+        self.busy = false;
+        self.sync();
+        self.emit('failed');
+        err.querySelector('.err-retry').addEventListener('click', function () {
+          if (self.busy) return;
+          self.busy = true;
+          self.sync();
+          err.className = 'err';
+          err.innerHTML = SPIN + '<span class="err-msg">Reconnecting…</span>';
+          self.emit('retrying');
+          self.later(1000, function () {
+            err.className = 'err ok';
+            err.innerHTML = '<span class="err-icon" aria-hidden="true">' + ICON_CHECK + '</span><span class="err-msg">Back online. Restarting the reply.</span>';
+            self.later(1100, function () {
+              err.remove();
+              text.textContent = '';
+              self.input.placeholder = 'Ask a follow-up…';
+              self.stream(turn, q);
+            });
+          });
+        });
+      });
+    })();
+  };
+
+  // Start the background task: a short reply, then a progress card that keeps going when the widget closes.
+  Frame.prototype.startTask = function () {
+    if (this.busy || Task.state === 'running') return;
+    if (!this.turns) this.convo();
+    this.turns++;
+    this.busy = true;
+    var self = this, log = this.root.querySelector('.log'), scroller = this.root.querySelector('.scroll');
+    var turn = document.createElement('div');
+    turn.className = 'turn';
+    turn.innerHTML = '<div class="ask">' + esc(TASK_Q) + '</div><div class="ans">' + slot(24, 'think') +
+      '<div class="ans-body"><p class="shimmer">Thinking it through…</p><p class="ans-text"></p></div></div>';
+    log.appendChild(turn);
+    this.input.value = '';
+    this.sync();
+    scroller.scrollTop = scroller.scrollHeight;
+    var av = turn.querySelector('.avslot'), body = turn.querySelector('.ans-body');
+    this.later(700, function () {
+      turn.querySelector('.shimmer').remove();
+      self.typeWords(body.querySelector('.ans-text'), 'On it. This usually takes a minute or two, so feel free to close this. I’ll let you know when it’s done.', av, 45, function () {
+        body.insertAdjacentHTML('beforeend',
+          '<div class="task"><div class="task-top"><span class="task-spin" aria-hidden="true"></span><span class="task-ok" aria-hidden="true">' + ICON_CHECK + '</span>' +
+          '<span class="task-title">Reconciling last week’s receipts</span><span class="task-pct">0%</span></div>' +
+          '<div class="task-bar"><i></i></div><div class="task-sub">Matched 0 of 214 receipts</div></div>');
+        self.busy = false;
+        self.sync();
+        scroller.scrollTop = scroller.scrollHeight;
+        Task.start(self, body.querySelector('.task'), av);
+      });
+    });
+  };
+
+  Frame.prototype.convo = function () {
+    this.gen++;
+    this.onDraft = null;
+    this.onKey = null;
+    var self = this, id = this.root.id + '-ask2', own = !this.opts.restartBtn;
+    this.root.innerHTML =
+      (own ? '<button type="button" class="restart">Start over</button>' : '') +
+      '<div class="scroll"><div class="log pad"><div class="log-head"><b>' + SALUTE + ', Joe.</b><span>' + TODAY + '</span></div></div></div>' +
+      '<div class="dock pad">' + composer(id, 'Ask a follow-up…', { compact: this.opts.compact }) + '<p class="disclaimer">AI can make mistakes. Verify important financial details.</p></div>';
+    if (own) this.root.querySelector('.restart').addEventListener('click', function () { self.reset(); });
+    this.bindComposer(this.root.querySelector('.dock'));
+  };
+
+  var VIEWS = {
+    // V3: the assistant types suggested questions into the composer as ghost text.
+    ghost: function () {
+      var id = this.root.id + '-ask';
+      this.root.innerHTML =
+        '<div class="scroll"><div class="v3 pad" style="min-height:100%">' +
+        '<h1 class="hl">' + SALUTE + ', Joe.<br><span class="two">What are we working on?</span></h1>' +
+        composer(id, '', { avatar: true, ghost: true }) +
+        '<div class="sugg"><div class="label" style="padding-bottom:8px">Suggested for today</div>' + rowsHTML('q', true) + '</div></div></div>';
+      this.bindComposer(this.root);
+      this.bindPicks('.row');
+      this.ghostify({ av: this.root.querySelector('.composer .avslot'), chips: this.root.querySelectorAll('.row'), list: SUGG.map(function (s) { return s.q; }) });
+    },
+
+    // V3 compact: the hello sits just above a docked composer; suggestions become short rows.
+    ghostPanel: function () {
+      var id = this.root.id + '-ask';
+      this.root.innerHTML =
+        '<div class="scroll"><div class="cp pad">' +
+        '<h1 class="hl-s">' + SALUTE + ', Joe.<br><span class="two">What are we working on?</span></h1>' +
+        '<div class="cp-sugg"><div class="label" style="padding-bottom:6px">Or start from</div>' +
+        (this.opts.task ? rowsHTML('short', false).replace('<div class="rows">', '<div class="rows"><button type="button" class="row row-task"><span class="q">' + TASK_Q + '</span><span class="t-note">Runs in background</span>' + ICON_ARROW + '</button>') : rowsHTML('short', false)) +
+        '</div>' +
+        '</div></div>' +
+        '<div class="dock pad">' + composer(id, '', { avatar: true, ghost: true, compact: true }) + '<p class="disclaimer">AI can make mistakes. Verify important financial details.</p></div>';
+      this.bindComposer(this.root.querySelector('.dock'));
+      this.bindPicks('.row[data-i]', 'short');
+      var self = this, list = SUGG.map(function (s) { return s.short; }), task = this.root.querySelector('.row-task');
+      if (task) { task.addEventListener('click', function () { self.startTask(); }); list.unshift(TASK_Q); }
+      this.ghostify({ av: this.root.querySelector('.composer .avslot'), chips: this.root.querySelectorAll('.row'), list: list, delay: this.opts.delay });
+    },
+
+    // V3 as a command bar: one line while closed, the greeting and then the conversation when open.
+    ghostBar: function () {
+      var self = this, id = this.root.id + '-ask';
+      this.root.innerHTML =
+        '<div class="cbar-line">' + slot(24, 'idle') +
+        '<div class="c-field"><label class="sr" for="' + id + '">Message Assistant</label><input id="' + id + '" type="text" autocomplete="off" placeholder="">' +
+        '<span class="c-ghost" hidden><span class="g-text"></span><span class="caret"></span></span></div>' +
+        '<span class="tab-hint" hidden><kbd>Tab</kbd></span>' +
+        '<button type="button" class="send" aria-label="Send">' + ICON_UP + '</button></div>' +
+        '<div class="cbar-body"><div class="cbar-hello">' + SALUTE + ', Joe. <span>What are we working on?</span></div>' +
+        rowsHTML('short', false) +
+        '<p class="disclaimer">AI can make mistakes. Verify important financial details.</p></div>';
+      this.bindComposer(this.root.querySelector('.cbar-line'));
+      this.bindPicks('.row', 'short');
+      this.ghostify({ av: this.root.querySelector('.cbar-line .avslot'), chips: this.root.querySelectorAll('.row'), list: SUGG.map(function (s) { return s.short; }), delay: 1400 });
+      this.convoHook = function () {
+        this.gen++;
+        this.onDraft = null;
+        this.onKey = null;
+        this.root.querySelector('.c-ghost').hidden = true;
+        this.root.querySelector('.tab-hint').hidden = true;
+        this.input.placeholder = 'Ask a follow-up…';
+        var body = this.root.querySelector('.cbar-body');
+        body.innerHTML = '<div class="cbar-top"><span><b>' + SALUTE + ', Joe.</b> ' + TODAY + '</span><button type="button" class="cbar-clear">Clear</button></div>' +
+          '<div class="scroll"><div class="log"></div></div>' +
+          '<p class="disclaimer">AI can make mistakes. Verify important financial details.</p>';
+        body.querySelector('.cbar-clear').addEventListener('click', function () { self.reset(); self.input.focus(); });
+      };
+    }
+  };
+
+  // The product page behind the compact variants.
+  function appHTML(withBar) {
+    var pts = [38, 42, 40, 47, 45, 52, 50, 56, 54, 61, 58, 66, 64, 71, 69, 84], w = 600, h = 110;
+    var line = pts.map(function (v, i) { return (i ? 'L' : 'M') + (i * w / (pts.length - 1)).toFixed(1) + ' ' + (h - v * 1.2).toFixed(1); }).join('');
+    return '<div class="app">' +
+      '<div class="app-nav"><span class="app-logo" aria-hidden="true"><i></i><b>Treasury</b></span>' +
+      '<span class="app-tabs" aria-hidden="true"><span class="on">Cash</span><span>Payments</span><span>Approvals</span><span>Reports</span></span>' +
+      '<span class="app-sp"></span>' + (withBar ? '<div class="cbar-slot"><div class="cbar" id="fc-bar"></div></div>' : '') +
+      '<span class="app-me" aria-hidden="true">JS</span></div>' +
+      '<div class="app-main" aria-hidden="true">' +
+      '<div class="app-head"><h4>Cash overview</h4><p>All operating accounts · ' + TODAY + '</p></div>' +
+      '<div class="kpis"><div class="kpi"><span>Operating cash</span><b>$4,826,300</b><em class="pos">+$182,400 since Friday</em></div>' +
+      '<div class="kpi"><span>Due this week</span><b>$48,210</b><em>7 invoices</em></div>' +
+      '<div class="kpi"><span>Flagged</span><b>1 account</b><em class="warn">Operating, Alderfinch</em></div></div>' +
+      '<div class="app-card chart"><span class="label">Last 30 days</span><svg viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none"><path d="' + line + 'L' + w + ' ' + h + 'L0 ' + h + 'Z" fill="var(--p-brand-soft)" opacity=".6"/><path d="' + line + '" fill="none" stroke="var(--p-brand)" stroke-width="2" vector-effect="non-scaling-stroke"/></svg></div>' +
+      '<div class="app-card"><span class="label">Recent activity</span>' +
+      '<div class="tbl-row"><span>Today</span><span>Receipt · Harbor &amp; Pine Co.</span><b class="pos">+$121,000</b></div>' +
+      '<div class="tbl-row"><span>Today</span><span>Receipt · Meridian Labs</span><b class="pos">+$61,400</b></div>' +
+      '<div class="tbl-row"><span>Fri</span><span>Vendor batch · 3 transfers</span><b>−$24,860</b></div>' +
+      '</div></div>' +
+      (withBar ? '<div class="cbar-dim"></div>' : '') +
+      '</div>';
+  }
+  function wHead(label, extra) {
+    return '<div class="w-head"><span class="w-title">' + label + '</span>' +
+      '<button type="button" class="w-btn" data-act="new" aria-label="New chat" title="New chat">' + ICON_NEW + '</button>' +
+      (extra || '') + '</div>';
+  }
+
+  var frames = [new Frame(document.getElementById('f3'), 'ghost')];
+
+  // 3A floating widget
+  var fb = document.getElementById('fb');
+  fb.innerHTML = appHTML(false) +
+    '<div class="pop" id="fb-pop" role="dialog" aria-label="Assistant">' +
+    wHead('Assistant', '<button type="button" class="w-btn" aria-label="Expand" title="Expand">' + ICON_EXPAND + '</button><button type="button" class="w-btn" data-act="close" aria-label="Close" title="Close">' + ICON_X + '</button>') +
+    '<div class="w-body compact" id="fb-body"></div></div>' +
+    '<div class="hover-sugg" hidden><span class="label">Start from</span>' +
+    SUGG.map(function (s, i) { return '<button type="button" class="hs-row" data-i="' + i + '">' + esc(s.short) + ICON_ARROW + '</button>'; }).join('') + '</div>' +
+    '<span class="sr" role="status" id="fb-status"></span>' +
+    '<button type="button" class="launcher" aria-expanded="true" aria-controls="fb-pop" aria-label="Close Assistant">' +
+    '<svg class="l-ring" viewBox="0 0 76 76" aria-hidden="true"><circle class="l-track" cx="38" cy="38" r="35"/><circle class="l-bar" cx="38" cy="38" r="35" pathLength="100"/></svg>' +
+    slot(56, 'idle') + '<span class="l-check" aria-hidden="true" hidden>' + ICON_CHECK + '</span><span class="l-badge" aria-hidden="true" hidden></span></button>';
+  var pop = fb.querySelector('.pop'), launcher = fb.querySelector('.launcher'), sugg = fb.querySelector('.hover-sugg');
+  var status = fb.querySelector('#fb-status'), lCheck = fb.querySelector('.l-check'), lBadge = fb.querySelector('.l-badge'), lBar = fb.querySelector('.l-bar');
+  function lAv() { return launcher.querySelector('.avslot'); }
+  function isOpen() { return !pop.classList.contains('closed'); }
+  function labelLauncher() {
+    var extra = Reply.unread === 'error' ? ', connection lost' : Task.unread ? ', 1 finished task' : Reply.unread === 'done' ? ', new reply' :
+      Reply.state === 'retrying' ? ', reconnecting' : Task.state === 'running' ? ', task in progress' : '';
+    launcher.setAttribute('aria-label', (isOpen() ? 'Close' : 'Open') + ' Assistant' + extra);
+  }
+  function showBadge(kind) {
+    lBadge.hidden = false;
+    lBadge.classList.toggle('bad', kind === 'error');
+    lBadge.textContent = kind === 'error' ? '!' : '';
+  }
+
+  // One background task at a time. It outlives the widget being closed, not a new chat.
+  var Task = {
+    gen: 0, state: 'idle', unread: false,
+    start: function (frame, card, av) {
+      var me = ++this.gen, self = this, total = 214, n = 0, steps = [9, 14, 17, 12, 19, 16, 21, 13, 18, 15, 22, 17, 31];
+      this.state = 'running';
+      setAv(av, 'think');
+      launcher.classList.remove('finished');
+      launcher.classList.add('running');
+      setAv(lAv(), 'think');
+      hideSugg();
+      labelLauncher();
+      (function tick(k) {
+        if (me !== self.gen) return;
+        n = Math.min(total, n + steps[k % steps.length]);
+        var pct = Math.round(n / total * 100);
+        card.querySelector('.task-bar i').style.width = pct + '%';
+        card.querySelector('.task-pct').textContent = pct + '%';
+        card.querySelector('.task-sub').textContent = 'Matched ' + n + ' of ' + total + ' receipts';
+        lBar.style.strokeDashoffset = String(100 - pct);
+        if (n < total) setTimeout(function () { tick(k + 1); }, 650);
+        else setTimeout(function () { if (me === self.gen) self.finish(frame, card, av); }, 450);
+      })(0);
+    },
+    finish: function (frame, card, av) {
+      var me = this.gen, self = this;
+      this.state = 'done';
+      card.classList.add('done');
+      card.querySelector('.task-title').textContent = 'Reconciliation done';
+      card.querySelector('.task-pct').textContent = '';
+      card.querySelector('.task-sub').textContent = '212 matched. 2 receipts need a look.';
+      card.insertAdjacentHTML('beforeend', '<button type="button" class="task-btn">Review 2 receipts</button>');
+      card.querySelector('.task-btn').addEventListener('click', function () { if (!isOpen()) openWidget(); frame.send(REVIEW_Q); });
+      setAv(av, 'done');
+      setTimeout(function () { if (me === self.gen) setAv(av, 'idle'); }, 1000);
+      // The ring fills green, then gives way to the check.
+      launcher.classList.add('finished');
+      setTimeout(function () {
+        if (me !== self.gen) return;
+        launcher.classList.remove('running');
+        if (isOpen()) { setAv(lAv(), 'idle'); labelLauncher(); return; }
+        self.unread = true;
+        hideSugg();
+        lCheck.hidden = false;
+        showBadge('done');
+        setAv(lAv(), 'done');
+        setTimeout(function () { if (me === self.gen) { setAv(lAv(), 'idle'); lCheck.hidden = true; } }, 2400);
+        status.textContent = 'Reconciliation done. 2 receipts need a look.';
+        labelLauncher();
+      }, 600);
+    },
+    seen: function () {
+      this.unread = false;
+      lCheck.hidden = true;
+    },
+    cancel: function () {
+      this.gen++;
+      this.state = 'idle';
+      this.seen();
+      launcher.classList.remove('running', 'finished');
+      lBar.style.strokeDashoffset = '100';
+      setAv(lAv(), 'idle');
+      labelLauncher();
+    }
+  };
+
+  // The latest reply, so the minimized launcher can show what it is doing.
+  var Reply = {
+    state: 'idle', unread: null,
+    on: function (s) {
+      var closed = !isOpen();
+      if (s === 'reset') {
+        this.state = 'idle';
+        this.unread = null;
+        launcher.classList.remove('retrying');
+      } else if (s === 'think' || s === 'stream') {
+        this.state = s;
+        launcher.classList.remove('retrying');
+        if (closed) setAv(lAv(), s === 'think' ? 'think' : 'talk');
+      } else if (s === 'done') {
+        this.state = 'idle';
+        if (closed) { setAv(lAv(), 'idle'); this.unread = 'done'; showBadge('done'); status.textContent = 'The reply is ready.'; }
+      } else if (s === 'retrying') {
+        this.state = 'retrying';
+        launcher.classList.add('retrying');
+        setAv(lAv(), 'idle');
+      } else if (s === 'failed') {
+        this.state = 'failed';
+        launcher.classList.remove('retrying');
+        if (closed) {
+          this.unread = 'error';
+          showBadge('error');
+          setAv(lAv(), 'error');
+          setTimeout(function () { if (Reply.unread === 'error') setAv(lAv(), 'idle'); }, 700);
+          status.textContent = 'Connection lost. The reply stopped partway.';
+        }
+      }
+      if (s !== 'reset') hideSugg();
+      labelLauncher();
+    }
+  };
+  var frameB = new Frame(fb.querySelector('.w-body'), 'ghostPanel', { compact: true, task: true, restartBtn: fb.querySelector('[data-act="new"]'), delay: 1200, onState: function (s) { Reply.on(s); } });
+
+  // Start-from questions show only on hover (or keyboard focus) of the closed, quiet launcher.
+  var suggTimer = 0;
+  function quiet() { return !isOpen() && Task.state !== 'running' && !Task.unread && (Reply.state === 'idle' || Reply.state === 'failed') && !Reply.unread; }
+  function showSugg() { clearTimeout(suggTimer); if (quiet()) sugg.hidden = false; }
+  function hideSugg(delay) {
+    clearTimeout(suggTimer);
+    if (delay) suggTimer = setTimeout(function () { sugg.hidden = true; }, delay);
+    else sugg.hidden = true;
+  }
+  launcher.addEventListener('mouseenter', showSugg);
+  launcher.addEventListener('mouseleave', function () { hideSugg(240); });
+  launcher.addEventListener('focus', function () { if (launcher.matches(':focus-visible')) showSugg(); });
+  sugg.addEventListener('mouseenter', function () { clearTimeout(suggTimer); });
+  sugg.addEventListener('mouseleave', function () { hideSugg(240); });
+  fb.addEventListener('focusout', function (e) { if (!sugg.contains(e.relatedTarget) && e.relatedTarget !== launcher) hideSugg(); });
+  fb.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !sugg.hidden) { hideSugg(); launcher.focus(); } });
+  sugg.addEventListener('click', function (e) {
+    var b = e.target.closest('.hs-row');
+    if (!b) return;
+    hideSugg();
+    openWidget();
+    frameB.send(SUGG[+b.getAttribute('data-i')].short);
+  });
+
+  function openWidget() {
+    hideSugg();
+    var scrollTo = Reply.unread === 'error' ? '.err' : Task.unread ? '.task' : null, toEnd = Reply.unread === 'done';
+    Task.seen();
+    Reply.unread = null;
+    lBadge.hidden = true;
+    status.textContent = '';
+    if (Task.state !== 'running') setAv(lAv(), 'idle');
+    pop.classList.remove('closed');
+    launcher.setAttribute('aria-expanded', 'true');
+    labelLauncher();
+    var scroller = fb.querySelector('.w-body .scroll'), target = scrollTo && fb.querySelector('.w-body ' + scrollTo);
+    if (scroller && target) scroller.scrollTop = target.offsetTop - 80;
+    else if (scroller && toEnd) scroller.scrollTop = scroller.scrollHeight;
+  }
+  function closeWidget() {
+    pop.classList.add('closed');
+    launcher.setAttribute('aria-expanded', 'false');
+    if (Reply.state === 'think') setAv(lAv(), 'think');
+    else if (Reply.state === 'stream') setAv(lAv(), 'talk');
+    labelLauncher();
+  }
+  fb.querySelector('[data-act="new"]').addEventListener('click', function () { Task.cancel(); frameB.reset(); });
+  var demoGen = 0;
+  function playDemo() {
+    var me = ++demoGen;
+    Task.cancel();
+    frameB.reset();
+    openWidget();
+    setTimeout(function () { if (me === demoGen) frameB.startTask(); }, 1000);
+    setTimeout(function () { if (me === demoGen && isOpen()) closeWidget(); }, 4200);
+  }
+  document.getElementById('demo').addEventListener('click', playDemo);
+  // Ask, minimize while the reply streams, then lose the connection.
+  function playErrorDemo() {
+    var me = ++demoGen;
+    Task.cancel();
+    frameB.reset();
+    openWidget();
+    setTimeout(function () { if (me === demoGen) frameB.send(SUGG[0].short, { failAt: 30 }); }, 900);
+    setTimeout(function () { if (me === demoGen && isOpen()) closeWidget(); }, 2500);
+  }
+  document.getElementById('demo-err').addEventListener('click', playErrorDemo);
+  fb.querySelector('[data-act="close"]').addEventListener('click', function () { closeWidget(); launcher.focus(); });
+  launcher.addEventListener('click', function () { if (isOpen()) closeWidget(); else openWidget(); });
+
+  // 3C command bar
+  var fc = document.getElementById('fc');
+  fc.innerHTML = appHTML(true);
+  var cbar = fc.querySelector('.cbar');
+  var frameC = new Frame(cbar, 'ghostBar', { compact: true });
+  function barOpen(on) { cbar.classList.toggle('open', on); fc.classList.toggle('bar-open', on); }
+  cbar.addEventListener('focusin', function () { barOpen(true); });
+  cbar.addEventListener('click', function (e) { if (!e.target.closest('button')) frameC.input.focus(); });
+  cbar.addEventListener('keydown', function (e) { if (e.key === 'Escape') { barOpen(false); frameC.input.blur(); } });
+  // Clicks on rows that the bar just replaced count as inside.
+  document.addEventListener('click', function (e) { if (e.target.isConnected && !cbar.contains(e.target)) barOpen(false); });
+
+  frames.push(frameB, frameC);
+  frames.forEach(function (f) { f.reset(); });
+
+  var picker = document.getElementById('picker');
+  function drawPicker() {
+    picker.innerHTML = PICKS.map(function (a) {
+      return '<button type="button" data-id="' + a.id + '" aria-pressed="' + (a.id === CUR) + '">' + Avatars.svg(a.id, { size: 22, state: 'idle' }) + esc(a.name) + '</button>';
+    }).join('');
+  }
+  drawPicker();
+  picker.addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (!b) return;
+    CUR = b.getAttribute('data-id');
+    try { localStorage.setItem('greeting-avatar', CUR); } catch (err) {}
+    picker.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+    repaintAll();
+  });
+  document.getElementById('replay').addEventListener('click', function () { demoGen++; Task.cancel(); openWidget(); barOpen(false); frames.forEach(function (f) { f.reset(); }); });
+})();
+</script>
+
+</body></html>

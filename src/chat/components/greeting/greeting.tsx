@@ -1,4 +1,3 @@
-import { Orb } from '../../../primitives/orb'
 import type { GreetingProps } from './types'
 function greeting(): string {
   const h = new Date().getHours()
@@ -7,15 +6,22 @@ function greeting(): string {
   return 'Good evening'
 }
 
-export function Greeting({ name, salutation = greeting() }: GreetingProps) {
+/**
+ * The empty conversation's headline, in two tones: the greeting in ink, then
+ * the assistant's question in a quieter colour. One heading, so it is read as
+ * one sentence. The assistant's mark is not here — it sits in the composer,
+ * beside the question it is typing.
+ */
+export function Greeting({
+  name,
+  salutation = greeting(),
+  question = 'What are we working on?',
+}: GreetingProps) {
   return (
-    <div className="flex flex-col items-center">
-      <Orb className="orb block size-16 rounded-full animate-orb-drift" aria-hidden />
-
-      <h1 className="mt-8 text-center text-4xl font-bold tracking-tight text-ink-strong sm:text-5xl">
-        {salutation}, {name}
-      </h1>
-      <p className="mt-3 text-lg text-ink-soft">How can I help you today?</p>
-    </div>
+    <h1 className="text-[30px] leading-[1.08] font-extrabold tracking-[-0.025em] text-balance text-ink-strong sm:text-[42px] lg:text-[50px]">
+      {salutation}, {name}.
+      <br />
+      <span className="text-ink-soft">{question}</span>
+    </h1>
   )
 }

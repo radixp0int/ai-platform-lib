@@ -27,7 +27,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Today’s suggested questions. `SuggestionsMenu` is the composer’s sparkle drop-up — picking fills the draft, never sends; the footer switches suggest-as-you-type. `SuggestedQuestions` is the empty state’s grid, where a pick asks straight away.',
+          'Today’s suggested questions. `SuggestionsMenu` is the composer’s sparkle drop-up — picking fills the draft, never sends; the footer switches suggest-as-you-type. `SuggestedQuestions` is the empty state’s rows, where a pick asks straight away.',
       },
     },
   },
@@ -44,7 +44,8 @@ export const MenuCompact: Story = { args: { compact: true } }
 /** Without `onQueue`, rows offer no queue button. */
 export const MenuWithoutQueue: Story = { args: { onQueue: undefined } }
 
-export const EmptyStateGrid: Story = {
+/** The empty state's rows: the question, why it is suggested, and an arrow. */
+export const EmptyStateRows: Story = {
   render: () => (
     <div className="max-w-3xl">
       <SuggestedQuestions suggestions={suggestions} onPick={fn()} />
@@ -52,7 +53,17 @@ export const EmptyStateGrid: Story = {
   ),
 }
 
-export const EmptyStateSingleColumn: Story = {
+/** The row the assistant is typing into the composer, in the brand colour. */
+export const EmptyStateActiveRow: Story = {
+  render: () => (
+    <div className="max-w-3xl">
+      <SuggestedQuestions suggestions={suggestions} onPick={fn()} activeIndex={1} />
+    </div>
+  ),
+}
+
+/** Narrow: smaller rows, and the reasons give way to the questions. */
+export const EmptyStateCompact: Story = {
   render: () => (
     <div className="max-w-sm">
       <SuggestedQuestions suggestions={suggestions} onPick={fn()} compact limit={3} />

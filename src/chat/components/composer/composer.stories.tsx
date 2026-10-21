@@ -3,7 +3,9 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { fn } from 'storybook/test'
 import { suggestions, typeaheadPool } from '../../fixtures/chat'
 import type { ChainControls, ChainState } from '../../engine/types'
+import { AssistantAvatar } from '../assistant-avatar'
 import { Composer } from './composer'
+import { useGhostPrompt } from './use-ghost-prompt'
 
 /** Chain controls the way useChat hands them out, minus the running. */
 function useChain(): ChainControls {
@@ -89,4 +91,28 @@ export const WithChain: Story = {
 export const Narrow: Story = {
   args: { suggestions },
   decorators: [(Story) => <div className="max-w-sm">{Story()}</div>],
+}
+
+/**
+ * The empty-state composer with the assistant typing today's questions into
+ * it. Tab or → puts the whole question in the draft; typing anything hides it.
+ */
+export const GhostPrompt: Story = {
+  args: { docked: false },
+  decorators: [(Story) => <div className="-mt-60">{Story()}</div>],
+  render: function GhostPromptStory(args) {
+    const [draft, setDraft] = useState('')
+    const ghost = useGhostPrompt({
+      items: suggestions.slice(0, 4).map((s) => s.text),
+      enabled: draft === '',
+    })
+    return (
+      <Composer
+        {...args}
+        onDraftChange={setDraft}
+        ghostPrompt={ghost}
+        leading={<AssistantAvatar size={28} state={ghost.speaking ? 'talking' : 'idle'} />}
+      />
+    )
+  },
 }

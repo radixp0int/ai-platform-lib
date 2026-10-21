@@ -22,6 +22,7 @@ export * from './engine/types'
 
 // Components — one folder per component
 export * from './components/asked-over'
+export * from './components/assistant-avatar'
 export * from './components/chat-menu'
 export * from './components/chat-message'
 export * from './components/chat-widget'

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { useBranding } from '../../engine/branding'
 import { useAutoGrowTextarea } from '../../../hooks/useAutoGrowTextarea'
 import {
@@ -13,6 +13,7 @@ import {
   StopIcon,
 } from '../../../primitives/icons'
 import { IconButton } from '../../../primitives/icon-button'
+import { Kbd } from '../../../primitives/kbd'
 import { useUiSize, type UiSize } from '../../../lib/uiSize'
 import { keyLabels } from '../../../lib/keyLabels'
 import { Pill } from '../../../primitives/pill'
@@ -53,6 +54,8 @@ export function Composer({
   typeaheadPool,
   typeaheadStorageKey,
   onDraftChange,
+  ghostPrompt,
+  leading,
 }: ComposerProps) {
   const { appName } = useBranding()
   const size = useUiSize()
@@ -142,6 +145,25 @@ export function Composer({
 
   const toolIconSize = compact ? 16 : 18
 
+  // The suggested question shows only in an empty box the reader could send
+  // from; anything they type, say or queue takes its place.
+  const ghostOn = !!ghostPrompt && value === '' && !speech.listening && !disabled && !planning
+  const ghostText = ghostOn ? ghostPrompt.text : ''
+  const ghostReady = ghostOn && ghostPrompt.full
+  const ghostHintId = useId()
+  const takeGhost = () => {
+    const text = ghostPrompt?.accept()
+    if (text) fill(text)
+    return !!text
+  }
+
+  // The text line's padding, shared by the textarea and both layers drawn
+  // behind it: they must sit on identical metrics or the ghost drifts off the
+  // caret. A leading mark takes the start of the line.
+  const padStart = leading ? (compact ? 'pl-11' : 'pl-[54px]') : compact ? 'pl-4' : 'pl-5'
+  const padTop = compact ? 'pt-3 text-sm' : 'pt-4 text-[15px]'
+  const padEnd = canExpand ? (compact ? 'pr-10' : 'pr-12') : compact ? 'pr-4' : 'pr-5'
+
   return (
     <div
       // Named so the toolbar's triggers (and anything else nested here) can
@@ -174,19 +196,57 @@ export function Composer({
       )}
 
       <div className="relative">
+        {leading && (
+          <span
+            className={`pointer-events-none absolute flex ${compact ? 'top-[11px] left-3' : 'top-3.5 left-4'}`}
+          >
+            {leading}
+          </span>
+        )}
+
         {/* The completion, drawn behind the transparent textarea on the same
             metrics: the typed text is invisible here and the rest shows after
             it, so it reads as sitting right after the caret. */}
         {typeahead.ghost && (
           <div
             aria-hidden
-            className={`pointer-events-none absolute inset-0 overflow-hidden pb-1 leading-relaxed break-words whitespace-pre-wrap ${
-              compact ? 'pt-3 pl-4 text-sm' : 'pt-4 pl-5 text-[15px]'
-            } ${canExpand ? (compact ? 'pr-10' : 'pr-12') : compact ? 'pr-4' : 'pr-5'}`}
+            className={`pointer-events-none absolute inset-0 overflow-hidden pb-1 leading-relaxed break-words whitespace-pre-wrap ${padTop} ${padStart} ${padEnd}`}
           >
             <span className="text-transparent">{value}</span>
             <span className="text-ink-soft/70">{typeahead.ghost}</span>
           </div>
+        )}
+
+        {/* The suggested question, where the placeholder would be. The caret
+            line it draws is the assistant's, not the reader's. */}
+        {ghostText && (
+          <div
+            aria-hidden
+            data-ghost-prompt
+            className={`pointer-events-none absolute inset-0 overflow-hidden pb-1 leading-relaxed break-words whitespace-pre-wrap text-ink-soft ${padTop} ${padStart} ${
+              ghostReady && !compact ? 'pr-5 sm:pr-28' : padEnd
+            }`}
+          >
+            {ghostText}
+            {!ghostReady && (
+              <span className="ml-px inline-block h-[1.1em] w-0.5 translate-y-[0.2em] rounded-full bg-accent" />
+            )}
+          </div>
+        )}
+        {ghostReady && (
+          <>
+            <span id={ghostHintId} className="sr-only">
+              Suggestion: {ghostPrompt.text}. Press Tab to use it.
+            </span>
+            {!compact && (
+              <span
+                aria-hidden
+                className="pointer-events-none absolute top-4 right-4 hidden items-center gap-1.5 text-xs text-ink-soft sm:flex"
+              >
+                <Kbd>Tab</Kbd> to use
+              </span>
+            )}
+          </>
         )}
         <textarea
           ref={textareaRef}
@@ -196,7 +256,16 @@ export function Composer({
             typeahead.onInput()
           }}
           {...typeahead.inputProps}
+          aria-describedby={ghostReady ? ghostHintId : undefined}
           onKeyDown={(e) => {
+            if (
+              ghostReady &&
+              ((e.key === 'Tab' && !e.shiftKey) || e.key === 'ArrowRight') &&
+              takeGhost()
+            ) {
+              e.preventDefault()
+              return
+            }
             if (typeahead.onKeyDown(e)) return
             if (e.key === 'Enter' && !e.shiftKey) {
               e.preventDefault()
@@ -217,12 +286,12 @@ export function Composer({
               ? 'Listening… release to stop'
               : planning
                 ? 'Add a question to the queue…'
-                : 'Ask anything…'
+                : ghostOn
+                  ? ''
+                  : 'Ask anything…'
           }
           aria-label={`Message ${appName}`}
-          className={`w-full resize-none bg-transparent pb-1 leading-relaxed text-ink-strong outline-none placeholder:text-ink-soft ${
-            compact ? 'pt-3 pl-4 text-sm' : 'pt-4 pl-5 text-[15px]'
-          } ${canExpand ? (compact ? 'pr-10' : 'pr-12') : compact ? 'pr-4' : 'pr-5'}`}
+          className={`w-full resize-none bg-transparent pb-1 leading-relaxed text-ink-strong outline-none placeholder:text-ink-soft ${padTop} ${padStart} ${padEnd}`}
         />
 
         {canExpand && (

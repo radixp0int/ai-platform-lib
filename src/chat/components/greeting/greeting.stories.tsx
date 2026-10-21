@@ -14,6 +14,9 @@ export const Evening: Story = { args: { salutation: 'Good evening' } }
 /** With no salutation it reads the clock: morning, afternoon or evening. */
 export const FromTheClock: Story = { args: { salutation: undefined } }
 
+/** The second line is the host's to change. */
+export const OwnQuestion: Story = { args: { question: 'Where should we start?' } }
+
 /** A long name wraps under the salutation rather than shrinking. */
 export const LongName: Story = {
   args: { name: 'Alexandria Montgomery-Whitfield' },

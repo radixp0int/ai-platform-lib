@@ -46,4 +46,43 @@ test.describe('Composer', () => {
     await story.open('chat-components-composer--disabled')
     await expect(page.getByRole('button', { name: 'Send message' })).toBeDisabled()
   })
+
+  test('the assistant types a suggested question into the empty box', async ({ story, page }) => {
+    await story.open('chat-components-composer--ghost-prompt')
+    const ghost = page.locator('[data-ghost-prompt]')
+    await expect(ghost).toHaveText('What changed in our cash position since Friday?')
+    await expect(page.getByText('Tab to use', { exact: true })).toBeVisible()
+  })
+
+  test('Tab puts the whole question in the draft', async ({ story, page }) => {
+    await story.open('chat-components-composer--ghost-prompt')
+    const box = page.getByRole('textbox', { name: 'Message Acme' })
+    await expect(box).toHaveAccessibleDescription(
+      'Suggestion: What changed in our cash position since Friday?. Press Tab to use it.',
+    )
+    await box.focus()
+    await box.press('Tab')
+    await expect(box).toHaveValue('What changed in our cash position since Friday?')
+    await expect(box).toBeFocused()
+    await expect(page.locator('[data-ghost-prompt]')).toHaveCount(0)
+  })
+
+  test('typing hides the suggestion', async ({ story, page }) => {
+    await story.open('chat-components-composer--ghost-prompt')
+    await expect(page.locator('[data-ghost-prompt]')).toBeVisible()
+    await page.getByRole('textbox', { name: 'Message Acme' }).fill('W')
+    await expect(page.locator('[data-ghost-prompt]')).toHaveCount(0)
+  })
+
+  test('with reduced motion the question appears whole, without typing', async ({
+    story,
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await story.open('chat-components-composer--ghost-prompt')
+    const ghost = page.locator('[data-ghost-prompt]')
+    // Visible at all only once whole: there is no partly typed moment to catch.
+    await expect(ghost).toBeVisible()
+    await expect(ghost).toHaveText('What changed in our cash position since Friday?')
+  })
 })

@@ -119,6 +119,7 @@
   --radius-dialog: 14px;
 
   --animate-orb-drift: orb-drift 9s ease-in-out infinite;
+  --animate-orb-talk: orb-talk 0.9s ease-in-out infinite;
   --animate-fade-up: fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-shimmer: shimmer 1.6s linear infinite;
 
@@ -129,6 +130,17 @@
     }
     50% {
       transform: translateY(-7px) rotate(6deg);
+    }
+  }
+  /* The assistant speaking: a small, steady swell — enough to say "this is me
+     typing", not so much that it pulls the eye off the words. */
+  @keyframes orb-talk {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.08);
     }
   }
   @keyframes fade-up {
