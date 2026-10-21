@@ -22,6 +22,9 @@ type Story = StoryObj<typeof meta>
 
 export const AlderAndFinch: Story = { name: 'Alder & Finch' }
 
+/** Humanized, as for a super admin: the launcher and the panel show the marble bust. */
+export const Humanized: Story = { args: { humanized: true } }
+
 function OverTheWire({ network }: { network: NetworkCondition }) {
   return <WidgetDemoPage responder={useSimulatedResponder(network)} />
 }

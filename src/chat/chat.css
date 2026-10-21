@@ -109,3 +109,141 @@
     transition-delay: 60ms;
   }
 }
+
+/* The Marble bust avatar (components/assistant-avatar/marble-bust.tsx).
+   Marble and stone are fixed materials, the same in every theme; the tile is
+   the brand and the cloth is the warm decorative hue, which is why it may
+   use --ember (decoration, never text). Each move is keyed off data-state. */
+@layer components {
+  .marble-bust {
+    overflow: visible;
+  }
+  .marble-bust * {
+    transform-box: view-box;
+  }
+  .marble-bust .mb-tile {
+    fill: var(--brand-solid);
+  }
+  .marble-bust .mb-cloth {
+    fill: var(--ember-500, var(--accent-500));
+  }
+  .marble-bust .mb-marble {
+    fill: #f3f6f9;
+  }
+  .marble-bust .mb-shade {
+    fill: #c5d1dd;
+  }
+  .marble-bust .mb-deep {
+    fill: #12202e;
+  }
+  .marble-bust .mb-line {
+    fill: none;
+    stroke: #12202e;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .marble-bust .mb-eyes {
+    transform-origin: 24px 21px;
+  }
+  .marble-bust .mb-head {
+    transform-origin: 24px 38px;
+  }
+  .marble-bust .mb-mouth {
+    transform-origin: 24px 31px;
+  }
+
+  /* Idle and thinking: a blink every few seconds. */
+  .marble-bust[data-state='idle'] .mb-eyes {
+    animation: mb-blink 3.8s ease-in-out infinite;
+  }
+  /* Thinking: the head tilts, the brows lift and the eyes glance up. */
+  .marble-bust[data-state='thinking'] .mb-head {
+    animation: mb-tilt 3.2s ease-in-out infinite;
+  }
+  .marble-bust[data-state='thinking'] .mb-brows {
+    animation: mb-brow 3.2s ease-in-out infinite;
+  }
+  .marble-bust[data-state='thinking'] .mb-eyes {
+    animation:
+      mb-blink 3.8s ease-in-out infinite,
+      mb-glance 3.2s ease-in-out infinite;
+  }
+  /* Talking: a nod, and the mouth moves with the words. */
+  .marble-bust[data-state='talking'] .mb-head {
+    animation: mb-nod 1.6s ease-in-out infinite;
+  }
+  .marble-bust[data-state='talking'] .mb-mouth {
+    animation: mb-talk 0.9s ease-in-out infinite;
+  }
+
+  @keyframes mb-blink {
+    0%,
+    90%,
+    100% {
+      transform: scaleY(1);
+    }
+    94% {
+      transform: scaleY(0.12);
+    }
+  }
+  @keyframes mb-tilt {
+    0%,
+    100% {
+      transform: rotate(0);
+    }
+    40%,
+    75% {
+      transform: rotate(6deg);
+    }
+  }
+  @keyframes mb-brow {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    40%,
+    75% {
+      transform: translateY(-1.3px);
+    }
+  }
+  @keyframes mb-glance {
+    0%,
+    100% {
+      translate: 0 0;
+    }
+    40%,
+    75% {
+      translate: 1.2px -1.2px;
+    }
+  }
+  @keyframes mb-nod {
+    0%,
+    100% {
+      transform: rotate(0);
+    }
+    30% {
+      transform: rotate(-2deg) translateY(0.4px);
+    }
+    65% {
+      transform: rotate(1.5deg);
+    }
+  }
+  @keyframes mb-talk {
+    0%,
+    100% {
+      transform: scale(1, 1);
+    }
+    20% {
+      transform: scale(0.9, 1.9);
+    }
+    45% {
+      transform: scale(1, 1.15);
+    }
+    65% {
+      transform: scale(0.94, 1.65);
+    }
+    85% {
+      transform: scale(1, 1.25);
+    }
+  }
+}

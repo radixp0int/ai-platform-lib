@@ -7,6 +7,7 @@ import {
   type WidgetHandle,
   type WidgetPosition,
 } from '../../../components/chat-widget'
+import { assistantAvatarFor } from '../../../components/assistant-avatar'
 import { createCannedResponder, type Responder } from '../../../engine/chatEngine'
 import { type SidePanel } from '../../../engine/types'
 // Not ai-platform-lib/widget.css: the side panels below render inside the
@@ -48,9 +49,13 @@ function buildSidePanels(): SidePanel[] {
 }
 
 // Assemble the Acme-specific content that makes the library widget concrete.
-function buildContent(responder: Responder = createCannedResponder(cannedTurns)): WidgetContent {
+function buildContent(
+  responder: Responder = createCannedResponder(cannedTurns),
+  humanized = false,
+): WidgetContent {
   return {
     responder,
+    assistantAvatar: assistantAvatarFor({ humanized }),
     branding: acmeBranding,
     suggestions: todaysSuggestions,
     typeaheadPool,
@@ -68,12 +73,14 @@ function buildContent(responder: Responder = createCannedResponder(cannedTurns))
 export type AcmeChatOptions = Omit<MountOptions, 'cssText'> & {
   /** Where answers come from. Defaults to the canned turns, replayed locally. */
   responder?: Responder
+  /** Show the humanized assistant, the marble bust — for super admins. */
+  humanized?: boolean
 }
 export type AcmeChatHandle = WidgetHandle
 
 /** Mount the Acme chat widget. Returns a handle to control or remove it. */
-export function init({ responder, ...options }: AcmeChatOptions = {}): AcmeChatHandle {
-  return mountWidget(buildContent(responder), { ...options, cssText })
+export function init({ responder, humanized, ...options }: AcmeChatOptions = {}): AcmeChatHandle {
+  return mountWidget(buildContent(responder, humanized), { ...options, cssText })
 }
 
 // Auto-init when loaded via a classic script tag carrying data-auto-init:

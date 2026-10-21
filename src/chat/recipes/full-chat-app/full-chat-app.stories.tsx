@@ -22,6 +22,9 @@ type Story = StoryObj<typeof meta>
 
 export const Acme: Story = {}
 
+/** Humanized: the assistant is Aristotle, as a marble bust — what super admins see. */
+export const Humanized: Story = { args: { humanized: true } }
+
 function OverTheWire({ network }: { network: NetworkCondition }) {
   return <App responder={useSimulatedResponder(network)} />
 }

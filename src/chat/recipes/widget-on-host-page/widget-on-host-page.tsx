@@ -36,13 +36,19 @@ const services = [
 const field =
   'rounded-control border border-line bg-panel px-3 py-2 text-sm font-normal tracking-normal text-ink-strong normal-case outline-none focus:border-accent'
 
-export function WidgetDemoPage({ responder }: { responder?: Responder }) {
+export function WidgetDemoPage({
+  responder,
+  humanized = false,
+}: {
+  responder?: Responder
+  humanized?: boolean
+}) {
   // Mount the widget exactly the way an embedding site would — same init()
   // the script tag calls — and tear it down when leaving the route.
   useEffect(() => {
-    const handle = init({ theme: 'auto', themeClass: THEME, responder })
+    const handle = init({ theme: 'auto', themeClass: THEME, responder, humanized })
     return () => handle.destroy()
-  }, [responder])
+  }, [responder, humanized])
 
   return (
     <div className={`${THEME} min-h-dvh bg-canvas text-ink-strong`} style={displayFace}>
