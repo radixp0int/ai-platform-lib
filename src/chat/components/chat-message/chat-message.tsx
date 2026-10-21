@@ -7,6 +7,7 @@ import { InlineTip } from '../../../primitives/inline-tip'
 import { useDismissableTip } from '../../../hooks/useDismissableTip'
 import { useUiSize } from '../../../lib/uiSize'
 import { AskedOverStrip } from '../asked-over'
+import { AssistantAvatar } from '../assistant-avatar'
 import { MessageActions } from '../message-actions'
 import { Markdown } from '../markdown'
 import { FollowupChips } from '../followup-chips'
@@ -84,9 +85,17 @@ export function ChatMessage({
 
   return (
     <div className={`flex animate-fade-up ${compact ? 'gap-2.5' : 'gap-3.5'}`}>
-      <span
-        className={`orb mt-1 block shrink-0 rounded-full ${compact ? 'size-6' : 'size-7'} ${message.streaming || message.thinkingActive ? 'animate-orb-drift' : ''}`}
-        aria-hidden
+      {/* Thinking until the first words arrive, then talking while they stream. */}
+      <AssistantAvatar
+        size={compact ? 24 : 28}
+        state={
+          message.thinkingActive || (message.streaming && !message.content)
+            ? 'thinking'
+            : message.streaming
+              ? 'talking'
+              : 'idle'
+        }
+        className="mt-1"
       />
       <div className="min-w-0 flex-1 pt-0.5">
         {message.thinking && (

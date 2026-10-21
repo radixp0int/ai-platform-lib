@@ -22,6 +22,9 @@ type Story = StoryObj<typeof meta>
 
 export const AlderAndFinch: Story = { name: 'Alder & Finch' }
 
+/** The same site with a super admin signed in: the launcher and the panel show the marble bust. */
+export const SuperAdmin: Story = { args: { superAdmin: true } }
+
 function OverTheWire({ network }: { network: NetworkCondition }) {
   return <WidgetDemoPage responder={useSimulatedResponder(network)} />
 }

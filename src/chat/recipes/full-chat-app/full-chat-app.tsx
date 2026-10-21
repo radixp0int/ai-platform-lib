@@ -5,6 +5,7 @@ import { SlideOver } from '../../../components/slide-over'
 import { useMediaQuery } from '../../../hooks/useMediaQuery'
 import { AmbientGlow } from '../../../primitives/ambient-glow'
 import { SlidersIcon, UserIcon } from '../../../primitives/icons'
+import { AssistantAvatarProvider, assistantAvatarFor } from '../../components/assistant-avatar'
 import { ChatMenu } from '../../components/chat-menu/chat-menu'
 import { Conversation } from '../../components/conversation/conversation'
 import { Greeting } from '../../components/greeting'
@@ -256,21 +257,29 @@ export function Chat({
 
 /** The chat as its own page: owns the settings state and the two dialogs
  *  behind the sidebar's account menu. Both are modal, so at most one is ever
- *  open — opening either closes the other. */
-function App({ responder }: Pick<ChatProps, 'responder'>) {
+ *  open — opening either closes the other.
+ *
+ *  `superAdmin` stands in for what a real app reads from the signed-in user:
+ *  it picks the assistant's mark through `assistantAvatarFor`. */
+function App({
+  responder,
+  superAdmin = false,
+}: Pick<ChatProps, 'responder'> & { superAdmin?: boolean }) {
   const demo = useDemoFeatureState()
   const [dialog, setDialog] = useState<'user' | 'features' | null>(null)
   return (
     <BrandingProvider value={acmeBranding}>
-      <DemoFeaturesProvider value={demo}>
-        <Chat
-          responder={responder}
-          onOpenUserSettings={() => setDialog('user')}
-          onOpenFeatureToggles={() => setDialog('features')}
-        />
-        <UserSettingsModal open={dialog === 'user'} onClose={() => setDialog(null)} />
-        <FeatureTogglesModal open={dialog === 'features'} onClose={() => setDialog(null)} />
-      </DemoFeaturesProvider>
+      <AssistantAvatarProvider value={assistantAvatarFor({ superAdmin })}>
+        <DemoFeaturesProvider value={demo}>
+          <Chat
+            responder={responder}
+            onOpenUserSettings={() => setDialog('user')}
+            onOpenFeatureToggles={() => setDialog('features')}
+          />
+          <UserSettingsModal open={dialog === 'user'} onClose={() => setDialog(null)} />
+          <FeatureTogglesModal open={dialog === 'features'} onClose={() => setDialog(null)} />
+        </DemoFeaturesProvider>
+      </AssistantAvatarProvider>
     </BrandingProvider>
   )
 }

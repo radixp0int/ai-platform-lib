@@ -22,6 +22,9 @@ type Story = StoryObj<typeof meta>
 
 export const Acme: Story = {}
 
+/** Signed in as a super admin: the assistant is Aristotle, as a marble bust. */
+export const SuperAdmin: Story = { args: { superAdmin: true } }
+
 function OverTheWire({ network }: { network: NetworkCondition }) {
   return <App responder={useSimulatedResponder(network)} />
 }

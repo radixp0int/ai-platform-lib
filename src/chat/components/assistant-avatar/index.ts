@@ -1,2 +1,8 @@
 export { AssistantAvatar } from './assistant-avatar'
-export type { AssistantAvatarProps, AssistantAvatarState } from './types'
+export { AssistantAvatarProvider, assistantAvatarFor, useAssistantAvatarKind } from './context'
+export type {
+  AssistantAvatarKind,
+  AssistantAvatarProps,
+  AssistantAvatarState,
+  AssistantAvatarViewer,
+} from './types'

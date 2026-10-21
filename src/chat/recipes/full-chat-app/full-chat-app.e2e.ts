@@ -52,3 +52,24 @@ test.describe('Full chat app on canned turns', () => {
     await expect(page.getByText(/Page \d+ of \d+/)).toHaveCount(0)
   })
 })
+
+test.describe('The assistant mark by role', () => {
+  test('a regular user sees the Orb beside the composer', async ({ story, page }) => {
+    await story.open('chat-recipes-full-chat-app--acme')
+    await expect(page.locator('[data-avatar="orb"]').first()).toBeVisible()
+    await expect(page.locator('[data-avatar="marble-bust"]')).toHaveCount(0)
+  })
+
+  test('a super admin sees the marble bust, beside the composer and the answer', async ({
+    story,
+    page,
+  }) => {
+    await page.clock.install()
+    await story.open('chat-recipes-full-chat-app--super-admin')
+    await expect(page.locator('[data-avatar="marble-bust"]')).toHaveCount(1)
+    await ask(page, 'How big should my emergency fund be?')
+    await page.clock.runFor(60_000)
+    await expect(page.locator('[data-avatar="marble-bust"]').first()).toBeVisible()
+    await expect(page.locator('[data-avatar="orb"]')).toHaveCount(0)
+  })
+})

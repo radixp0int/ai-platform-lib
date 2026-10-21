@@ -32,3 +32,27 @@ test.describe('Widget on a host page over a simulated network', () => {
     await expect(page.getByRole('heading', { level: 1 })).toContainText('Quiet counsel')
   })
 })
+
+test.describe('Widget on a host page, by role', () => {
+  test('for a super admin the launcher and the panel show the marble bust', async ({
+    story,
+    page,
+  }) => {
+    await story.open('chat-recipes-widget-on-a-host-page--super-admin')
+    const launcher = page.getByRole('button', { name: 'Ask Acme' })
+    await expect(launcher.locator('[data-avatar="marble-bust"]')).toBeVisible()
+    await launcher.click()
+    const panel = page.getByRole('dialog', { name: 'Acme chat' })
+    await expect(panel.locator('[data-avatar="marble-bust"]')).toHaveCount(2)
+  })
+
+  test('for everyone else the launcher is the Orb', async ({ story, page }) => {
+    await story.open('chat-recipes-widget-on-a-host-page--alder-and-finch')
+    const launcher = page.getByRole('button', { name: 'Ask Acme' })
+    await expect(launcher.locator('[data-avatar]')).toHaveCount(0)
+    await launcher.click()
+    await expect(
+      page.getByRole('dialog', { name: 'Acme chat' }).locator('[data-avatar="orb"]'),
+    ).toHaveCount(2)
+  })
+})

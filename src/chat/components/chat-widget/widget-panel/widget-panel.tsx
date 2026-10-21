@@ -10,7 +10,7 @@ import {
   RefreshIcon,
   XIcon,
 } from '../../../../primitives/icons'
-import { Orb } from '../../../../primitives/orb'
+import { AssistantAvatar } from '../../assistant-avatar'
 import { ScrollToBottomButton } from '../../../../primitives/scroll-to-bottom-button'
 import { useBranding } from '../../../engine/branding'
 import type {
@@ -173,7 +173,7 @@ export function WidgetPanel({
   return (
     <>
       <header className="flex items-center gap-2.5 border-b border-line px-4 py-3">
-        <Orb className="orb block size-6 shrink-0 rounded-full" aria-hidden />
+        <AssistantAvatar size={24} state={busy ? 'talking' : 'idle'} />
         <div className="flex min-w-0 flex-col">
           <span className="text-sm leading-tight font-semibold text-ink-strong">{appName}</span>
           {name && (
@@ -240,7 +240,7 @@ export function WidgetPanel({
                   </div>
                 ) : (
                   <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
-                    <Orb className="orb block size-12 rounded-full animate-orb-drift" aria-hidden />
+                    <AssistantAvatar size={48} />
                     <p className="mt-3 text-base font-semibold text-ink-strong">
                       {firstName ? `Hi, ${firstName}` : `Hi, I'm ${appName}`}
                     </p>

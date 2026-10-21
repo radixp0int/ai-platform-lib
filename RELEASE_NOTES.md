@@ -3,6 +3,29 @@
 Changes to the component library as seen from Storybook. Newest first. Each
 entry names the modules it touches so the sidebar entry is easy to find.
 
+## 2026-10-21 — Chat: the marble bust for super admins
+
+- **The Marble bust won the avatar review.** Super admins see Aristotle as a
+  marble bust wherever the assistant appears; everyone else keeps the Orb.
+  It blinks at rest, tilts its head while thinking and nods while talking,
+  and reduced motion stills it.
+- **`AssistantAvatar` takes a `kind`:** `orb` or `marble-bust`. Without one it
+  draws what the nearest **`AssistantAvatarProvider`** sets, and the Orb when
+  there is none. The library doesn't know who is signed in, so the host sets
+  it; **`assistantAvatarFor({ superAdmin })`** writes the rule once. Avatars
+  for individual agents can join the list later.
+- **The assistant's mark now goes through `AssistantAvatar` everywhere it
+  speaks:** beside each answer in `ChatMessage` (thinking until the first
+  words, then talking while they stream), in the widget's header and empty
+  panel, and in the empty-state composer.
+- **Widget: `assistantAvatar` on `WidgetContent`.** With the bust, the closed
+  launcher shows it in place of the sphere.
+- **Recipes:** a **Super admin** story on Full chat app and on Widget on a
+  host page; both take a `superAdmin` flag, as a stand-in for the signed-in
+  user.
+- **Tests.** Unit tests for `assistantAvatarFor`; browser tests for the bust's
+  size and motion, the provider, and both recipes by role.
+
 ## 2026-10-21 — Chat: the Ghost prompt greeting
 
 - **The empty conversation is the Ghost prompt.** The greeting, then the
