@@ -5,7 +5,7 @@ test.describe('Suggestions', () => {
     story,
     page,
   }) => {
-    await story.open('chat-components-suggestions--empty-state-grid')
+    await story.open('chat-components-suggestions--empty-state-rows')
     const region = page.getByRole('region', { name: 'Suggested for today' })
     await expect(region.getByRole('listitem')).toHaveCount(4)
     await expect(
@@ -29,8 +29,8 @@ test.describe('Suggestions', () => {
     await expect(trigger).toHaveAttribute('aria-expanded', 'false')
   })
 
-  test('in one column the cards stack', async ({ story, page }) => {
-    await story.open('chat-components-suggestions--empty-state-single-column')
+  test('rows run the full width, one under another', async ({ story, page }) => {
+    await story.open('chat-components-suggestions--empty-state-rows')
     const items = page.getByRole('region', { name: 'Suggested for today' }).getByRole('listitem')
     const [first, second] = [
       (await items.nth(0).boundingBox())!,
@@ -38,5 +38,30 @@ test.describe('Suggestions', () => {
     ]
     expect(second.y).toBeGreaterThan(first.y)
     expect(second.x).toBe(first.x)
+    expect(second.width).toBe(first.width)
+  })
+
+  test('the row being typed into the composer is marked', async ({ story, page }) => {
+    await story.open('chat-components-suggestions--empty-state-active-row')
+    const region = page.getByRole('region', { name: 'Suggested for today' })
+    await expect(region.locator('[data-active]')).toHaveCount(1)
+    await expect(region.locator('[data-active]')).toHaveAccessibleName(
+      /^Which invoices are due this week\?/,
+    )
+  })
+
+  test('at phone width the reasons give way to the questions', async ({ story, page }) => {
+    await page.setViewportSize({ width: 375, height: 800 })
+    await story.open('chat-components-suggestions--empty-state-rows')
+    const region = page.getByRole('region', { name: 'Suggested for today' })
+    await expect(region.getByText('Popular in your org')).toBeHidden()
+    await expect(region.getByText('Which invoices are due this week?')).toBeVisible()
+  })
+
+  test('compact rows leave the reasons out', async ({ story, page }) => {
+    await story.open('chat-components-suggestions--empty-state-compact')
+    const region = page.getByRole('region', { name: 'Suggested for today' })
+    await expect(region.getByRole('listitem')).toHaveCount(3)
+    await expect(region.getByText('Monday check-in')).toHaveCount(0)
   })
 })

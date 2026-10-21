@@ -3,6 +3,41 @@
 Changes to the component library as seen from Storybook. Newest first. Each
 entry names the modules it touches so the sidebar entry is easy to find.
 
+## 2026-10-21 — Chat: the Ghost prompt greeting
+
+- **The empty conversation is the Ghost prompt.** The greeting, then the
+  composer, then today's suggestions, all left-aligned. While the box is empty
+  the assistant types each suggestion into it in turn; once a question is
+  whole, Tab or → puts it in the draft (it never sends by itself), and typing
+  anything hides it. With reduced motion each question appears whole and
+  changes every six seconds. Screen readers hear the finished question as the
+  box's description, not each character.
+- **`Greeting` is a two-tone headline:** "Good morning, Joe." then the
+  assistant's question, "What are we working on?", in a quieter colour, as one
+  `h1`. New `question` prop. The Orb is no longer drawn here, and "How can I
+  help you today?" is gone.
+- **`SuggestedQuestions` are rows, not cards:** the question, its reason on the
+  right and an arrow, under a "Suggested for today" label. New `activeIndex`
+  marks the row being typed into the composer. Reasons drop out when `compact`
+  and below `sm`.
+- **`Composer`: `ghostPrompt` and `leading`.** `ghostPrompt` takes what
+  `useGhostPrompt` returns and draws it where the placeholder would be, with a
+  "Tab to use" hint once whole; `leading` puts a mark at the start of the text
+  line. Both are optional and change nothing when omitted.
+- **New hook: `useGhostPrompt`** (exported with `GHOST_TIMING`), headless:
+  type, hold, erase, next. Pauses while disabled and carries on with the next
+  question.
+- **New component: `AssistantAvatar`,** the assistant's mark with an `idle`,
+  `thinking` or `talking` state. It draws the Orb today; the chosen avatar goes
+  in here. New `animate-orb-talk` motion token.
+- **New icon: `ArrowRightIcon`.**
+- **Tests.** Eight unit tests for `useGhostPrompt`; browser tests for the
+  ghost prompt (typing, Tab, typing over it, reduced motion), the rows (reason,
+  active row, phone width, compact), the two-tone heading and the empty
+  state's order.
+- **Design.** Built from `designs/assistant-greeting/greeting.html`, section
+  "As its own page".
+
 ## 2026-10-09 — Workflows: a table of workflows, foldable stages, richer steps
 
 - **New recipe: Workflows table.** Every workflow in a tenant and where its

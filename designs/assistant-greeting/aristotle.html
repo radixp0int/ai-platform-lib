@@ -1,0 +1,327 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<title>Aristotle Avatar Options</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Nunito+Sans:wght@400;600;700;800&display=swap">
+<style>
+/* Layout: four option columns, each showing the avatar large, its three moods, small sizes and a dark chat. */
+:root {
+  --ground: #eef2f6;
+  --panel: #ffffff;
+  --stage: #ffffff;
+  --ink: #12202e;
+  --muted: #586774;
+  --line: #d5dde5;
+  --tint: #e3eaf1;
+  --accent: #004c97;
+  --font-ui: 'Nunito Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --chat-ink: #e0e8f0;
+  --chat-head: #f2f6fa;
+  --chat-quiet: #8fa1b3;
+
+  --av-brand: #004c97;
+  --av-warm: #ef6a00;
+  --av-ink: #ffffff;
+  --av-marble: #f3f6f9;
+  --av-shade: #c5d1dd;
+  --av-deep: #12202e;
+  --canvas-dark: #04172a;
+  --brand-dark: #3d7fc4;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #0b1520; --panel: #12202e; --ink: #e7eef5; --muted: #93a3b3; --line: #253748; --tint: #1b2d40;
+    --accent: #8db8e8; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #0b1520; --panel: #12202e; --ink: #e7eef5; --muted: #93a3b3; --line: #253748; --tint: #1b2d40;
+  --accent: #8db8e8; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font: 15px/1.5 var(--font-ui);
+  padding-block: 48px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+button { font: inherit; color: inherit; }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.wrap { max-width: 1240px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }
+
+.eyebrow { margin: 0; font: 500 11px/1.4 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.top { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px 48px; align-items: end; }
+.top-text { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.top h1 { margin: 0; font-size: clamp(30px, 4.4vw, 40px); line-height: 1.08; font-weight: 800; letter-spacing: -0.02em; text-wrap: balance; }
+.lede { margin: 0; max-width: 62ch; color: var(--muted); font-size: 16px; }
+.origin { display: flex; align-items: center; gap: 12px; padding: 10px 14px 10px 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; font-size: 13px; color: var(--muted); max-width: 300px; }
+.origin b { display: block; color: var(--ink); font-size: 14px; }
+@media (max-width: 760px) { .top { grid-template-columns: minmax(0, 1fr); } }
+
+.controls { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; padding-block: 12px; margin-block: -12px; background: var(--ground); }
+.ctl { display: flex; align-items: center; gap: 10px; }
+.ctl-label { font: 500 11px/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.seg { display: flex; padding: 3px; gap: 2px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
+.seg button { border: 0; background: transparent; border-radius: 7px; padding: 6px 12px; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.seg button[aria-pressed="true"] { background: var(--tint); color: var(--ink); }
+.swatch { width: 10px; height: 10px; border-radius: 50%; }
+.play { border: 0; background: var(--ink); color: var(--ground); border-radius: 10px; padding: 9px 16px; font-size: 13px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+.play:disabled { opacity: .55; cursor: default; }
+
+.grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: 24px; row-gap: 16px; }
+@media (max-width: 1080px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* Subgrid keeps each part of the four options on the same line */
+.opt { display: grid; grid-template-rows: subgrid; grid-row: span 6; min-width: 0; padding-bottom: 24px; }
+.opt-head { display: flex; flex-direction: column; gap: 2px; }
+.opt-head h2 { margin: 0; font-size: 21px; font-weight: 800; letter-spacing: -0.01em; }
+.stage { position: relative; height: 232px; background: var(--stage); border: 1px solid var(--line); border-radius: 16px; display: grid; place-items: center; }
+.stage .mood { position: absolute; left: 14px; bottom: 12px; font: 500 11px/1 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: #586774; }
+.stage .mood::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #9aa9b7; margin-right: 7px; vertical-align: 1px; }
+.stage[data-state="think"] .mood::before { background: #ef6a00; }
+.stage[data-state="talk"] .mood::before { background: #1b7a44; }
+.desc { margin: 0; font-size: 14px; line-height: 1.55; color: var(--muted); }
+.desc strong { color: var(--ink); font-weight: 700; }
+
+.moves { display: grid; grid-template-rows: repeat(3, 1fr); border-top: 1px solid var(--line); }
+.move { display: grid; grid-template-columns: 74px minmax(0, 1fr); gap: 10px; align-items: center; padding: 8px 8px; border: 0; border-bottom: 1px solid var(--line); background: transparent; text-align: left; cursor: pointer; font-size: 13px; color: var(--muted); border-radius: 0; transition: background-color .15s; }
+.move:hover { background: var(--tint); }
+.move span:first-child { font: 500 11px/1.4 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.move[aria-pressed="true"] { background: var(--tint); color: var(--ink); }
+.move[aria-pressed="true"] span:first-child { color: var(--ink); }
+
+.sizes { display: flex; align-items: flex-end; gap: 22px; padding: 14px 16px; background: var(--stage); border: 1px solid var(--line); border-radius: 14px; }
+.size { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.size span { font: 400 11px/1 var(--font-mono); color: #586774; }
+.size-note { margin-left: auto; align-self: center; font-size: 12px; color: #586774; text-align: right; }
+
+.chat { --av-brand: var(--brand-dark); background: var(--canvas-dark); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.chat-head { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 700; color: var(--chat-head); }
+.chat-msg { display: flex; align-items: flex-start; gap: 10px; }
+.chat-msg p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--chat-ink); min-height: 4.5em; }
+.chat-msg p.wait { color: var(--chat-quiet); font-weight: 600; }
+
+.foot { font-size: 13px; color: var(--muted); max-width: 70ch; margin: 0; }
+
+/* The pick from round 1 */
+.picked { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; margin-top: 6px; font: 500 11px/1 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); background: var(--tint); border-radius: 999px; padding: 5px 9px; }
+.opt.is-picked .stage { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+
+/* Round 2 */
+.round { display: flex; flex-direction: column; gap: 28px; padding-top: 40px; border-top: 1px solid var(--line); }
+.round h2.round-title { margin: 0; font-size: clamp(26px, 3.4vw, 32px); line-height: 1.1; font-weight: 800; letter-spacing: -0.02em; }
+.borrow { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.borrow span { display: inline-flex; align-items: center; gap: 6px; font: 500 11px/1 var(--font-mono); letter-spacing: 0.04em; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 3px 8px 3px 3px; background: var(--panel); }
+.borrow span.plain { padding-left: 8px; }
+.lineup { display: flex; flex-wrap: wrap; gap: 8px 28px; align-items: center; padding: 16px 20px; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; }
+.lineup-label { font: 500 11px/1.4 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-right: auto; }
+.lineup-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.lineup-item b { color: var(--ink); font-weight: 700; }
+@media (max-width: 760px) { .controls { position: static; margin-block: 0; padding-block: 0; } .lineup-label { flex-basis: 100%; } }
+
+@media (prefers-reduced-motion: reduce) { .move { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="top-text">
+      <p class="eyebrow">Assistant · Avatar</p>
+      <h1>Aristotle, narrowed down</h1>
+      <p class="lede">Each option keeps what works about the current face: two friendly eyes, a smile, flat shapes in the brand colour. Then it adds one piece of Aristotle. Ionic capital and Drachma are out, and their best ideas carry on in the bust variants below. Every option blinks, thinks and talks, and every colour comes from the palette, so they follow any theme.</p>
+    </div>
+    <div class="origin" id="origin"><div><b>Starting point</b>The current face. Friendly, but it could belong to any assistant.</div></div>
+  </header>
+
+  <div class="controls">
+    <div class="ctl"><span class="ctl-label" id="mood-label">Mood</span>
+      <div class="seg" id="mood" role="group" aria-labelledby="mood-label">
+        <button type="button" data-v="idle" aria-pressed="true">Idle</button>
+        <button type="button" data-v="think" aria-pressed="false">Thinking</button>
+        <button type="button" data-v="talk" aria-pressed="false">Talking</button>
+      </div>
+    </div>
+    <div class="ctl"><span class="ctl-label" id="pal-label">Palette</span>
+      <div class="seg" id="palette" role="group" aria-labelledby="pal-label">
+        <button type="button" data-v="navy" aria-pressed="true"><span class="swatch" style="background:#004c97"></span>Navy</button>
+        <button type="button" data-v="crimson" aria-pressed="false"><span class="swatch" style="background:#a30606"></span>Crimson</button>
+        <button type="button" data-v="teal" aria-pressed="false"><span class="swatch" style="background:#0f766e"></span>Teal</button>
+      </div>
+    </div>
+    <button type="button" class="play" id="play">
+      <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8z" fill="currentColor"/></svg>
+      Play a reply
+    </button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <p class="foot">The Marble bust has the most personality but loses its features below 24px, so it would need a simplified small version. The Bearded face is the safest step from what ships today. The greeting page uses the bust and its variants, so you can see them in context.</p>
+
+  <section class="round" aria-labelledby="r2-title">
+    <header class="top">
+      <div class="top-text">
+        <p class="eyebrow">Round 2 · Marble bust</p>
+        <h2 class="round-title" id="r2-title">The bust, two ways</h2>
+        <p class="lede">Each variant keeps the bust’s face: marble, curly beard, and the orange himation. Then it borrows an idea from the earlier Ionic capital or Drachma options. Both blink, tilt and nod like the bust, and the controls above change these too.</p>
+      </div>
+      <div class="origin" id="origin2"><div><b>Reference</b>Option C, the Marble bust, as picked from round 1.</div></div>
+    </header>
+    <div class="grid" id="grid2"></div>
+    <div class="lineup" id="lineup"><span class="lineup-label">At 24px, beside the reference</span></div>
+    <p class="foot">Like the bust, both variants soften below 24px, so whichever one is picked will need a simpler small-size version. The greeting page uses the bust and these two, so you can see them in the compact widget.</p>
+  </section>
+</div>
+
+<script src="avatars.js"></script>
+<script>
+(function () {
+  var OPTIONS = [
+    {
+      id: 'beard', letter: 'A', name: 'Bearded face',
+      desc: '<strong>The current face with Aristotle’s curly beard.</strong> The smallest change from what ships today, and it still reads at 16px.',
+      moves: { idle: 'Blinks', think: 'Glances up while the curls ripple', talk: 'Jaw and beard move with the words' },
+      note: 'Clear at all sizes'
+    },
+    {
+      id: 'bust', letter: 'C', name: 'Marble bust', picked: true,
+      desc: '<strong>A friendly portrait of the philosopher.</strong> Curly hair, a full beard and a himation over one shoulder in the accent colour. The most character of the first round.',
+      moves: { idle: 'Blinks', think: 'Tilts his head and raises his brows', talk: 'Nods along while speaking' },
+      note: 'Needs a simpler 16px version'
+    }
+  ];
+  var ROUND2 = [
+    {
+      id: 'curls', letter: 'C2', name: 'Volute curls', borrow: [{ id: 'ionic', name: 'Ionic capital' }],
+      desc: '<strong>The hair and beard are carved as Ionic volutes.</strong> Each curl is a small spiral, like the scrolls on a column, so the bust looks sculpted rather than drawn.',
+      moves: { idle: 'Blinks', think: 'The curls wind and unwind one by one', talk: 'Nods along while speaking' },
+      note: 'Spirals blur below 24px'
+    },
+    {
+      id: 'coinbust', letter: 'C4', name: 'Coin portrait', borrow: [{ id: 'drachma', name: 'Drachma' }],
+      desc: '<strong>The bust struck on a coin,</strong> facing you instead of in profile. It keeps the friendly face and adds the beaded rim and the money connection.',
+      moves: { idle: 'Blinks', think: 'Tilts his head and raises his brows', talk: 'Nods along while speaking' },
+      note: 'Face gets small at 16px'
+    }
+  ];
+  var MOOD_NAME = { idle: 'Idle', think: 'Thinking', talk: 'Talking' };
+  var PALETTES = {
+    navy: { brand: '#004c97', brandDark: '#3d7fc4', warm: '#ef6a00', canvasDark: '#04172a' },
+    crimson: { brand: '#a30606', brandDark: '#bc372c', warm: '#fdbf38', canvasDark: '#141110' },
+    teal: { brand: '#0f766e', brandDark: '#2a9d8f', warm: '#ef6a00', canvasDark: '#06201d' }
+  };
+  var REPLY = 'Good morning, Joe. Cash is up $182,400 since Friday, mostly from two customer receipts that landed this morning.';
+  var RESTING = 'Here is a straightforward way to think about it.';
+
+  function card(o, label) {
+    var borrow = o.borrow ? '<div class="borrow">' + o.borrow.map(function (b) {
+      return b.plain ? '<span class="plain">' + b.plain + '</span>' : '<span>' + Avatars.svg(b.id, { size: 16, state: 'idle' }) + 'From ' + b.name + '</span>';
+    }).join('') + '</div>' : '';
+    return '<article class="opt' + (o.picked ? ' is-picked' : '') + '" data-id="' + o.id + '" aria-labelledby="h-' + o.id + '">' +
+      '<div class="opt-head"><p class="eyebrow">' + label + ' ' + o.letter + '</p><h2 id="h-' + o.id + '">' + o.name + '</h2>' +
+      (o.picked ? '<span class="picked">Picked</span>' : '') + borrow + '</div>' +
+      '<div class="stage" data-state="idle">' + Avatars.svg(o.id, { size: 128, state: 'idle' }) + '<span class="mood">Idle</span></div>' +
+      '<p class="desc">' + o.desc + '</p>' +
+      '<div class="moves" role="group" aria-label="' + o.name + ' moods">' +
+      ['idle', 'think', 'talk'].map(function (m) {
+        return '<button type="button" class="move" data-v="' + m + '" aria-pressed="' + (m === 'idle') + '"><span>' + MOOD_NAME[m] + '</span><span>' + o.moves[m] + '</span></button>';
+      }).join('') + '</div>' +
+      '<div class="sizes">' + [40, 24, 16].map(function (s) {
+        return '<div class="size">' + Avatars.svg(o.id, { size: s, state: 'idle' }) + '<span>' + s + '</span></div>';
+      }).join('') + '<span class="size-note">' + o.note + '</span></div>' +
+      '<div class="chat"><div class="chat-head">' + Avatars.svg(o.id, { size: 24, state: 'idle' }) + 'Assistant</div>' +
+      '<div class="chat-msg">' + Avatars.svg(o.id, { size: 32, state: 'idle' }) + '<p>' + RESTING + '</p></div></div>' +
+      '</article>';
+  }
+  var grid = document.getElementById('grid'), grid2 = document.getElementById('grid2');
+  grid.innerHTML = OPTIONS.map(function (o) { return card(o, 'Option'); }).join('');
+  grid2.innerHTML = ROUND2.map(function (o) { return card(o, 'Variant'); }).join('');
+  document.getElementById('origin2').insertAdjacentHTML('afterbegin', Avatars.svg('bust', { size: 40, state: 'idle' }));
+  document.getElementById('lineup').insertAdjacentHTML('beforeend', [{ id: 'bust', name: 'Reference' }].concat(ROUND2).map(function (o) {
+    return '<span class="lineup-item">' + Avatars.svg(o.id, { size: 24, state: 'idle' }) + (o.letter ? '<b>' + o.letter + '</b>' : '<b>C</b>') + o.name + '</span>';
+  }).join(''));
+
+  document.getElementById('origin').insertAdjacentHTML('afterbegin', Avatars.svg('face', { size: 40, state: 'idle' }));
+
+  // Mood for one option: the stage, the chat avatars and the pressed row follow it.
+  function setMood(card, mood) {
+    var stage = card.querySelector('.stage');
+    stage.setAttribute('data-state', mood);
+    stage.querySelector('.mood').textContent = MOOD_NAME[mood];
+    Avatars.setState(stage.querySelector('svg'), mood);
+    card.querySelectorAll('.chat svg').forEach(function (s) { Avatars.setState(s, mood); });
+    card.querySelectorAll('.move').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-v') === mood)); });
+  }
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.opt'));
+  var moodSeg = document.getElementById('mood');
+  function pressSeg(seg, v) { seg.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-v') === v)); }); }
+
+  var run = 0;
+  function stopReply() {
+    run++;
+    document.getElementById('play').disabled = false;
+    cards.forEach(function (c) { var p = c.querySelector('.chat-msg p'); p.textContent = RESTING; p.classList.remove('wait'); });
+  }
+
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.move');
+    if (!b) return;
+    stopReply();
+    setMood(b.closest('.opt'), b.getAttribute('data-v'));
+    pressSeg(moodSeg, null);
+  });
+  moodSeg.addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (!b) return;
+    stopReply();
+    pressSeg(moodSeg, b.getAttribute('data-v'));
+    cards.forEach(function (c) { setMood(c, b.getAttribute('data-v')); });
+  });
+
+  var palSeg = document.getElementById('palette');
+  function applyPalette(name) {
+    var p = PALETTES[name] || PALETTES.navy, root = document.documentElement.style;
+    root.setProperty('--av-brand', p.brand);
+    root.setProperty('--brand-dark', p.brandDark);
+    root.setProperty('--av-warm', p.warm);
+    root.setProperty('--canvas-dark', p.canvasDark);
+    pressSeg(palSeg, name);
+  }
+  palSeg.addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (b) applyPalette(b.getAttribute('data-v'));
+  });
+
+  // Think, then type a reply in every chat, then rest.
+  document.getElementById('play').addEventListener('click', function () {
+    var me = ++run, btn = this;
+    btn.disabled = true;
+    pressSeg(moodSeg, null);
+    cards.forEach(function (c) { setMood(c, 'think'); var p = c.querySelector('.chat-msg p'); p.textContent = 'Thinking it through…'; p.classList.add('wait'); });
+    setTimeout(function () {
+      if (me !== run) return;
+      var words = REPLY.split(' '), n = 0;
+      cards.forEach(function (c) { setMood(c, 'talk'); c.querySelector('.chat-msg p').classList.remove('wait'); });
+      (function step() {
+        if (me !== run) return;
+        n++;
+        cards.forEach(function (c) { c.querySelector('.chat-msg p').textContent = words.slice(0, n).join(' '); });
+        if (n < words.length) setTimeout(step, 90);
+        else setTimeout(function () {
+          if (me !== run) return;
+          cards.forEach(function (c) { setMood(c, 'idle'); });
+          pressSeg(moodSeg, 'idle');
+          btn.disabled = false;
+        }, 300);
+      })();
+    }, 2400);
+  });
+})();
+</script>
+
+</body></html>

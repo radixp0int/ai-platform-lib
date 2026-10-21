@@ -1,14 +1,43 @@
 import { expect, test } from '../../../../tests/story'
 
 test.describe('Conversation', () => {
-  test('empty, it greets and offers suggestions above a centred composer', async ({
+  test('empty, it greets, then the composer, then the suggestions', async ({ story, page }) => {
+    await story.open('chat-components-conversation--empty')
+    const heading = page.getByRole('heading', { name: 'Good morning, Joe' })
+    const box = page.getByRole('textbox', { name: 'Message Acme' })
+    const rows = page.getByRole('region', { name: 'Suggested for today' })
+    await expect(heading).toBeVisible()
+    const [h, b, r] = await Promise.all(
+      [heading, box, rows].map(async (l) => (await l.boundingBox())!),
+    )
+    expect(b.y).toBeGreaterThan(h.y)
+    expect(r.y).toBeGreaterThan(b.y)
+  })
+
+  test('the assistant types the first suggestion, and its row lights up', async ({
     story,
     page,
   }) => {
     await story.open('chat-components-conversation--empty')
-    await expect(page.getByRole('heading', { name: 'Good morning, Joe' })).toBeVisible()
+    await expect(page.locator('[data-ghost-prompt]')).toHaveText(
+      'What changed in our cash position since Friday?',
+    )
+    await expect(
+      page.getByRole('region', { name: 'Suggested for today' }).locator('[data-active]'),
+    ).toHaveAccessibleName(/^What changed in our cash position since Friday\?/)
+  })
+
+  test('Tab takes the suggestion without sending it', async ({ story, page }) => {
+    await story.open('chat-components-conversation--empty')
+    await expect(page.getByText('Tab to use', { exact: true })).toBeVisible()
+    const box = page.getByRole('textbox', { name: 'Message Acme' })
+    await box.focus()
+    await box.press('Tab')
+    await expect(box).toHaveValue('What changed in our cash position since Friday?')
     await expect(page.getByRole('region', { name: 'Suggested for today' })).toBeVisible()
-    await expect(page.getByRole('textbox', { name: 'Message Acme' })).toBeVisible()
+    await expect(
+      page.getByRole('region', { name: 'Suggested for today' }).locator('[data-active]'),
+    ).toHaveCount(0)
   })
 
   test('asking a question starts the transcript and docks the composer', async ({

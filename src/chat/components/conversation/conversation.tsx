@@ -1,16 +1,23 @@
-import { useMemo, useRef } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useStickToBottom } from '../../../hooks/useStickToBottom'
 import { ScrollToBottomButton } from '../../../primitives/scroll-to-bottom-button'
 import { type ChainControls } from '../../engine/types'
+import { AssistantAvatar } from '../assistant-avatar'
 import { ChatMessage } from '../chat-message'
-import { Composer } from '../composer'
+import { Composer, useGhostPrompt } from '../composer'
 import { QueueDock, QueueDraft, type QueueDockHandle } from '../queue-dock'
 import { SuggestedQuestions } from '../suggestions'
 import type { ConversationProps } from './types'
 
+/** How many of today's suggestions the empty state offers, as rows and as ghost text. */
+const EMPTY_SUGGESTIONS = 4
+
 /**
  * The center column: the greeting hero before the first message, the message
  * list after, and the composer — centered at first, then docked to the bottom.
+ *
+ * Before the first message the assistant types today's suggestions into the
+ * empty composer, one at a time, and the matching row below lights up with it.
  */
 export function Conversation({
   disclaimer,
@@ -57,6 +64,16 @@ export function Conversation({
 
   const queueOn = features.queue !== false
   const suggestOn = features.suggestions !== false
+
+  // The empty state's draft, so the ghost prompt steps aside the moment the
+  // reader starts writing their own question.
+  const [emptyDraft, setEmptyDraft] = useState('')
+  const ghostItems = useMemo(
+    () => suggestions.slice(0, EMPTY_SUGGESTIONS).map((s) => s.text),
+    [suggestions],
+  )
+  const ghost = useGhostPrompt({ items: ghostItems, enabled: !inChat && emptyDraft === '' })
+
   // Running a chain puts its first question on screen, so bring it into view.
   const chainControls = useMemo<ChainControls>(
     () => ({
@@ -73,6 +90,12 @@ export function Conversation({
     <Composer
       docked={docked}
       onDraftChange={onDraftChange}
+      ghostPrompt={docked ? undefined : ghost}
+      leading={
+        docked ? undefined : (
+          <AssistantAvatar size={28} state={ghost.speaking ? 'talking' : 'idle'} />
+        )
+      }
       streaming={busy}
       onStop={onStop}
       onSubmit={(text, opts) => {
@@ -142,9 +165,14 @@ export function Conversation({
               /* my-auto centers when there is room, without clipping on short viewports */
               <div className="my-auto py-8">
                 {greeting}
-                <div className="mt-9 mb-8 flex flex-col gap-4">
-                  <SuggestedQuestions suggestions={suggestions} onPick={submit} />
-                  {composer(false)}
+                <div className="mt-8 mb-8 flex flex-col gap-7">
+                  {composer(false, setEmptyDraft)}
+                  <SuggestedQuestions
+                    suggestions={suggestions}
+                    onPick={submit}
+                    limit={EMPTY_SUGGESTIONS}
+                    activeIndex={ghost.index}
+                  />
                 </div>
               </div>
             )}

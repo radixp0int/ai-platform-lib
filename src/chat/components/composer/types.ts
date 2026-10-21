@@ -1,4 +1,6 @@
+import type { ReactNode } from 'react'
 import type { ChainControls, Suggestion } from '../../engine/types'
+import type { GhostPrompt } from './use-ghost-prompt'
 
 export type ComposerProps = {
   docked: boolean
@@ -29,4 +31,14 @@ export type ComposerProps = {
   /** Called with the draft on every change, so the queue dock can show where
    *  it will land. Omitted, nothing watches the draft. */
   onDraftChange?: (text: string) => void
+  /**
+   * The assistant typing a suggested question into the empty box, from
+   * `useGhostPrompt`. Shown in place of the placeholder while the draft is
+   * empty; once the whole question is there, Tab or → puts it in the draft.
+   * Omitted, the box shows its usual placeholder.
+   */
+  ghostPrompt?: Pick<GhostPrompt, 'text' | 'full' | 'accept'>
+  /** Drawn at the start of the text line — the assistant's mark, beside the
+   *  question it is typing. */
+  leading?: ReactNode
 }
