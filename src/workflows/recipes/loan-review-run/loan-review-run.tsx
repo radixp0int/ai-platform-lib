@@ -25,7 +25,7 @@ import { StageInspector } from '../../components/stage-inspector'
 import { StepDetail } from '../../components/step-detail'
 import { StepInspector } from '../../components/step-inspector'
 import { EDGE_TOKENS, WorkflowCanvas } from '../../components/workflow-canvas'
-import { useRun, type Decision, type RunSource } from '../../engine/index'
+import { resolveStepIO, useRun, type Decision, type RunSource } from '../../engine/index'
 import type { RunDetail } from '../../engine/wireProtocol'
 import { WorkflowSkeleton } from '../loading-skeleton'
 
@@ -272,6 +272,12 @@ export function WorkflowDemoPage({
     () => (selectedStage ? (graph?.steps.filter((s) => s.stageId === selectedStage.id) ?? []) : []),
     [selectedStage, graph],
   )
+  /* Resolved here rather than in the panel, so the panel stays a view of what
+     it is given: an input's value is a fact about the whole run, not the step. */
+  const selectedIO = useMemo(
+    () => (graph && selectedId ? resolveStepIO(graph, statuses, selectedId) : null),
+    [graph, statuses, selectedId],
+  )
 
   const onDecide = useCallback(
     (decision: Decision, note?: string) => {
@@ -327,6 +333,7 @@ export function WorkflowDemoPage({
     <StepInspector
       step={selectedStep}
       status={selectedId ? statuses[selectedId] : undefined}
+      io={selectedIO}
       decisions={(selectedId && decisionsFor[selectedId]) || []}
       busy={busyStepId === selectedId}
       onClose={() => {
@@ -421,6 +428,7 @@ export function WorkflowDemoPage({
           <StepDetail
             step={selectedStep}
             status={selectedId ? statuses[selectedId] : undefined}
+            io={selectedIO}
             runTitle={graph.title}
             next={nextSteps}
             decisions={(selectedId && decisionsFor[selectedId]) || []}

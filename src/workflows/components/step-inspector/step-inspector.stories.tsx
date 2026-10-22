@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { fn } from 'storybook/test'
-import { APPROVAL } from '../../fixtures/storyRun'
+import { APPROVAL, APPROVAL_IO } from '../../fixtures/storyRun'
 import { StepInspector } from './step-inspector'
 const meta = {
   title: 'Workflows/Components/Step inspector',
@@ -16,6 +16,7 @@ const meta = {
   args: {
     step: APPROVAL,
     status: 'waiting',
+    io: APPROVAL_IO,
     decisions: ['approved', 'changes', 'declined'],
     busy: false,
     onClose: fn(),
