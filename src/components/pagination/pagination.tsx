@@ -93,7 +93,7 @@ export function Pagination({
                 id={sizeId}
                 size="sm"
                 value={size}
-                onChange={(e) => onSizeChange(Number(e.target.value))}
+                onChange={(next) => onSizeChange(Number(next))}
                 options={sizeOptions.map((n) => ({ value: n, label: String(n) }))}
               />
             </span>

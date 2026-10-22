@@ -86,8 +86,9 @@ describe('Pagination', () => {
     const onSizeChange = vi.fn()
     setup({ onSizeChange })
     const rows = screen.getByRole('combobox', { name: 'Rows' })
-    expect(rows).toHaveValue('10')
-    await userEvent.selectOptions(rows, '50')
+    expect(rows).toHaveTextContent('10')
+    await userEvent.click(rows)
+    await userEvent.click(screen.getByRole('option', { name: '50' }))
     expect(onSizeChange).toHaveBeenCalledExactlyOnceWith(50)
   })
 

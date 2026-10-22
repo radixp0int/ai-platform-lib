@@ -96,7 +96,7 @@ export const Editable: Story = {
             aria-label="Editable sides"
             size="sm"
             value={editable}
-            onChange={(e) => setEditable(e.target.value as DiffEditable)}
+            onChange={(next) => setEditable(next as DiffEditable)}
             options={[
               { value: 'none', label: 'None — read only' },
               { value: 'original', label: 'Original only' },
