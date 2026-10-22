@@ -257,7 +257,17 @@ export function createFixtureRunSource(
   }
   reset()
   return {
-    variants: [],
+    /* One variant, so the sidebar draws no switcher — but the page can still
+       find what this run asks for when it is started again. */
+    variants: [
+      {
+        id: script.id,
+        label: script.label,
+        blurb: script.blurb,
+        inputs: script.inputs,
+        outputs: script.outputs,
+      },
+    ],
     subscribe(listener) {
       listeners.add(listener)
       listener(snapshot())

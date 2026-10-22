@@ -1,5 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { useState } from 'react'
 import { AppShell } from '../../../recipes/app-shell'
+import { StartRunDialog } from '../../components/start-run-dialog'
+import { STARTABLE_WORKFLOWS } from '../../fixtures/runContracts'
 import { WORKFLOW_SUMMARIES } from '../../fixtures/workflowSummaries'
 import { WorkflowsTablePage } from './workflows-table'
 
@@ -44,3 +47,31 @@ export const InsideAppShell: Story = {
     />
   ),
 }
+
+/** "Start a workflow" opens the start form: pick a workflow, fill in what it asks for. */
+function WithStartForm() {
+  const [open, setOpen] = useState(false)
+  const [started, setStarted] = useState(false)
+  return (
+    <>
+      <WorkflowsTablePage
+        onStart={() => {
+          setStarted(false)
+          setOpen(true)
+        }}
+      />
+      {open && (
+        <StartRunDialog
+          open
+          onOpenChange={setOpen}
+          workflows={STARTABLE_WORKFLOWS}
+          started={started}
+          onStart={() => setStarted(true)}
+          onOpenRun={() => setOpen(false)}
+        />
+      )}
+    </>
+  )
+}
+
+export const StartAWorkflow: Story = { render: () => <WithStartForm /> }

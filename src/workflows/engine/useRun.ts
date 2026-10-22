@@ -24,7 +24,10 @@ export function useRun(source: RunSource) {
   )
 
   const control = useCallback((action: ControlAction) => source.control(action), [source])
-  const start = useCallback((variantId: string) => source.start(variantId), [source])
+  const start = useCallback(
+    (variantId: string, inputs?: Record<string, string>) => source.start(variantId, inputs),
+    [source],
+  )
 
   return { ...state, decide, control, start, variants: source.variants }
 }

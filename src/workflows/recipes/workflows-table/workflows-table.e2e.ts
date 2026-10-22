@@ -40,4 +40,14 @@ test.describe('WorkflowsTablePage', () => {
     await page.getByRole('option', { name: /Search for/ }).click()
     await expect(page.getByText('No workflows match')).toBeVisible()
   })
+
+  test('“Start a workflow” asks which, then what it needs', async ({ story, page }) => {
+    await story.open('workflows-recipes-workflows-table--start-a-workflow')
+    await page.getByRole('button', { name: 'Start a workflow' }).click()
+    const dialog = page.getByRole('dialog', { name: 'Start a workflow' })
+    await dialog.getByLabel('Workflow').selectOption('incident-triage')
+    await expect(dialog.getByLabel('Service')).toHaveValue('checkout-api')
+    await dialog.getByRole('button', { name: 'Start run' }).click()
+    await expect(page.getByRole('dialog', { name: 'Run started' })).toBeVisible()
+  })
 })
