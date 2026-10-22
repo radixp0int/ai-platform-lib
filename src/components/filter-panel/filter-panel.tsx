@@ -31,17 +31,16 @@ function OptionsField({ field, labels }: { field: OptionsFilterField; labels: Fi
         aria-labelledby={`${field.id}-label`}
         size="sm"
         value={value[0] ?? ''}
-        onChange={(e) => onChange(e.target.value ? [e.target.value] : [])}
+        onChange={(next) => onChange(next ? [String(next)] : [])}
         className="w-full"
-      >
-        <option value="">{field.emptyLabel ?? labels.any}</option>
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-            {o.count != null ? ` (${o.count.toLocaleString()})` : ''}
-          </option>
-        ))}
-      </Select>
+        options={[
+          { value: '', label: field.emptyLabel ?? labels.any },
+          ...options.map((o) => ({
+            value: o.value,
+            label: o.count != null ? `${o.label} (${o.count.toLocaleString()})` : o.label,
+          })),
+        ]}
+      />
     )
   }
 

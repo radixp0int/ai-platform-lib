@@ -30,7 +30,8 @@ test.describe('Pagination', () => {
   test('changing rows per page changes the range', async ({ story, page }) => {
     await story.open('components-pagination--default')
     const nav = page.getByRole('navigation', { name: 'Pagination' })
-    await nav.getByRole('combobox', { name: 'Rows' }).selectOption('25')
+    await nav.getByRole('combobox', { name: 'Rows' }).click()
+    await page.getByRole('option', { name: '25', exact: true }).click()
     await expect(nav).toContainText(/of 1,284/)
     await expect(nav).not.toContainText('41–50 of 1,284')
   })

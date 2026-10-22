@@ -82,7 +82,7 @@ export const Languages: Story = {
               aria-label="Language"
               size="sm"
               value={lang}
-              onChange={(e) => setLang(e.target.value as CodeLanguage)}
+              onChange={(next) => setLang(next as CodeLanguage)}
               options={LANGUAGES}
             />
             {(lang === 'json' || lang === 'csv' || lang === 'html') && (
