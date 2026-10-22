@@ -38,6 +38,27 @@ loan, loading, unavailable, and runs-list recipes show the surrounding screen
 states. The sibling `chat-interfaces` demo uses this library for its
 `/workflow-demo` and `/workflow-live` routes; those routes are not library APIs.
 
+## Inputs and outputs
+
+Every step can declare `io`: inputs that name where they come from (an earlier
+step's output, or the run's own inputs) and typed outputs that carry a value
+once produced. A workflow declares its start inputs and its outputs on
+`VariantInfo`; `run.start` carries the values the start form collected, and a
+snapshot restates them as `WireRun.inputs`.
+
+| Addition                          | Where                                                     |
+| --------------------------------- | --------------------------------------------------------- |
+| `WireStep.io`, `StepPatch.io`     | A step's inputs and outputs; a whole replacement on patch |
+| `WireRun.inputs`                  | The values the run was started with                       |
+| `VariantInfo.inputs` / `.outputs` | The start form's fields, and what the run hands back      |
+| `run.start` `inputs`              | The start form's values, by input name                    |
+| `run.error` `MISSING_INPUT`       | A required input was empty; `INVALID_INPUT` if unreadable |
+
+All of it is optional on read, so a server without it still works: no `io`
+means no I/O block, and no inputs means a workflow starts without a form.
+**These are wire changes:** `workflow-ws-server/src/types.ts` and
+`chat-workflow-mock-api` need the same types before they send any of it.
+
 ## Static incident and onboarding recipes
 
 | Recipe              | Run                                 | What it demonstrates                                                              |

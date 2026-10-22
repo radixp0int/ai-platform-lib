@@ -3,6 +3,41 @@
 Changes to the component library as seen from Storybook. Newest first. Each
 entry names the modules it touches so the sidebar entry is easy to find.
 
+## 2026-10-22 — Workflows: inputs and outputs
+
+- **Steps say what they read and produce.** The Step details panel and the
+  full-width step view show a step's **Inputs** (each with where it came from)
+  and **Outputs**, with this run's values. A value the run has not reached reads
+  "Not ready yet", "Waiting on this step", "Being produced" and so on, by
+  status. New component **`StepInputsOutputs`**; `StepInspector` and
+  `StepDetail` take an optional `io`.
+- **Starting a run asks for its inputs.** New **`RunInputsForm`** (one field per
+  input, by type; it will not submit with a required field empty) and
+  **`StartRunDialog`** (the form in a modal, with a workflow picker when there
+  is a choice, a refusal notice, and a "Run started" state). The run page's
+  workflow switcher goes through the form when a workflow asks for inputs.
+- **New component: `RunContract`,** a workflow's inputs (required or optional)
+  and outputs (and where each goes), for the workflow detail page.
+- **New component: `IoTypePill`,** the mono type tag beside a field's name.
+- **Engine: `resolveStepIO`, `validateIO`, `PENDING_OUTPUT`.** An input's value
+  is read off its source's output once that step is done, never stored twice.
+  `RunGraph` gains `io` and `inputs`; `StepChange` gains `io`;
+  `RunSource.start` and `useRun().start` take the start values.
+- **Wire protocol** (coordinate with `workflow-ws-server` and
+  `chat-workflow-mock-api`): `WireStep.io`, `StepPatch.io`, `WireRun.inputs`,
+  `VariantInfo.inputs`/`outputs`, `run.start` `inputs`, and the `IoType`,
+  `StepInput`, `StepOutput`, `RunInputSpec` and `RunOutputSpec` types. All
+  optional on read.
+- **Fixtures.** Every step of the loan, RFP, onboarding and incident runs has
+  I/O, written one line each way through the new `io()` helper; each run
+  declares its start inputs and outputs. The fixture source holds output values
+  back until a step finishes.
+- **Recipes:** a **Start a workflow** story on Workflows table.
+- **Tests.** Unit tests for `resolveStepIO`, `validateIO`, the reducer's `io`
+  patch, and the wiring of all four fixtures; browser tests for each new
+  component, the RFP run's panel before and after approval, and starting a
+  workflow from the table.
+
 ## 2026-10-21 — Chat: the humanized assistant, a marble bust
 
 - **The Marble bust won the avatar review.** The humanized assistant is
