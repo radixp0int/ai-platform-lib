@@ -37,7 +37,7 @@ async function open(id) {
   })
   page.on('pageerror', (error) => errors.push({ id, message: error.message }))
   await page.goto(`${base}/iframe.html?id=${id}&viewMode=story`)
-  await page.getByRole('button', { name: 'Normal', exact: true }).waitFor()
+  await page.locator('.react-flow').waitFor()
   await page.locator('.react-flow__node').first().waitFor()
   return page
 }

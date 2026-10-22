@@ -41,7 +41,7 @@ try {
     const errors = []
     page.on('pageerror', (error) => errors.push(error.message))
     await page.goto(`${base}/iframe.html?id=workflows-recipes-loan-review-run--run&viewMode=story`)
-    await page.getByRole('button', { name: 'Normal', exact: true }).waitFor()
+    await page.locator('.react-flow').waitFor()
     await page.locator('.react-flow__node').first().waitFor()
     await page.waitForTimeout(500)
     const canvas = await page.locator('.react-flow').boundingBox()
