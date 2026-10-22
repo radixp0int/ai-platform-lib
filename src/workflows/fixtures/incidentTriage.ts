@@ -10,8 +10,9 @@
 //  2. A status moving backwards. `verify` fails, then goes back to `running` for
 //     a retry, which smokes out anything that assumes progress is monotonic.
 
+import { io, PEOPLE } from './io-spec'
 import { work, type RunScript, type ScriptStep } from './script-types'
-import type { WireEdge, WireStep } from '../engine/wireProtocol'
+import type { StepIO, WireEdge, WireStep } from '../engine/wireProtocol'
 
 const steps: WireStep[] = [
   {
@@ -219,6 +220,42 @@ const steps: WireStep[] = [
   },
 ]
 
+/** What each step reads and produces. Output values appear as each step finishes. */
+const IO: Record<string, StepIO> = {
+  alert: io(
+    'service:text<run; severity:choice<run; alert:object<run',
+    'service:text=checkout-api; burn_rate:number=4.1×',
+  ),
+  page: io('service:text<alert; on_call:person<run', 'on_call:person=Sam Raines'),
+  metrics: io('service:text<alert', 'metrics:list=p99 and error rate'),
+  logs: io('service:text<alert', 'log_lines:list=312 errors'),
+  deploys: io('service:text<alert', 'deploys:list=2026.9.14-3'),
+  correlate: io(
+    'metrics:list<metrics; log_lines:list<logs; deploys:list<deploys',
+    'likely_cause:text=Deploy 2026.9.14-3; confidence:choice=High',
+  ),
+  canary: io('service:text<alert', 'probe:object=3 of 5 regions failing'),
+  traces: io('log_lines:list<logs', 'slow_span:text=payments.authorize'),
+  blast: io(
+    'likely_cause:text<correlate; probe:object<canary; slow_span:text<traces',
+    'affected:number=18% of checkouts; route:choice=Approve rollback',
+  ),
+  'rollback-approve': io(
+    'likely_cause:text<correlate; affected:number<blast',
+    'decision:choice=Approved',
+  ),
+  'page-vendor': io('likely_cause:text<correlate', 'vendor_case:text'),
+  rollback: io(
+    'decision:choice<rollback-approve; deploys:list<deploys',
+    'rollback:object=Back on 2026.9.14-2',
+  ),
+  verify: io('service:text<alert', 'passed:boolean=5 of 5 regions'),
+  postmortem: io(
+    'likely_cause:text<correlate; rollback:object<rollback',
+    'postmortem:file=Draft, 4 follow-ups',
+  ),
+}
+
 const edges: WireEdge[] = [
   { from: 'alert', to: 'page', rule: 'feeds' },
   { from: 'page', to: 'metrics', rule: 'feeds' },
@@ -365,8 +402,51 @@ export const incidentTriage: RunScript = {
     { id: 'decide', name: 'Decide', sub: 'Not reached', status: 'upcoming' },
     { id: 'mitigate', name: 'Mitigate', sub: '3 steps', status: 'upcoming' },
   ],
-  steps,
+  steps: steps.map((s) => ({ ...s, io: IO[s.id] })),
   edges,
+  inputs: [
+    { name: 'service', type: 'text', required: true, description: 'The service that is failing.' },
+    {
+      name: 'severity',
+      type: 'choice',
+      required: true,
+      description: 'How bad it is. Sets who is paged.',
+      options: ['SEV-1', 'SEV-2', 'SEV-3'],
+    },
+    {
+      name: 'alert',
+      type: 'object',
+      required: false,
+      description: 'The alert that fired, if a monitor started it.',
+    },
+    {
+      name: 'on_call',
+      type: 'person',
+      required: false,
+      description: 'Leave empty to page the rotation.',
+      options: PEOPLE,
+    },
+  ],
+  outputs: [
+    { name: 'root_cause', type: 'text', description: 'What caused it.', goesTo: 'Postmortem' },
+    {
+      name: 'action_taken',
+      type: 'choice',
+      description: 'Rolled back, escalated or none.',
+      goesTo: 'Run history',
+    },
+    {
+      name: 'postmortem',
+      type: 'file',
+      description: 'The write-up and its follow-ups.',
+      goesTo: 'Incident review',
+    },
+  ],
+  defaultInputs: {
+    service: 'checkout-api',
+    severity: 'SEV-2',
+    alert: 'Latency SLO burn on checkout-api',
+  },
   initialStatuses: {
     alert: 'done',
     page: 'queued',

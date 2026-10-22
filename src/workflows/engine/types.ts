@@ -21,6 +21,7 @@ import type {
   RunDetail,
   RunHeader,
   RunPhase,
+  StepIO,
   VariantInfo,
 } from './wireProtocol'
 
@@ -49,6 +50,13 @@ export type RunGraph = {
   laneBottom: number
   focusStepId?: string
   /**
+   * Each step's inputs and outputs, by step id. Beside the steps rather than on
+   * them: the seeds are the canvas kit's type, and the kit never reads I/O.
+   */
+  io: Record<string, StepIO>
+  /** The values the run was started with, by input name. */
+  inputs: Record<string, string>
+  /**
    * Bumped only when the node set or their positions change — i.e. on a
    * snapshot, never on a status or detail patch. The canvas refits on this, and
    * refitting on every status change would yank the viewport out from under the
@@ -65,6 +73,8 @@ export type StepChange = {
   assignee?: string
   content?: StepContent
   detail?: RunDetail
+  /** A whole replacement, like `detail`. */
+  io?: StepIO
 }
 
 export type StageChange = { status?: StageStatus; sub?: string }
@@ -117,7 +127,8 @@ export type RunState = {
  */
 export type RunSource = {
   subscribe(listener: (event: RunEvent) => void): () => void
-  start(variantId: string): void
+  /** `inputs` are the start form's values, by input name. */
+  start(variantId: string, inputs?: Record<string, string>): void
   decide(stepId: string, decision: Decision, note?: string): void
   control(action: ControlAction): void
   /** Empty when there is nothing to switch between — the static source. */

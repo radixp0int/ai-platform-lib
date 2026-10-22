@@ -12,6 +12,8 @@ import type {
   RunActor,
   RunDetail,
   RunHeader,
+  RunInputSpec,
+  RunOutputSpec,
   VariantId,
   WireEdge,
   WireStage,
@@ -102,8 +104,18 @@ export type RunScript = {
   header: RunHeader
   actor: RunActor
   stages: WireStage[]
+  /**
+   * A step's `io` outputs carry the values it produces when it finishes. The
+   * runner holds them back until then, the way a server would.
+   */
   steps: WireStep[]
   edges: WireEdge[]
+  /** The start form's fields. */
+  inputs: RunInputSpec[]
+  /** What the run hands back when it ends. */
+  outputs: RunOutputSpec[]
+  /** What a story run is started with when nobody fills the form in. */
+  defaultInputs: Record<string, string>
   /** Where every step starts. Steps this run will never reach start `skipped`. */
   initialStatuses: Record<string, WireStepStatus>
   focusStepId?: string

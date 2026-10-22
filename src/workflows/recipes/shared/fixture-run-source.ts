@@ -3,7 +3,7 @@
 import { feeds, never } from '../../components'
 import { placeRun } from '../../engine/layout'
 import type { RunEvent, RunGraph, RunSource } from '../../engine/types'
-import type { Decision, LogEntry, WireRun, WireStepStatus } from '../../engine/wireProtocol'
+import type { Decision, LogEntry, StepIO, WireRun, WireStepStatus } from '../../engine/wireProtocol'
 import type { RunScript, ScriptStep, WorkStep } from '../../fixtures/script-types'
 
 type Gate = Extract<ScriptStep, { kind: 'gate' | 'gateAll' }>
@@ -13,6 +13,20 @@ export type FixtureRunOptions = {
   stopAt?: { stepId: string; status: WireStepStatus }
 }
 const START = Date.parse('2026-10-04T10:00:00Z')
+
+/** The statuses at which a step's outputs exist. Mirrors `resolveStepIO`. */
+const PRODUCES = new Set<WireStepStatus>(['done', 'approved'])
+
+/** A step's I/O with its output values in or out, by whether it has produced them. */
+function ioAt(authored: StepIO, status: WireStepStatus): StepIO {
+  const produced = PRODUCES.has(status)
+  return {
+    inputs: authored.inputs,
+    outputs: authored.outputs.map(({ value, ...output }) =>
+      produced && value !== undefined ? { ...output, value } : output,
+    ),
+  }
+}
 
 export function createFixtureRunSource(
   script: RunScript,
@@ -28,6 +42,12 @@ export function createFixtureRunSource(
   let stopped = false
   let paused = false
   let layout: ReturnType<typeof placeRun>
+  /** The run's start values. Kept across restarts; a new `start` replaces them. */
+  let inputs = { ...script.defaultInputs }
+  /** Each step's I/O as the script wrote it, values included. */
+  const authoredIO = new Map(
+    script.steps.flatMap((step) => (step.io ? [[step.id, step.io] as const] : [])),
+  )
 
   function addLog(level: LogEntry['level'], text: string, stepId?: string, source?: string) {
     log.push({
@@ -49,6 +69,8 @@ export function createFixtureRunSource(
     if (!step) throw new Error(`Unknown fixture step: ${stepId}`)
     run.statuses[stepId] = status
     Object.assign(step, patch)
+    const authored = authoredIO.get(stepId)
+    if (authored) step.io = ioAt(authored, status)
     if (options.stopAt?.stepId === stepId && options.stopAt.status === status) stopped = true
   }
   function finishWork(step: WorkStep, start: number) {
@@ -167,6 +189,11 @@ export function createFixtureRunSource(
       phase: 'running',
       awaiting: [],
       focusStepId: script.focusStepId,
+      inputs: { ...inputs },
+    }
+    for (const step of run.steps) {
+      const authored = authoredIO.get(step.id)
+      if (authored) step.io = ioAt(authored, run.statuses[step.id])
     }
     queue = copy.play
     pending = new Map()
@@ -191,6 +218,8 @@ export function createFixtureRunSource(
         content: current.content,
       }
     })
+    const io: Record<string, StepIO> = {}
+    for (const step of run.steps) if (step.io) io[step.id] = step.io
     const graph: RunGraph = {
       lanes: layout.lanes,
       laneTop: layout.laneTop,
@@ -209,6 +238,8 @@ export function createFixtureRunSource(
         state: rule === 'never' ? never : feeds(to),
       })),
       focusStepId: run.focusStepId,
+      io,
+      inputs: { ...run.inputs },
       epoch,
     }
     return {
@@ -233,7 +264,8 @@ export function createFixtureRunSource(
       listener({ type: 'connection', state: 'open' })
       return () => listeners.delete(listener)
     },
-    start() {
+    start(_variantId, given) {
+      if (given) inputs = { ...given }
       reset()
       publish()
     },

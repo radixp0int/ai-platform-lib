@@ -10,8 +10,9 @@
 //  2. Two approvals open together. "Needs you" reads 2, the sidebar lists both,
 //     and neither can be the one hardcoded step the old page looked for.
 
+import { io, PEOPLE } from './io-spec'
 import { work, type RunScript, type ScriptStep } from './script-types'
-import type { WireEdge, WireStep } from '../engine/wireProtocol'
+import type { StepIO, WireEdge, WireStep } from '../engine/wireProtocol'
 
 const steps: WireStep[] = [
   {
@@ -241,6 +242,38 @@ const steps: WireStep[] = [
   },
 ]
 
+/** What each step reads and produces. Output values appear as each step finishes. */
+const IO: Record<string, StepIO> = {
+  signed: io(
+    'new_hire:text<run; role:choice<run; start_date:date<run',
+    'new_hire:text=Priya Raman; start_date:date=Mon 2 Nov; offer:file=Signed offer letter',
+  ),
+  hris: io('new_hire:text<signed; start_date:date<signed', 'employee_id:text=4471'),
+  okta: io('employee_id:text<hris; role:choice<run', 'username:text=praman'),
+  gsuite: io('employee_id:text<hris', 'mailbox:text=praman@alderfinch.com'),
+  slack: io('employee_id:text<hris', 'invite:object=6 channels'),
+  github: io('employee_id:text<hris; role:choice<run', 'membership:object=2 teams'),
+  laptop: io('employee_id:text<hris; role:choice<run; office:choice<run', 'order_id:text=IT-20931'),
+  badge: io(
+    'username:text<okta; start_date:date<signed; office:choice<run',
+    'badge_request:text=FAC-1180',
+  ),
+  payroll: io('employee_id:text<hris; mailbox:text<gsuite', 'payroll_id:text=P-4471'),
+  bgcheck: io('new_hire:text<signed; username:text<okta', 'report:file=1 exception to confirm'),
+  tier: io('role:choice<run; membership:object<github', 'tier:choice=Elevated'),
+  'manager-approve': io('tier:choice<tier; membership:object<github', 'decision:choice=Approved'),
+  'hr-approve': io('report:file<bgcheck', 'decision:choice=Approved'),
+  welcome: io(
+    'role:choice<run; manager:person<run; mailbox:text<gsuite',
+    'welcome_pack:file=First-week guide',
+  ),
+  calendar: io(
+    'start_date:date<signed; manager:person<run; welcome_pack:file<welcome',
+    'meetings:list=4 meetings',
+  ),
+  notify: io('welcome_pack:file<welcome; username:text<okta', 'messages:list=3 messages'),
+}
+
 const edges: WireEdge[] = [
   { from: 'signed', to: 'hris', rule: 'feeds' },
   ...['okta', 'gsuite', 'slack', 'github', 'laptop'].map(
@@ -369,8 +402,71 @@ export const onboarding: RunScript = {
     { id: 'approvals', name: 'Approvals', sub: 'Not reached', status: 'upcoming' },
     { id: 'dayone', name: 'Day one', sub: '3 steps', status: 'upcoming' },
   ],
-  steps,
+  steps: steps.map((s) => ({ ...s, io: IO[s.id] })),
   edges,
+  inputs: [
+    {
+      name: 'new_hire',
+      type: 'text',
+      required: true,
+      description: 'Their full name, as on the offer.',
+    },
+    {
+      name: 'role',
+      type: 'choice',
+      required: true,
+      description: 'Decides their accounts, equipment and access.',
+      options: ['Solutions engineer', 'Account executive', 'Analyst', 'Engineer'],
+    },
+    { name: 'start_date', type: 'date', required: true, description: 'Their first day.' },
+    {
+      name: 'manager',
+      type: 'person',
+      required: true,
+      description: 'Who approves elevated access and hosts day one.',
+      options: PEOPLE,
+    },
+    {
+      name: 'office',
+      type: 'choice',
+      required: true,
+      description: 'Where the laptop and badge go.',
+      options: ['London', 'New York', 'Remote'],
+    },
+  ],
+  outputs: [
+    {
+      name: 'accounts',
+      type: 'list',
+      description: 'Every account created for them.',
+      goesTo: 'Okta, Google, Slack, GitHub',
+    },
+    {
+      name: 'equipment_order',
+      type: 'object',
+      description: 'The laptop order and the badge request.',
+      goesTo: 'IT and Facilities',
+    },
+    {
+      name: 'access_tier',
+      type: 'choice',
+      description: 'The access they were given.',
+      goesTo: 'Okta',
+    },
+    {
+      name: 'welcome_pack',
+      type: 'file',
+      description: 'Their first-week guide.',
+      goesTo: 'New hire',
+    },
+  ],
+  defaultInputs: {
+    new_hire: 'Priya Raman',
+    role: 'Solutions engineer',
+    start_date: '2026-11-02',
+    manager: 'Rachel Okafor',
+    office: 'London',
+  },
   initialStatuses: {
     signed: 'done',
     hris: 'queued',

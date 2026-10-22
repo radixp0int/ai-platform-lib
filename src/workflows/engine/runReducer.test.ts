@@ -21,6 +21,10 @@ function graph(): RunGraph {
       { id: 'review', name: 'Review', sub: '3 steps', status: 'current' },
       { id: 'close', name: 'Close', sub: '1 step', status: 'upcoming' },
     ],
+    io: {
+      credit: { inputs: [], outputs: [{ name: 'score', type: 'number' }] },
+    },
+    inputs: {},
     epoch: 1,
   } as unknown as RunGraph
 }
@@ -149,6 +153,37 @@ describe('runReducer', () => {
         type: 'step',
         stepId: 'missing',
         change: { meta: 'nobody home' },
+      })
+      expect(after).toBe(before)
+    })
+
+    it('replaces a step’s I/O whole and leaves the steps alone, so nothing rebuilds', () => {
+      const before = run(snapshot())
+      const io = { inputs: [], outputs: [{ name: 'score', type: 'number' as const, value: '742' }] }
+      const after = runReducer(before, { type: 'step', stepId: 'credit', change: { io } })
+      expect(after.graph?.io.credit).toBe(io)
+      expect(after.graph?.steps).toBe(before.graph?.steps)
+      expect(after.graph?.epoch).toBe(before.graph?.epoch)
+      expect(after.statuses).toBe(before.statuses)
+    })
+
+    it('carries an I/O patch alongside a status change', () => {
+      const io = { inputs: [], outputs: [{ name: 'score', type: 'number' as const, value: '742' }] }
+      const state = run(snapshot(), {
+        type: 'step',
+        stepId: 'credit',
+        change: { status: 'done', io },
+      })
+      expect(state.statuses.credit).toBe('done')
+      expect(state.graph?.io.credit).toBe(io)
+    })
+
+    it('ignores an I/O patch for a step the graph does not have', () => {
+      const before = run(snapshot())
+      const after = runReducer(before, {
+        type: 'step',
+        stepId: 'nowhere',
+        change: { io: { inputs: [], outputs: [] } },
       })
       expect(after).toBe(before)
     })
