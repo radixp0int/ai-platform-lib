@@ -90,10 +90,12 @@ function InputFor(props: InputProps) {
       return (
         <Select
           {...common}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
+          value={value || null}
+          placeholder={spec.type === 'person' ? 'Choose a person' : 'Choose one'}
+          onChange={(next) => onChange(String(next))}
           options={[
-            { value: '', label: spec.type === 'person' ? 'Choose a person' : 'Choose one' },
+            // An optional choice has to be un-choosable, or picking one is final.
+            ...(spec.required ? [] : [{ value: '', label: 'None' }]),
             ...(spec.options ?? []).map((o) => ({ value: o, label: o })),
           ]}
         />

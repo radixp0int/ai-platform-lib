@@ -34,7 +34,7 @@ test.describe('RunInputsForm', () => {
     await expect(page.getByLabel('Term months')).toHaveAttribute('inputmode', 'numeric')
     await expect(page.getByLabel('Amount')).toHaveAttribute('inputmode', 'decimal')
     await expect(page.getByRole('combobox', { name: 'Severity' })).toBeVisible()
-    await expect(page.getByRole('combobox', { name: 'Reviewer' })).toContainText('Choose a person')
+    await expect(page.getByRole('combobox', { name: 'Reviewer' })).toHaveText('Choose a person')
     await expect(page.getByRole('switch', { name: 'Notify buyer' })).toBeVisible()
     await expect(page.getByLabel('Guarantors')).toHaveAttribute('placeholder', 'One per line')
   })

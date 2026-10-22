@@ -64,7 +64,7 @@ export function StartRunDialog({
               <Select
                 id={pickerId}
                 value={workflow?.id}
-                onChange={(e) => setPicked(e.target.value)}
+                onChange={(next) => setPicked(String(next))}
                 options={workflows.map((w) => ({ value: w.id, label: w.name }))}
               />
             </Field>
