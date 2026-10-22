@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { fn } from 'storybook/test'
-import { APPROVAL, STORY_RUN } from '../../fixtures/storyRun'
+import { APPROVAL, APPROVAL_IO, STORY_RUN } from '../../fixtures/storyRun'
 import { StepDetail } from './step-detail'
 const meta = {
   title: 'Workflows/Components/Step detail',
@@ -16,6 +16,7 @@ const meta = {
   args: {
     step: APPROVAL,
     status: 'waiting',
+    io: APPROVAL_IO,
     runTitle: STORY_RUN.graph.title,
     next: STORY_RUN.graph.steps.filter((s) => ['letter', 'notify'].includes(s.id)),
     decisions: ['approved', 'changes', 'declined'],

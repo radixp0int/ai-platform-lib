@@ -10,9 +10,11 @@
 //
 // Like the others it needs no server. It is authored here rather than copied
 // from the mock API, which does not have it yet.
+import { io, PEOPLE } from './io-spec'
 import { work, type RunScript, type ScriptStep } from './script-types'
 import type {
   RunDetail,
+  StepIO,
   WireEdge,
   WireStep,
   WireStepContent,
@@ -304,6 +306,48 @@ const steps: WireStep[] = [
   ),
 ]
 
+/** What each step reads and produces. Output values appear as each step finishes. */
+const IO: Record<string, StepIO> = {
+  received: io(
+    'rfp_document:file<run; buyer:text<run; due_date:date<run',
+    'rfp_document:file=Meridian_RFP_2026.pdf; buyer:text=Meridian Health; due_date:date=Fri 16 Oct',
+  ),
+  read: io('rfp_document:file<received', 'requirements:list=142 questions; scope:text=64 pages'),
+  fit: io(
+    'requirements:list<read; scope:text<read',
+    'fit_score:choice=Strong; risks:list=Hosting region',
+  ),
+  split: io('requirements:list<read', 'questions:list=142 in 6 groups'),
+  search: io('questions:list<split', 'matches:list=118 past answers'),
+  answers: io('questions:list<split; matches:list<search', 'answers:list=142 drafts'),
+  questionnaire: io(
+    'rfp_document:file<received; matches:list<search',
+    'security_pack:file=Security pack, 5 sections',
+  ),
+  vendor: io('buyer:text<received', 'risk_tier:choice=Low; findings:list=2 findings'),
+  price: io(
+    'scope:text<read; deal_estimate:money<run',
+    'price_table:object=3-year table; quote_total:money=$412,000',
+  ),
+  quote: io('scope:text<read; risk_tier:choice<vendor', 'quote_id:text=Q-88412'),
+  margin: io('deal_estimate:money<run; risk_tier:choice<vendor', 'margin:choice=Above the floor'),
+  size: io(
+    'quote_total:money<price; quote_id:text<quote; margin:choice<margin',
+    'route:choice=Review response',
+  ),
+  review: io(
+    'answers:list<answers; security_pack:file<questionnaire; price_table:object<price; findings:list<vendor',
+    'decision:choice=Approved',
+  ),
+  legal: io('price_table:object<price; contract_terms:file<run', 'decision:choice'),
+  assemble: io(
+    'answers:list<answers; price_table:object<price; security_pack:file<questionnaire',
+    'response_doc:file=38 pages',
+  ),
+  pdf: io('response_doc:file<assemble', 'response_pdf:file=Meridian_Response.pdf'),
+  submit: io('response_pdf:file<pdf', 'submission_receipt:object=Receipt MH-5521'),
+}
+
 const edges: WireEdge[] = (
   [
     ['received', 'read'],
@@ -378,8 +422,75 @@ export const rfpResponse: RunScript = {
     { id: 'assemble', name: 'Assemble', sub: '2 steps', status: 'upcoming' },
     { id: 'submit', name: 'Submit', sub: '1 step', status: 'upcoming' },
   ],
-  steps,
+  steps: steps.map((s) => ({ ...s, io: IO[s.id] })),
   edges,
+  inputs: [
+    {
+      name: 'rfp_document',
+      type: 'file',
+      required: true,
+      description: 'The RFP as the buyer sent it.',
+    },
+    { name: 'buyer', type: 'text', required: true, description: 'Who the response is for.' },
+    {
+      name: 'due_date',
+      type: 'date',
+      required: true,
+      description: 'When the buyer needs the response.',
+    },
+    {
+      name: 'deal_estimate',
+      type: 'money',
+      required: false,
+      description: 'A rough deal size, so pricing can start before review.',
+    },
+    {
+      name: 'contract_terms',
+      type: 'file',
+      required: false,
+      description: 'Only needed for deals over $1M, for Legal sign-off.',
+    },
+    {
+      name: 'reviewer',
+      type: 'person',
+      required: true,
+      description: 'Who reviews the response before it is sent.',
+      options: PEOPLE,
+    },
+  ],
+  outputs: [
+    {
+      name: 'response_pdf',
+      type: 'file',
+      description: 'The response exactly as submitted.',
+      goesTo: 'Buyer portal',
+    },
+    {
+      name: 'submission_receipt',
+      type: 'object',
+      description: 'Proof of when it was sent.',
+      goesTo: 'Run history',
+    },
+    {
+      name: 'price_table',
+      type: 'object',
+      description: 'The prices that were quoted.',
+      goesTo: 'CPQ',
+    },
+    {
+      name: 'decision',
+      type: 'choice',
+      description: 'Approved, sent back or declined at review.',
+      goesTo: 'Run history',
+    },
+  ],
+  defaultInputs: {
+    rfp_document: 'Meridian_RFP_2026.pdf',
+    buyer: 'Meridian Health',
+    due_date: '2026-10-16',
+    deal_estimate: '$400,000',
+    reviewer: 'Kofi Adeyemi',
+  },
   initialStatuses: {
     ...Object.fromEntries(steps.map((s) => [s.id, 'queued' as const])),
     received: 'done',

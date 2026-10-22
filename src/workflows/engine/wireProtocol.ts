@@ -92,6 +92,48 @@ export type WireStepContent = {
   note?: string
 }
 
+/** What a step or run input carries. Picks the start form's field and the type pill. */
+export type IoType =
+  | 'text'
+  | 'number'
+  | 'money'
+  | 'date'
+  | 'file'
+  | 'list'
+  | 'object'
+  | 'choice'
+  | 'person'
+  | 'boolean'
+
+/** Where an input comes from: an earlier step's output, or one of the run's own inputs. */
+export type IoSource = { step: string; output: string } | { run: string }
+
+/**
+ * An input never carries a value of its own. The client reads it off the source
+ * output once that step is done — the same rule statuses follow in
+ * workflowSummaries.ts — so a run cannot show an input that disagrees with the
+ * output it came from.
+ */
+export type StepInput = { name: string; type: IoType; from: IoSource }
+
+/** `value` is absent until the step produces it, and arrives in an `io` patch. */
+export type StepOutput = { name: string; type: IoType; value?: string }
+
+export type StepIO = { inputs: StepInput[]; outputs: StepOutput[] }
+
+/** One field of the start form. */
+export type RunInputSpec = {
+  name: string
+  type: IoType
+  required: boolean
+  description: string
+  /** The choices for `choice`; the people who can be picked for `person`. */
+  options?: string[]
+}
+
+/** What a run hands back when it ends, and where it goes. */
+export type RunOutputSpec = { name: string; type: IoType; description: string; goesTo: string }
+
 export type WireStep = {
   id: string
   kind: WireStepKind
@@ -118,6 +160,12 @@ export type WireStep = {
   /** Overrides the width the kind implies (NODE_W, or GATE_W for a decision). */
   w?: number
   detail: RunDetail
+  /**
+   * What the step reads and produces. Kept out of `detail` because the client
+   * resolves it across steps, and out of `content` because the canvas never
+   * draws it: only the panels do, so it cannot change a node's size.
+   */
+  io?: StepIO
 }
 
 export type WireStage = {
@@ -165,6 +213,12 @@ export type WireRun = {
   awaiting: OpenGate[]
   /** Which step to open in the inspector on arrival. */
   focusStepId?: string
+  /**
+   * The values this run was started with, by input name. State rather than only
+   * the `run.start` message, so a client attaching mid-run can still show what
+   * a `{ run }` input was given.
+   */
+  inputs?: Record<string, string>
 }
 
 export type LogEntry = {
@@ -182,11 +236,13 @@ export type LogEntry = {
 }
 
 /**
- * A patch to one step. `meta`, `detail` and `content` are whole replacements: `detail` is
- * opaque to the canvas, so merging into it would mean a deep merge for nothing.
+ * A patch to one step. `meta`, `detail`, `content` and `io` are whole replacements:
+ * `detail` is opaque to the canvas, so merging into it would mean a deep merge for
+ * nothing. A step that finishes sends `io` with its outputs' values filled in; a
+ * step sent back sends it again with them cleared.
  */
 export type StepPatch = Partial<
-  Pick<WireStep, 'meta' | 'statusLabel' | 'assignee' | 'detail' | 'content'>
+  Pick<WireStep, 'meta' | 'statusLabel' | 'assignee' | 'detail' | 'content' | 'io'>
 > & {
   status?: WireStepStatus
 }
@@ -215,11 +271,26 @@ export type ServerMessage =
 
 export type ControlAction = 'pause' | 'resume' | 'restart'
 
+/**
+ * `run.start` carries the start form's values by input name. A server that finds a
+ * required one missing answers with `run.error` code `MISSING_INPUT`, and one it
+ * cannot read with `INVALID_INPUT`; both are recoverable.
+ */
 export type ClientMessage =
-  | { type: 'run.start'; variantId: VariantId }
+  | { type: 'run.start'; variantId: VariantId; inputs?: Record<string, string> }
   | { type: 'run.attach'; runId: string }
   | { type: 'run.decide'; runId: string; stepId: string; decision: Decision; note?: string }
   | { type: 'run.control'; runId: string; action: ControlAction }
 
-/** What the variant switcher needs to draw a button. Rides on every snapshot. */
-export type VariantInfo = { id: VariantId; label: string; blurb: string }
+/**
+ * What the variant switcher needs to draw a button, and the start form to draw its
+ * fields. Rides on every snapshot, so the form exists before the run does. An older
+ * server sends neither list; read them as empty, and start without a form.
+ */
+export type VariantInfo = {
+  id: VariantId
+  label: string
+  blurb: string
+  inputs?: RunInputSpec[]
+  outputs?: RunOutputSpec[]
+}

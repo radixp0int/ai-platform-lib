@@ -12,7 +12,14 @@ import {
   type StatusMap,
   type StepSeed,
 } from '../components/index'
-import type { RunDetail } from '../engine/wireProtocol'
+import type {
+  RunDetail,
+  RunInputSpec,
+  RunOutputSpec,
+  StepIO,
+  StepOutput,
+} from '../engine/wireProtocol'
+import { io, PEOPLE } from './io-spec'
 
 /**
  * What this example puts in the detail panel. The canvas only carries it.
@@ -308,6 +315,110 @@ export const EDGE_SEEDS: EdgeSeed[] = [
   { from: 'letter', to: 'notify', state: feeds('notify') },
   { from: 'senior', to: 'letter', state: never },
   { from: 'approve', to: 'letter', state: feeds('letter') },
+]
+
+/** What the run was started with. */
+export const RUN_INPUT_SPECS: RunInputSpec[] = [
+  {
+    name: 'application',
+    type: 'file',
+    required: true,
+    description: 'The completed application and its documents.',
+  },
+  { name: 'applicant', type: 'text', required: true, description: 'The business applying.' },
+  { name: 'amount', type: 'money', required: true, description: 'How much they are asking for.' },
+  {
+    name: 'term_months',
+    type: 'number',
+    required: true,
+    description: 'The length of the loan, in months.',
+  },
+  {
+    name: 'guarantors',
+    type: 'list',
+    required: false,
+    description: 'Anyone guaranteeing the loan, one per line.',
+  },
+  {
+    name: 'analyst',
+    type: 'person',
+    required: true,
+    description: 'Who approves the credit memo.',
+    options: PEOPLE,
+  },
+]
+
+export const RUN_OUTPUT_SPECS: RunOutputSpec[] = [
+  {
+    name: 'credit_memo',
+    type: 'file',
+    description: 'The memo and its recommendation.',
+    goesTo: 'Loan file',
+  },
+  {
+    name: 'risk_grade',
+    type: 'number',
+    description: 'The grade from the risk model, 1 to 10.',
+    goesTo: 'Loan file',
+  },
+  {
+    name: 'decision',
+    type: 'choice',
+    description: 'Approved, sent back or declined.',
+    goesTo: 'Loan portal',
+  },
+  {
+    name: 'decision_letter',
+    type: 'file',
+    description: 'The letter sent to the applicant.',
+    goesTo: 'Applicant',
+  },
+]
+
+export const RUN_INPUTS: Record<string, string> = {
+  application: 'Harbor_Street_application.pdf',
+  applicant: 'Harbor Street Bakery LLC',
+  amount: '$450,000',
+  term_months: '84',
+  guarantors: 'Maria Okonjo\nDavid Okonjo',
+  analyst: 'Dana Whitfield',
+}
+
+/**
+ * Each step's inputs and outputs. Outputs carry values only where this run has
+ * produced them: everything up to the policy check.
+ */
+export const STEP_IO: Record<string, StepIO> = {
+  trigger: io(
+    'application:file<run; applicant:text<run; amount:money<run',
+    'application:file=6 documents; applicant:text=Harbor Street Bakery LLC; amount:money=$450,000',
+  ),
+  intake: io('application:file<trigger', 'fields:object=14 fields; owners:list=2 owners'),
+  bureau: io('fields:object<intake', 'credit_score:number=742; derogatories:list=None'),
+  spread: io('application:file<trigger', 'spread:object=3 years; dscr:number=1.38×'),
+  kyc: io('owners:list<intake', 'verified:boolean=2 of 2 owners'),
+  risk: io('credit_score:number<bureau; spread:object<spread', 'risk_grade:number=4 of 10'),
+  memo: io(
+    'spread:object<spread; dscr:number<spread; verified:boolean<kyc',
+    'credit_memo:file=7 pages; recommendation:choice=Approve with conditions',
+  ),
+  policy: io(
+    'amount:money<trigger; risk_grade:number<risk; credit_memo:file<memo',
+    'route:choice=Analyst approval; exceptions:list=1 exception',
+  ),
+  approve: io(
+    'credit_memo:file<memo; risk_grade:number<risk; exceptions:list<policy',
+    'decision:choice; conditions:text',
+  ),
+  senior: io('credit_memo:file<memo; exceptions:list<policy', 'decision:choice'),
+  letter: io('decision:choice<approve; conditions:text<approve', 'decision_letter:file'),
+  notify: io('decision_letter:file<letter', 'delivery_receipt:object'),
+}
+
+/** What the approval produces once it is given. */
+export const APPROVAL_OUTPUTS: StepOutput[] = [
+  { name: 'decision', type: 'choice', value: 'Approved' },
+  { name: 'conditions', type: 'text', value: 'Personal guarantee from both owners' },
 ]
 
 /** What the analyst's decision does to the rest of the run. */

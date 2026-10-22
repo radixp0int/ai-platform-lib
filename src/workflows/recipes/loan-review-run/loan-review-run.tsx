@@ -22,10 +22,11 @@ import { RunLog } from '../../components/run-log'
 import { RunSidebar, type NeedsItem } from '../../components/run-sidebar'
 import { RunTopBar } from '../../components/run-top-bar'
 import { StageInspector } from '../../components/stage-inspector'
+import { StartRunDialog } from '../../components/start-run-dialog'
 import { StepDetail } from '../../components/step-detail'
 import { StepInspector } from '../../components/step-inspector'
 import { EDGE_TOKENS, WorkflowCanvas } from '../../components/workflow-canvas'
-import { useRun, type Decision, type RunSource } from '../../engine/index'
+import { resolveStepIO, useRun, type Decision, type RunSource } from '../../engine/index'
 import type { RunDetail } from '../../engine/wireProtocol'
 import { WorkflowSkeleton } from '../loading-skeleton'
 
@@ -105,6 +106,9 @@ export function WorkflowDemoPage({
      a second id: it is always the step the panel is on, so the two can never
      disagree about what is being decided. */
   const [expanded, setExpanded] = useState(false)
+  /* The workflow whose start form is open. Switching to a workflow that asks
+     for inputs goes through its form; one that asks for nothing starts at once. */
+  const [startingId, setStartingId] = useState<string | null>(null)
 
   /* Which stages are drawn folded. The reader's own choice once they have made
      one; until then it follows `defaultFolds`. */
@@ -272,6 +276,22 @@ export function WorkflowDemoPage({
     () => (selectedStage ? (graph?.steps.filter((s) => s.stageId === selectedStage.id) ?? []) : []),
     [selectedStage, graph],
   )
+  /* Resolved here rather than in the panel, so the panel stays a view of what
+     it is given: an input's value is a fact about the whole run, not the step. */
+  const selectedIO = useMemo(
+    () => (graph && selectedId ? resolveStepIO(graph, statuses, selectedId) : null),
+    [graph, statuses, selectedId],
+  )
+
+  const onVariant = useCallback(
+    (variantId: string) => {
+      const variant = run.variants.find((v) => v.id === variantId)
+      if (variant?.inputs?.length) setStartingId(variantId)
+      else run.start(variantId)
+    },
+    [run],
+  )
+  const starting = startingId ? run.variants.find((v) => v.id === startingId) : undefined
 
   const onDecide = useCallback(
     (decision: Decision, note?: string) => {
@@ -297,7 +317,7 @@ export function WorkflowDemoPage({
       onSelectStage={selectStage}
       variants={run.variants}
       variantId={graph.variantId}
-      onVariant={run.start}
+      onVariant={onVariant}
       onOpenStep={openStepFromSidebar}
       selectedStepId={selectedId}
       onCollapse={() => {
@@ -327,6 +347,7 @@ export function WorkflowDemoPage({
     <StepInspector
       step={selectedStep}
       status={selectedId ? statuses[selectedId] : undefined}
+      io={selectedIO}
       decisions={(selectedId && decisionsFor[selectedId]) || []}
       busy={busyStepId === selectedId}
       onClose={() => {
@@ -421,12 +442,25 @@ export function WorkflowDemoPage({
           <StepDetail
             step={selectedStep}
             status={selectedId ? statuses[selectedId] : undefined}
+            io={selectedIO}
             runTitle={graph.title}
             next={nextSteps}
             decisions={(selectedId && decisionsFor[selectedId]) || []}
             busy={busyStepId === selectedId}
             onClose={() => setExpanded(false)}
             onDecide={onDecide}
+          />
+        )}
+
+        {starting && (
+          <StartRunDialog
+            open
+            onOpenChange={(open) => !open && setStartingId(null)}
+            workflows={[{ id: starting.id, name: starting.label, inputs: starting.inputs ?? [] }]}
+            onStart={(id, values) => {
+              setStartingId(null)
+              run.start(id, values)
+            }}
           />
         )}
 

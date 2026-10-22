@@ -19,10 +19,12 @@ import { PolicyException } from '../policy-exception'
 import { Recommendation } from '../recommendation'
 import { StepBadges } from '../step-badges'
 import { StepDetails } from '../step-details'
+import { StepInputsOutputs } from '../step-inputs-outputs'
 
 export function StepInspector({
   step,
   status,
+  io,
   decisions,
   busy,
   onClose,
@@ -68,6 +70,9 @@ export function StepInspector({
           <p className="text-[13px] leading-[21px] text-pretty text-ink-soft">{detail.summary}</p>
         </div>
 
+        {/* Before the details: what a step works from is the first thing to
+            check its result against. */}
+        {io && <StepInputsOutputs io={io} />}
         <StepDetails step={step} />
         {detail.recommendation && <Recommendation rec={detail.recommendation} />}
         {detail.exception && <PolicyException exc={detail.exception} />}

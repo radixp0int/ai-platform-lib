@@ -73,6 +73,8 @@ function toGraph(run: WireRun, epoch: number): RunGraph {
     laneTop,
     laneBottom,
     focusStepId: run.focusStepId,
+    io: Object.fromEntries(run.steps.flatMap((s) => (s.io ? [[s.id, s.io]] : []))),
+    inputs: run.inputs ?? {},
     epoch,
   }
 }
@@ -268,14 +270,14 @@ export function createWsRunSource(url: string): RunSource {
       }
     },
 
-    start(variantId) {
+    start(variantId, inputs) {
       wantedVariant = variantId
       remember(VARIANT_KEY, variantId)
       // A new variant is a new run, so the old id must not be resumed.
       runId = null
       remember(RUN_ID_KEY, null)
       lastSeq = -1
-      send({ type: 'run.start', variantId: variantId as never })
+      send({ type: 'run.start', variantId: variantId as never, inputs })
     },
 
     decide(stepId, decision: Decision, note) {
