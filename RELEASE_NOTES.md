@@ -3,6 +3,26 @@
 Changes to the component library as seen from Storybook. Newest first. Each
 entry names the modules it touches so the sidebar entry is easy to find.
 
+## 2026-10-22 — One side menu: the run outline moves into it
+
+- **The live run page no longer has a side panel of its own.** Its run card,
+  workflow picker, stages and "Needs you" are now a **This run** section of the
+  platform's side menu, under the destinations, so the page uses the same menu
+  as every other. Folded to the rail, the section is the stage markers and a
+  badge for what needs you. The shell docks the menu on workflow pages (they
+  are no longer in its `FOCUSED` list) and starts it folded below 1280px.
+- **`SideMenu` takes a page's own section.** New **`InSideMenu`** (children for
+  the expanded menu, `rail` for the rail) and **`SideMenuSlotProvider`**; the
+  section is a portal, so it keeps the page's state. `AppShell` provides the
+  slot. `MenuBadge` is now exported.
+- **Breaking for hosts:** `RunSidebar` is gone, replaced by **`RunOutline`** and
+  **`RunOutlineRail`** (no `appName`, no `onCollapse`). `WorkflowDemoPage` has to
+  sit inside a `SideMenuSlotProvider` to show its outline, which `AppShell` is.
+  `RunTopBar` loses `runPanelOpen` and `onShowRunPanel`: the menu's own button
+  folds and opens it. The tablet "Run outline" dialog is gone with it.
+- **Stories:** the whole-run stories now render inside the shell
+  (`InAppShell`), so the outline has a menu to be drawn in.
+
 ## 2026-10-22 — Workflows: inputs and outputs
 
 - **Steps say what they read and produce.** The Step details panel and the

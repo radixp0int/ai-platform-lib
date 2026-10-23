@@ -1,3 +1,6 @@
 export { SideMenu } from './side-menu'
 export { flattenMenu, matchDestination, parentOf } from './menu'
 export type { MenuDestination, MenuSection, SideMenuMode, SideMenuProps } from './types'
+export { InSideMenu, SideMenuSlotProvider } from './slot'
+export type { InSideMenuProps } from './slot'
+export { MenuBadge } from './menu-badge'

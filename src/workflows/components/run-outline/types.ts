@@ -1,10 +1,11 @@
 import type { RunHeader, VariantInfo } from '../../engine/wireProtocol'
 import type { StageSeed } from '../index'
 import type { RecentRun } from '../recent-runs'
-import type { NeedsItem } from './run-sidebar'
 
-export type RunSidebarProps = {
-  appName: string
+/** One thing a person has to decide, resolved by the host from the statuses. */
+export type NeedsItem = { stepId: string; title: string; sub: string }
+
+export type RunOutlineProps = {
   header: RunHeader
   stages: StageSeed[]
   needs: NeedsItem[]
@@ -18,7 +19,6 @@ export type RunSidebarProps = {
   onOpenStep: (id: string) => void
   /** The step being looked at, if any — mirrors `selectedStageId` above. */
   selectedStepId: string | null
-  onCollapse: () => void
   /**
    * Stages the canvas is drawing folded. Supplying `onToggleFold` puts an eye on
    * every stage row: open means the stage is drawn in full.
@@ -26,7 +26,7 @@ export type RunSidebarProps = {
   foldedStageIds?: readonly string[]
   onToggleFold?: (id: string) => void
   /**
-   * Other runs to switch to. Supplying this splits the panel into two tabs,
+   * Other runs to switch to. Supplying this splits the section into two tabs,
    * Stages and Recent, so neither list has to be cut short for the other.
    */
   recent?: RecentRun[]
@@ -34,3 +34,9 @@ export type RunSidebarProps = {
   activeRecentId?: string | null
   onOpenRecent?: (id: string) => void
 }
+
+/** What the rail can say of a run: where it is, and that something is waiting. */
+export type RunOutlineRailProps = Pick<
+  RunOutlineProps,
+  'stages' | 'needs' | 'selectedStageId' | 'onSelectStage' | 'onOpenStep' | 'selectedStepId'
+>

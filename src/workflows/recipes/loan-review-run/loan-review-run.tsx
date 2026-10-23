@@ -1,9 +1,9 @@
 import { RunUnavailable } from '../run-unavailable'
 // Multi-step agentic workflow with a human in the loop.
 //
-// Three panels plus a log drawer: the run outline on the left, the graph in the
-// middle, the selected step on the right, and what the backend is doing
-// underneath. Any stage can be folded to its bars, and a long run opens with the
+// The graph in the middle, the selected step on the right, and what the backend
+// is doing underneath. The run outline is not a panel here: it is a section of
+// the platform's side menu, which this page adds to with `InSideMenu`. Any stage can be folded to its bars, and a long run opens with the
 // stages away from the action already folded — see docs/workflows/design.md
 // for why, for the zoom tiers, and for the source seam this page sits on.
 //
@@ -15,11 +15,12 @@ import { RunUnavailable } from '../run-unavailable'
 import { ReactFlowProvider } from '@xyflow/react'
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { CollapsiblePanel } from '../../../components/collapsible-panel'
+import { InSideMenu } from '../../../components/side-menu'
 import { AmbientGlow } from '../../../primitives/ambient-glow'
 import { Modal } from '../../../primitives/modal'
 import type { RecentRun, StageSeed, StepSeed } from '../../components/index'
 import { RunLog } from '../../components/run-log'
-import { RunSidebar, type NeedsItem } from '../../components/run-sidebar'
+import { RunOutline, RunOutlineRail, type NeedsItem } from '../../components/run-outline'
 import { RunTopBar } from '../../components/run-top-bar'
 import { StageInspector } from '../../components/stage-inspector'
 import { StartRunDialog } from '../../components/start-run-dialog'
@@ -60,7 +61,7 @@ function defaultFolds(stages: StageSeed[]): string[] {
 
 export type WorkflowDemoPageProps = {
   source: RunSource
-  /** Other runs to switch to from the left panel's Recent tab. */
+  /** Other runs to switch to from the menu's Recent tab. */
   recent?: RecentRun[]
   /** Which of `recent` this page is showing. */
   activeRecentId?: string | null
@@ -80,7 +81,7 @@ export function WorkflowDemoPage({
   folds = 'auto',
 }: WorkflowDemoPageProps) {
   const tablet = useSyncExternalStore(subscribeTablet, isTablet, () => false)
-  const [tabletPanel, setTabletPanel] = useState<'run' | 'details' | null>(null)
+  const [tabletDetails, setTabletDetails] = useState(false)
   const run = useRun(source)
   const { graph, statuses, phase, awaiting, decisionsFor, busyStepId } = run
 
@@ -99,7 +100,6 @@ export function WorkflowDemoPage({
      click, which resets React Flow's measurements and delayed — sometimes
      swallowed — the fit that click asked for. */
   const [panelShows, setPanelShows] = useState<'step' | 'stage'>('step')
-  const [runPanelOpen, setRunPanelOpen] = useState(true)
   const [detailsOpen, setDetailsOpen] = useState(true)
   const [logOpen, setLogOpen] = useState(false)
   /* The selected step, shown as a page instead of in the panel. A boolean, not
@@ -134,19 +134,19 @@ export function WorkflowDemoPage({
       setExpanded(false)
       if (id) {
         setDetailsOpen(true)
-        setTabletPanel('details')
+        setTabletDetails(true)
       }
     },
     [stageOf],
   )
 
-  /* Opening a step from the sidebar also frames its stage. `selectStep` on its
+  /* Opening a step from the menu also frames its stage. `selectStep` on its
      own deliberately does not — a live run moves the selection by itself, and
      framing on every selection change would yank the viewport several times a
      second (see `stageFocusSeq` in WorkflowCanvas). But a click in "Needs you"
      is a deliberate act, exactly like a click on a stage row, so it gets the
      same treatment: the stage lights up AND the canvas goes there. */
-  const openStepFromSidebar = useCallback(
+  const openStepFromOutline = useCallback(
     (id: string) => {
       selectStep(id)
       setStageFocusSeq((n) => n + 1)
@@ -164,7 +164,7 @@ export function WorkflowDemoPage({
       const next = selectedStageId === id ? null : id
       setSelectedStageId(next)
       setPanelShows(next ? 'stage' : 'step')
-      setTabletPanel('details')
+      setTabletDetails(true)
       setUserPicked(true)
       setStageFocusSeq((n) => n + 1)
       setExpanded(false)
@@ -307,30 +307,14 @@ export function WorkflowDemoPage({
     return run.error ? <RunUnavailable message={run.error.message} /> : <WorkflowSkeleton />
   }
 
-  const sidebar = (
-    <RunSidebar
-      appName="Acme"
-      header={graph.header}
-      stages={graph.stages}
-      needs={needs}
-      selectedStageId={selectedStageId}
-      onSelectStage={selectStage}
-      variants={run.variants}
-      variantId={graph.variantId}
-      onVariant={onVariant}
-      onOpenStep={openStepFromSidebar}
-      selectedStepId={selectedId}
-      onCollapse={() => {
-        setRunPanelOpen(false)
-        setTabletPanel(null)
-      }}
-      foldedStageIds={foldedStageIds}
-      onToggleFold={toggleFold}
-      recent={recent}
-      activeRecentId={activeRecentId}
-      onOpenRecent={onOpenRecent}
-    />
-  )
+  const outline = {
+    stages: graph.stages,
+    needs,
+    selectedStageId,
+    onSelectStage: selectStage,
+    onOpenStep: openStepFromOutline,
+    selectedStepId: selectedId,
+  }
   const inspector = selectedStage ? (
     <StageInspector
       stage={selectedStage}
@@ -340,7 +324,7 @@ export function WorkflowDemoPage({
       onSelectStep={selectStep}
       onClose={() => {
         setDetailsOpen(false)
-        setTabletPanel(null)
+        setTabletDetails(false)
       }}
     />
   ) : (
@@ -352,11 +336,11 @@ export function WorkflowDemoPage({
       busy={busyStepId === selectedId}
       onClose={() => {
         setDetailsOpen(false)
-        setTabletPanel(null)
+        setTabletDetails(false)
       }}
       onExpand={() => {
         setExpanded(true)
-        setTabletPanel(null)
+        setTabletDetails(false)
       }}
       onDecide={onDecide}
     />
@@ -366,27 +350,30 @@ export function WorkflowDemoPage({
     <div className="relative flex h-dvh gap-4 overflow-hidden bg-canvas p-4">
       <AmbientGlow />
 
-      {!tablet && (
-        <CollapsiblePanel open={runPanelOpen} width="w-72" gutter="-mr-4">
-          {sidebar}
-        </CollapsiblePanel>
-      )}
+      {/* The run outline is drawn in the platform menu, not beside the canvas. */}
+      <InSideMenu rail={<RunOutlineRail {...outline} />}>
+        <RunOutline
+          {...outline}
+          header={graph.header}
+          variants={run.variants}
+          variantId={graph.variantId}
+          onVariant={onVariant}
+          foldedStageIds={foldedStageIds}
+          onToggleFold={toggleFold}
+          recent={recent}
+          activeRecentId={activeRecentId}
+          onOpenRecent={onOpenRecent}
+        />
+      </InSideMenu>
       {tablet && (
-        <Modal
-          open={tabletPanel !== null}
-          onOpenChange={(open) => {
-            if (!open) setTabletPanel(null)
-          }}
-          title={tabletPanel === 'run' ? 'Run outline' : 'Step details'}
-          size="md"
-        >
-          <div className="h-[min(70dvh,42rem)]">{tabletPanel === 'run' ? sidebar : inspector}</div>
+        <Modal open={tabletDetails} onOpenChange={setTabletDetails} title="Step details" size="md">
+          <div className="h-[min(70dvh,42rem)]">{inspector}</div>
         </Modal>
       )}
 
       <main className="glass relative flex min-w-0 flex-1 overflow-hidden rounded-surface">
         {/* @container: the top bar has to respond to THIS column's width, not the
-            viewport's — the sidebar and inspector take ~700px of a 1440 screen,
+            viewport's — the menu and inspector take ~650px of a 1440 screen,
             so a viewport query never fires and the bar overflows the panel. */}
         <div className="@container flex min-w-0 flex-1 flex-col">
           <RunTopBar
@@ -394,14 +381,9 @@ export function WorkflowDemoPage({
             waitingCount={awaiting.length}
             phase={phase}
             onControl={run.control}
-            runPanelOpen={!tablet && runPanelOpen}
-            onShowRunPanel={() => {
-              if (tablet) setTabletPanel('run')
-              else setRunPanelOpen(true)
-            }}
-            detailsOpen={tablet ? tabletPanel === 'details' : detailsOpen}
+            detailsOpen={tablet ? tabletDetails : detailsOpen}
             onToggleDetails={() => {
-              if (tablet) setTabletPanel((panel) => (panel === 'details' ? null : 'details'))
+              if (tablet) setTabletDetails((open) => !open)
               else setDetailsOpen((o) => !o)
             }}
             logOpen={logOpen}
