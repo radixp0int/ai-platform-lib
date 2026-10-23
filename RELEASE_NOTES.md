@@ -3,6 +3,21 @@
 Changes to the component library as seen from Storybook. Newest first. Each
 entry names the modules it touches so the sidebar entry is easy to find.
 
+## 2026-10-23 — Workflows: one worked example, the commercial loan review
+
+- **The incident triage, employee onboarding and RFP response examples are
+  gone:** their stories, e2e tests and scripted runs (`incidentTriage`,
+  `onboarding`, `rfpResponse` in `fixtures/`), and the fixture-run harness only
+  they used (`FixtureWorkflow`, `createFixtureRunSource`, `RunScript`). The loan
+  review is the one run the stories, tests and `npm run test:static-workflows`
+  walk through; that script now checks its approve, decline and request-changes
+  paths.
+- **Kept as data, not examples:** the table's twenty workflow summaries, and the
+  wire protocol's variant ids, which a server may still send. `RUN_CONTRACTS`
+  now holds the loan review's contract only. The step-node "With content" story
+  carries a few steps of its own, since the RFP run was where its content came
+  from.
+
 ## 2026-10-23 — The standard side menu: an app rail and a panel you can drag
 
 - **`SideMenu` is now a rail of the apps and a panel for the one you are in.**

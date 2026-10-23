@@ -91,7 +91,7 @@ export function WorkflowsFlyout({ base, runs, onNavigate }: PanelProps) {
           href={`${base}/${run.path}`}
           dot={dotOf(run)}
           name={run.title}
-          count={run.step}
+          count={run.status === 'waiting' ? 'Waiting' : 'Running'}
           onNavigate={onNavigate}
         />
       ))}

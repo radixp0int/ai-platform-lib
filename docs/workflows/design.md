@@ -12,8 +12,8 @@ For _what the demo does_ rather than why, see [Overview](./overview.md).
 | --------------------------------------------- | ---------------------------------------------------------------------------------------- |
 | [components/](../../src/workflows/components) | The canvas kit and host panels: nodes, edges, zoom, run panel, inspector, lanes, and log |
 | [engine/](../../src/workflows/engine)         | Wire types, placement, reducer, and run sources                                          |
-| [fixtures/](../../src/workflows/fixtures)     | Authored loan, incident, onboarding, and story data                                      |
-| [recipes/](../../src/workflows/recipes)       | Screen composition and fixture-only helpers                                              |
+| [fixtures/](../../src/workflows/fixtures)     | The authored loan run and story data                                                     |
+| [recipes/](../../src/workflows/recipes)       | Screen composition                                                                       |
 
 [WorkflowDemoPage.tsx](../../src/workflows/recipes/loan-review-run/loan-review-run.tsx) is composition and selection only;
 [WorkflowCanvas.tsx](../../src/workflows/components/workflow-canvas/workflow-canvas.tsx) holds React Flow, because it is the
@@ -275,8 +275,8 @@ way to learn what that step will accept, and would otherwise draw buttons for a
 decision the server will refuse.
 
 Nothing keys on a step _id_ any more. "Needs you" is every step at `waiting`,
-because a run can stop on two approvals at once — the onboarding variant does,
-and the old single hardcoded card made the second one invisible. For the same
+because a run can stop on two approvals at once, and the old single hardcoded
+card made the second one invisible. For the same
 reason the run panel's stage list is the part that scrolls and "Needs you" is the
 part that doesn't.
 

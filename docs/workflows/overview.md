@@ -59,28 +59,18 @@ means no I/O block, and no inputs means a workflow starts without a form.
 **These are wire changes:** `workflow-ws-server/src/types.ts` and
 `chat-workflow-mock-api` need the same types before they send any of it.
 
-## Static incident and onboarding recipes
+## The static loan review recipe
 
-| Recipe              | Run                                 | What it demonstrates                                                              |
-| ------------------- | ----------------------------------- | --------------------------------------------------------------------------------- |
-| Loan review         | Commercial loan, 12 steps           | A three-way fan-out and a gate offering approve, request changes, or decline      |
-| Incident triage     | SEV-2 latency incident, 14 steps    | A failed probe while the run continues, rollback approval, and verification retry |
-| Employee onboarding | New hire across 5 systems, 16 steps | Five tools in one column and two approvals open together                          |
+| Recipe      | Run                       | What it demonstrates                                                         |
+| ----------- | ------------------------- | ---------------------------------------------------------------------------- |
+| Loan review | Commercial loan, 12 steps | A three-way fan-out and a gate offering approve, request changes, or decline |
 
-The incident and onboarding scripts were copied from
-`chat-workflow-mock-api/src/workflow/variants/` into this package's fixtures.
-Importing or running their stories requires no sibling checkout or server.
+It is the one worked example, and it needs no sibling checkout or server.
+Machine work completes immediately, keeping the story deterministic; the human
+approval stays interactive.
 
-Machine work completes immediately, keeping the stories deterministic. Human
-approvals remain interactive. Onboarding accepts manager and HR approvals in
-either order; declining either abandons the other and holds day-one setup.
-Incident triage retains the failed probe as a finding and offers verification
-failure, retry, resolved, and declined states. Pause then resume advances frozen
-verification states through the remaining script.
-
-The fixture source is a recipe helper, excluded from public engine exports.
-Run `npm run test:static-workflows` after `npm run build-storybook` to check these
-interactions, and `npm run test:tablet-workflow` for the tablet and desktop layout.
+Run `npm run test:static-workflows` after `npm run build-storybook` to check that
+approval, and `npm run test:tablet-workflow` for the tablet and desktop layout.
 
 ## Source layout
 
@@ -88,6 +78,6 @@ interactions, and `npm run test:tablet-workflow` for the tablet and desktop layo
 src/workflows/
   components/  canvas kit, panels, and shared workflow contracts
   engine/      wire types, placement, reducer, hooks, and run sources
-  fixtures/    authored loan, incident, onboarding, and story data
-  recipes/     composition, selection, and fixture-only helpers
+  fixtures/    the authored loan run and story data
+  recipes/     composition and selection
 ```

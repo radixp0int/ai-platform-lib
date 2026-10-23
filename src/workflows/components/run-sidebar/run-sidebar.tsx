@@ -5,8 +5,8 @@ import type { RunSidebarProps } from './types'
 // apps are the rail's and the top bar's; this is only the run-shaped part.
 //
 // Everything run-shaped arrives as props. "Needs you" is a *list*, not a
-// boolean: a run can stop on two approvals at once (the onboarding variant
-// does), and the old single hardcoded card made the second one invisible.
+// boolean: a run can stop on two approvals at once, and the old single
+// hardcoded card made the second one invisible.
 import { useState } from 'react'
 import { IconButton } from '../../../primitives/icon-button'
 import { ChevronDownIcon, ChevronLeftIcon, EyeIcon, EyeOffIcon } from '../../../primitives/icons'

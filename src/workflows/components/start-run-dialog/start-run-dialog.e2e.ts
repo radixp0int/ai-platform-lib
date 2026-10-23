@@ -27,12 +27,12 @@ test.describe('StartRunDialog', () => {
   test('with several workflows, picking one swaps in its own form', async ({ story, page }) => {
     await story.open('workflows-components-start-run-dialog--pick-a-workflow')
     const dialog = page.getByRole('dialog', { name: 'Start a workflow' })
-    await expect(dialog.getByLabel('Buyer')).toHaveValue('Meridian Health')
-    await choose(page, dialog, 'Workflow', 'Employee onboarding')
-    await expect(dialog.getByLabel('New hire')).toHaveValue('Priya Raman')
-    await expect(dialog.getByLabel('Buyer')).toHaveCount(0)
+    await expect(dialog.getByLabel('Term months')).toBeVisible()
     await choose(page, dialog, 'Workflow', 'Month-end close')
     await expect(dialog).toContainText('This workflow needs nothing to start.')
+    await expect(dialog.getByLabel('Term months')).toHaveCount(0)
+    await choose(page, dialog, 'Workflow', 'Commercial loan review')
+    await expect(dialog.getByLabel('Term months')).toBeVisible()
   })
 
   test('a refused start says why above the form', async ({ story, page }) => {

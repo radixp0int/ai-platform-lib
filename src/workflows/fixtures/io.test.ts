@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { validateIO } from '../engine/io'
-import { incidentTriage } from './incidentTriage'
-import { EDGE_SEEDS, RUN_INPUT_SPECS, STEP_IO, STEPS } from './loanRun'
-import { onboarding } from './onboarding'
-import { rfpResponse } from './rfpResponse'
+import { EDGE_SEEDS, RUN_INPUT_SPECS, RUN_INPUTS, STEP_IO, STEPS } from './loanRun'
 
 const loan = {
   id: 'loan-review',
@@ -12,7 +9,9 @@ const loan = {
   inputs: RUN_INPUT_SPECS,
 }
 
-describe.each([loan, rfpResponse, onboarding, incidentTriage])('$id I/O', (run) => {
+describe('the loan run’s I/O', () => {
+  const run = loan
+
   it('is wired soundly', () => {
     expect(validateIO(run, run.inputs)).toEqual([])
   })
@@ -32,9 +31,9 @@ describe.each([loan, rfpResponse, onboarding, incidentTriage])('$id I/O', (run) 
   })
 })
 
-describe('script defaults', () => {
-  it.each([rfpResponse, onboarding, incidentTriage])('$id fills every required input', (run) => {
-    for (const input of run.inputs.filter((i) => i.required))
-      expect(run.defaultInputs[input.name], input.name).toBeTruthy()
+describe('the loan run’s start values', () => {
+  it('fill every required input', () => {
+    for (const input of RUN_INPUT_SPECS.filter((i) => i.required))
+      expect(RUN_INPUTS[input.name], input.name).toBeTruthy()
   })
 })
