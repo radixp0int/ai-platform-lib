@@ -13,7 +13,7 @@ import { WizardPage } from './pages/WizardPage'
 // (TopBar, PinnedPages, TenantSwitcher, SideMenu) take data and
 // callbacks and know nothing of the router; this file is where routing,
 // the demo's fixtures meet them.
-import { Suspense, useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { PinnedPages, type PinnedPage } from '../../components/pinned-pages'
 import {
   SideMenu,
@@ -21,7 +21,6 @@ import {
   flattenMenu,
   matchDestination,
   parentOf,
-  type SideMenuMode,
 } from '../../components/side-menu'
 import { TenantSwitcher } from '../../components/tenant-switcher'
 import { TopBar, TopBarButton } from '../../components/top-bar'
@@ -36,7 +35,14 @@ import {
 } from '../../fixtures/platform/tenants'
 import { APP_NAME } from '../../fixtures/platform/user'
 import { runsFor, tasksFor } from '../../fixtures/platform/work'
-import { BellIcon, SearchIcon, SideMenuIcon, XIcon } from '../../primitives/icons'
+import {
+  BellIcon,
+  SearchIcon,
+  SideMenuIcon,
+  SlidersIcon,
+  WorkflowIcon,
+  XIcon,
+} from '../../primitives/icons'
 import type { NavigateHandler } from '../../primitives/link'
 import { ThemeToggle } from '../../primitives/theme-toggle'
 import { FeatureTogglesModal } from '../settings/feature-toggles-modal'
@@ -44,6 +50,7 @@ import { DemoFeaturesProvider, useDemoFeatureState } from '../settings/settings-
 import { UserSettingsModal } from '../settings/user-settings-modal'
 import { AccountButton } from '../top-bar/account-button'
 import { SpaceUnavailablePage } from './pages/SpaceUnavailablePage'
+import { WorkflowsFlyout, WorkflowsPanel } from './menu-panels'
 import { PlatformContext, type PlatformValue } from './platform-context'
 
 const DEFAULT_PINS = ['tasks', 'runs', 'chat']
@@ -51,11 +58,10 @@ const MAX_PINS = 3
 /** How many tenants the switcher lists before "Load more". */
 const SWITCHER_PAGE = 6
 
-/** Pages that bring their own side panel, so the platform menu is not docked
- *  beside them — it opens over the page from the top bar instead. */
-const FOCUSED = [/^\/chat(\/|$)/]
-/** Below this a docked menu leaves a canvas too little room, so it starts as a rail. */
-const TABLET = '(max-width: 1279px)'
+/** The apps with a place in the rail, in order. The rest are under All apps. */
+const RAIL = ['home', 'chat', 'workflows', 'tasks']
+/** A run on its canvas. It has a run panel of its own beside the rail, so the app's panel starts folded. */
+const RUN_PAGE = /\/workflows\/(demo|live)(\/|$)/
 /** A wizard: no menu at all, a close button, and the tenant shown as a label. */
 const WIZARD = /^\/ingestion\/new(\/|$)/
 
@@ -81,12 +87,13 @@ export type SpacePageProps = {
 }
 export type AppShellProps = {
   initialPath?: string
-  initialMenuMode?: SideMenuMode
+  /** Whether the app's panel beside the rail starts open. */
+  initialPanelOpen?: boolean
   renderSpace?: (props: SpacePageProps) => ReactNode
 }
 export function AppShell({
   initialPath = `/t/${DEFAULT_TENANT_ID}/home`,
-  initialMenuMode,
+  initialPanelOpen = true,
   renderSpace,
 }: AppShellProps) {
   const [pathname, navigate] = useState(initialPath)
@@ -116,21 +123,17 @@ export function AppShell({
   const active = routeTenantId ? matchDestination(sections, pathname) : undefined
 
   // ── Side menu ────────────────────────────────────────────────────────────
-  const [mode, setMode] = useState<SideMenuMode>(
-    () => initialMenuMode ?? (window.matchMedia(TABLET).matches ? 'rail' : 'expanded'),
-  )
   const [drawerOpen, setDrawerOpen] = useState(false)
-  const [openIds, setOpenIds] = useState<string[]>([])
-  const wizard = WIZARD.test(rest)
-  const focused = FOCUSED.some((pattern) => pattern.test(rest))
-  const docked = !wizard && !focused && !narrow
-  const activeParentId = active ? parentOf(sections, active.id)?.id : undefined
-
-  // Arriving somewhere opens the section it lives in; the user can fold it again.
+  const [panelOpen, setPanelOpen] = useState(initialPanelOpen && !RUN_PAGE.test(initialPath))
+  const onRunPage = RUN_PAGE.test(rest)
+  const seenRunPage = useRef(onRunPage)
   useEffect(() => {
-    if (activeParentId)
-      setOpenIds((ids) => (ids.includes(activeParentId) ? ids : [...ids, activeParentId]))
-  }, [activeParentId])
+    if (seenRunPage.current === onRunPage) return
+    seenRunPage.current = onRunPage
+    setPanelOpen(!onRunPage)
+  }, [onRunPage])
+  const wizard = WIZARD.test(rest)
+  const docked = !wizard && !narrow
   useEffect(() => {
     setDrawerOpen(false)
   }, [pathname])
@@ -203,15 +206,8 @@ export function AppShell({
   const space = SPACE_ORDER.find((id) => rest === `/${id}` || rest.startsWith(`/${id}/`))
   const unavailable = space && !tenant.spaces.includes(space) ? space : undefined
 
-  const toggle = docked ? (
-    <TopBarButton
-      aria-label={mode === 'expanded' ? 'Collapse menu' : 'Expand menu'}
-      aria-expanded={mode === 'expanded'}
-      onClick={() => setMode(mode === 'expanded' ? 'rail' : 'expanded')}
-    >
-      <SideMenuIcon width={20} height={20} />
-    </TopBarButton>
-  ) : (
+  // Docked, the rail is always there. Narrow, it opens over the page from here.
+  const drawerToggle = (
     <TopBarButton
       aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
       aria-expanded={drawerOpen}
@@ -220,6 +216,57 @@ export function AppShell({
     >
       <SideMenuIcon width={20} height={20} />
     </TopBarButton>
+  )
+
+  // The panels of the apps that have one. Chat's is filled by the chat page itself.
+  const panels = useMemo(
+    () => ({
+      ...(tenant.spaces.includes('workflows')
+        ? {
+            workflows: {
+              content: (
+                <WorkflowsPanel
+                  base={base}
+                  runs={runs}
+                  activeId={active?.id}
+                  onNavigate={onNavigate}
+                />
+              ),
+              flyout: <WorkflowsFlyout base={base} runs={runs} onNavigate={onNavigate} />,
+            },
+          }
+        : {}),
+      ...(tenant.spaces.includes('chat') ? { chat: { title: 'Chat' } } : {}),
+    }),
+    [tenant.spaces, base, runs, active?.id, onNavigate],
+  )
+  const places = [
+    ...runs.slice(0, 2).map((run) => ({
+      label: `Workflows › ${run.title}`,
+      href: `${base}/${run.path}`,
+      icon: <WorkflowIcon />,
+    })),
+  ]
+  const menu = (
+    <SideMenu
+      sections={sections}
+      rail={RAIL}
+      activeId={active?.id}
+      panels={panels}
+      appsHeading={tenant.name}
+      places={places}
+      footLinks={[
+        {
+          id: 'settings',
+          label: 'Settings',
+          icon: <SlidersIcon />,
+          onSelect: () => setDialog('user'),
+        },
+      ]}
+      panelOpen={panelOpen}
+      onPanelOpenChange={setPanelOpen}
+      onNavigate={onNavigate}
+    />
   )
 
   return (
@@ -240,9 +287,9 @@ export function AppShell({
                     >
                       <XIcon width={20} height={20} />
                     </TopBarButton>
-                  ) : (
-                    toggle
-                  )
+                  ) : narrow ? (
+                    drawerToggle
+                  ) : undefined
                 }
                 trailing={
                   <>
@@ -314,28 +361,13 @@ export function AppShell({
               </TopBar>
 
               <div className="relative flex min-h-0 flex-1">
-                {docked && (
-                  <SideMenu
-                    sections={sections}
-                    activeId={active?.id}
-                    mode={mode}
-                    openIds={openIds}
-                    onOpenIdsChange={setOpenIds}
-                    onNavigate={onNavigate}
-                  />
-                )}
+                {docked && menu}
                 <SlideOver
-                  open={!docked && drawerOpen}
+                  open={!docked && !wizard && drawerOpen}
                   onClose={() => setDrawerOpen(false)}
                   label="Menu"
                 >
-                  <SideMenu
-                    sections={sections}
-                    activeId={active?.id}
-                    openIds={openIds}
-                    onOpenIdsChange={setOpenIds}
-                    onNavigate={onNavigate}
-                  />
+                  {menu}
                 </SlideOver>
                 {/* The workflow pages were built to fill the viewport (`h-dvh`).
                 Under the top bar that is one bar too tall, so here — and only

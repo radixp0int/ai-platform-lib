@@ -11,7 +11,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'A ten-stage run, stopped at a review. It is long enough that it opens folded: the stage the run is on and its neighbours are drawn in full, the rest fold to one bar per step. Its steps carry structured content — facts, a decision’s branches, section progress, the tools an agent called and a step that runs another workflow. The run outline has a Recent tab for changing run. No server is required.',
+          'A ten-stage run, stopped at a review. It is long enough that it opens folded: the stage the run is on and its neighbours are drawn in full, the rest fold to one bar per step. Its steps carry structured content — facts, a decision’s branches, section progress, the tools an agent called and a step that runs another workflow. The left panel has a Recent tab for changing run. No server is required.',
       },
     },
   },
@@ -26,7 +26,7 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-/** Fold or unfold a stage from its lane header, a folded node, or the eye in the run outline. */
+/** Fold or unfold a stage from its lane header, a folded node, or the eye in the left panel. */
 export const AwaitingReview: Story = {}
 
 /** The same run opened with nothing folded: every step drawn. */

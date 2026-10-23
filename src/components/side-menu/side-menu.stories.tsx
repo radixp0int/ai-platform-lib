@@ -1,73 +1,96 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { useState } from 'react'
 import { buildMenu } from '../../fixtures/platform/menu'
 import { INITIAL_TENANTS } from '../../fixtures/platform/tenants'
+import { SlidersIcon, WorkflowIcon } from '../../primitives/icons'
+import { MenuPanelLabel, MenuPanelRow, MenuPanelSearch } from './panel-parts'
 import { SideMenu } from './side-menu'
 import { InSideMenu, SideMenuSlotProvider } from './slot'
+import type { SideMenuPanel } from './types'
+
+const base = '/t/alderfinch-treasury'
+
+const workflows: SideMenuPanel = {
+  action: { label: 'Start a workflow', onSelect: () => {} },
+  content: (
+    <div className="flex flex-col gap-0.5">
+      <MenuPanelSearch label="Jump to a workflow" />
+      <MenuPanelLabel>Views</MenuPanelLabel>
+      <MenuPanelRow current dot="bg-ink-strong" name="All workflows" count={20} />
+      <MenuPanelRow dot="bg-notify" name="Needs a person" count={6} />
+      <MenuPanelRow dot="bg-accent" name="Running" count={10} />
+      <MenuPanelLabel>Recently viewed</MenuPanelLabel>
+      <MenuPanelRow dot="bg-notify" name="RFP response" sub="Waiting on Kofi A." />
+      <MenuPanelRow dot="bg-notify" name="Commercial loan review" sub="Waiting on Dana W." />
+    </div>
+  ),
+  flyout: (
+    <>
+      <MenuPanelLabel>Recently viewed</MenuPanelLabel>
+      <MenuPanelRow dot="bg-notify" name="RFP response" count="1 day" />
+      <MenuPanelRow dot="bg-notify" name="Commercial loan review" count="3h 40m" />
+    </>
+  ),
+}
+
 const meta = {
   title: 'Components/Side menu',
   component: SideMenu,
   tags: ['autodocs'],
-  render: function Menu(args) {
-    const [open, setOpen] = useState(args.openIds)
-    return (
-      <div className="flex h-[620px]">
-        <SideMenu {...args} openIds={open} onOpenIdsChange={setOpen} />
-      </div>
-    )
-  },
+  render: (args) => (
+    <div className="flex h-[620px]">
+      <SideMenu {...args} />
+    </div>
+  ),
   args: {
     sections: buildMenu(INITIAL_TENANTS[0], 2),
-    activeId: 'home',
-    openIds: [],
-    onOpenIdsChange: () => {},
+    rail: ['home', 'chat', 'workflows', 'tasks'],
+    activeId: 'runs',
+    panels: { workflows },
+    appsHeading: 'Alderfinch Treasury',
+    places: [
+      { label: 'Workflows › RFP response', href: `${base}/workflows`, icon: <WorkflowIcon /> },
+    ],
+    footLinks: [{ id: 'settings', label: 'Settings', icon: <SlidersIcon />, onSelect: () => {} }],
   },
 } satisfies Meta<typeof SideMenu>
 export default meta
 type Story = StoryObj<typeof meta>
-export const Expanded: Story = {}
-export const SectionOpen: Story = { args: { openIds: ['workflows'], activeId: 'runs' } }
-export const Rail: Story = { args: { mode: 'rail' } }
-export const ChatOnly: Story = {
-  args: { sections: buildMenu(INITIAL_TENANTS[1], 0), activeId: 'chat' },
-}
+
+/** The rail, and the panel of the app you are in. Drag the panel's edge to size it. */
+export const Default: Story = {}
+
+/** Folded: the rail alone. Rest on the Workflows icon for the short version. */
+export const PanelFolded: Story = { args: { defaultPanelOpen: false } }
+
+/** An app with no panel of its own: the rail is the whole menu. */
+export const NoPanel: Story = { args: { activeId: 'home' } }
 
 /**
- * A page adds its own section under the destinations with `InSideMenu`, and a
- * line for the rail. The section keeps the page's own state and callbacks.
+ * A page adds to the panel with `InSideMenu` when what it holds depends on the
+ * page's own state. The section keeps that state.
  */
 export const WithPageSection: Story = {
-  args: { openIds: ['workflows'], activeId: 'live' },
+  args: { activeId: 'chat', panels: { chat: { title: 'Chat' } } },
   render: function Menu(args) {
-    const [open, setOpen] = useState(args.openIds)
-    const [picked, setPicked] = useState('Intake')
     return (
       <SideMenuSlotProvider>
         <div className="flex h-[620px]">
-          <SideMenu {...args} openIds={open} onOpenIdsChange={setOpen} />
-          <InSideMenu rail={<span className="text-xs text-ink-soft">{picked}</span>}>
-            <section aria-label="This page" className="mt-3 border-t border-line pt-3">
-              {['Intake', 'Gather', 'Analyze'].map((name) => (
-                <button
-                  key={name}
-                  type="button"
-                  aria-pressed={picked === name}
-                  onClick={() => setPicked(name)}
-                  className="block w-full rounded-control px-2.5 py-2 text-left text-sm aria-pressed:bg-tint/7 aria-pressed:font-bold"
-                >
-                  {name}
-                </button>
-              ))}
-            </section>
-          </InSideMenu>
+          <SideMenu {...args} />
+          <PageSection />
         </div>
       </SideMenuSlotProvider>
     )
   },
 }
 
-/** The same section in the rail: only what the page gave for it. */
-export const PageSectionInRail: Story = {
-  ...WithPageSection,
-  args: { mode: 'rail', activeId: 'live' },
+function PageSection() {
+  return (
+    <InSideMenu>
+      <section aria-label="This page" className="flex flex-col">
+        <MenuPanelLabel>Recent chats</MenuPanelLabel>
+        <MenuPanelRow name="Positive pay exceptions" sub="2 days ago" />
+        <MenuPanelRow name="Mortgage rate lock timing" sub="3 days ago" />
+      </section>
+    </InSideMenu>
+  )
 }

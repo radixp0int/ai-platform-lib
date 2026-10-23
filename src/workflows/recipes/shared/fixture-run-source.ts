@@ -257,7 +257,7 @@ export function createFixtureRunSource(
   }
   reset()
   return {
-    /* One variant, so the outline draws no switcher — but the page can still
+    /* One variant, so the sidebar draws no switcher — but the page can still
        find what this run asks for when it is started again. */
     variants: [
       {

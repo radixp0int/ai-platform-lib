@@ -8,7 +8,7 @@ import type { StepDetailProps } from './types'
 // — the panel is their narrow arrangement, this is the wide one) sit in two
 // columns, with the answer beside the evidence rather than below it.
 //
-// It covers the run's column, not the menu: what this run *is* and what else
+// It covers the run's column, not the sidebar: what this run *is* and what else
 // is waiting on you are still worth seeing while you decide.
 import { useEffect } from 'react'
 import { IconButton } from '../../../primitives/icon-button'
@@ -67,7 +67,7 @@ export function StepDetail({
 
       {/* @container, not a viewport query, for the reason RunTopBar spells out:
           this view lives in the run's column, which is ~690px on a 1024 screen
-          once the menu has its 248. `lg:` fired there and squeezed the left
+          once the sidebar has its 288. `lg:` fired there and squeezed the left
           column to 238px. */}
       <div className="@container min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex max-w-5xl flex-col gap-7 px-10 py-8">

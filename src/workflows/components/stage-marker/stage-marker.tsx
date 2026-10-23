@@ -1,7 +1,7 @@
 import { StatusDot } from '../../../primitives/status-dot'
 import type { StageMarkerProps } from './types'
 // The one marker that says where a stage stands. Used by the column headers, the
-// table's blueprint and the run outline, so the three can't drift.
+// table's blueprint and the left panel, so the three can't drift.
 import { CheckIcon } from '../../../primitives/icons'
 
 export function StageMarker({ status, size = 18 }: StageMarkerProps) {

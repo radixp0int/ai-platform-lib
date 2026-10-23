@@ -39,8 +39,19 @@ async function fullyVisible(locator, width) {
   )
 }
 
-/** Below desktop width the step details move into a dialog. */
+/** Below desktop width the run panel and step details move into dialogs. */
 async function checkNarrowPanels(page, width) {
+  const outline = page.getByRole('button', { name: 'Show run panel', exact: true })
+  await outline.click()
+  await page.getByRole('dialog', { name: 'Run outline', exact: true }).waitFor()
+  await fullyVisible(page.getByRole('button', { name: 'Close dialog', exact: true }), width)
+  await page.keyboard.press('Escape')
+  await page.getByRole('dialog').waitFor({ state: 'hidden' })
+  assert(
+    await outline.evaluate((el) => el === document.activeElement),
+    'Outline focus did not restore',
+  )
+
   const details = page.getByRole('button', { name: 'Show step details', exact: true })
   await details.click()
   const dialog = page.getByRole('dialog', { name: 'Step details', exact: true })
@@ -73,9 +84,8 @@ try {
     await page.locator('.react-flow__node').first().waitFor()
     await page.waitForTimeout(500)
     const canvas = await page.locator('.react-flow').boundingBox()
-    // Below 1280 the menu is a 64px rail; above, it is its full width.
     assert(
-      canvas.width >= (width < 1280 ? width - 112 : 500),
+      canvas.width >= (width < 1280 ? width - 64 : 500),
       `Canvas too narrow at ${width}: ${canvas.width}`,
     )
     for (const name of ['Run log', 'Pause run'])
