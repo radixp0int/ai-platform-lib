@@ -205,7 +205,7 @@ function summarise(spec: Spec): WorkflowSummary {
 
 export const WORKFLOW_SUMMARIES: WorkflowSummary[] = SPECS.map(summarise)
 
-/** The same workflows as the left panel's Recent tab wants them. */
+/** The same workflows as the run outline's Recent tab wants them. */
 export const RECENT_RUNS: RecentRun[] = WORKFLOW_SUMMARIES.map((workflow) => ({
   id: workflow.id,
   title: workflow.name,

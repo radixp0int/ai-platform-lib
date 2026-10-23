@@ -145,7 +145,7 @@ focus inside a contained drawer and returns focus to its trigger.
 
 Import workflow components and the run engine from `ai-platform-lib/workflows`.
 Load `ai-platform-lib/workflows.css` after the brand and generic stylesheets.
-`RunSidebar` takes the host's `appName`. `WorkflowCanvas` takes the graph,
+`RunOutline` is the run's section of the platform menu: the page hands it to `InSideMenu`, so it has to sit inside a `SideMenuSlotProvider` (the `AppShell` has one). `WorkflowCanvas` takes the graph,
 statuses, density, and controlled selection. The exported `EDGE_TOKENS` classes
 bind the graph's edge states to contrast-checked brand tokens.
 

@@ -8,12 +8,12 @@ For _what the demo does_ rather than why, see [Overview](./overview.md).
 
 ## Layout and boundaries
 
-| Folder                                        | What it contains                                                                       |
-| --------------------------------------------- | -------------------------------------------------------------------------------------- |
-| [components/](../../src/workflows/components) | The canvas kit and host panels: nodes, edges, zoom, sidebar, inspector, lanes, and log |
-| [engine/](../../src/workflows/engine)         | Wire types, placement, reducer, and run sources                                        |
-| [fixtures/](../../src/workflows/fixtures)     | Authored loan, incident, onboarding, and story data                                    |
-| [recipes/](../../src/workflows/recipes)       | Screen composition and fixture-only helpers                                            |
+| Folder                                        | What it contains                                                                           |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| [components/](../../src/workflows/components) | The canvas kit and host panels: nodes, edges, zoom, run outline, inspector, lanes, and log |
+| [engine/](../../src/workflows/engine)         | Wire types, placement, reducer, and run sources                                            |
+| [fixtures/](../../src/workflows/fixtures)     | Authored loan, incident, onboarding, and story data                                        |
+| [recipes/](../../src/workflows/recipes)       | Screen composition and fixture-only helpers                                                |
 
 [WorkflowDemoPage.tsx](../../src/workflows/recipes/loan-review-run/loan-review-run.tsx) is composition and selection only;
 [WorkflowCanvas.tsx](../../src/workflows/components/workflow-canvas/workflow-canvas.tsx) holds React Flow, because it is the
@@ -50,7 +50,7 @@ reader can still tell agent work from human work at 40%.
 inside the circle's inscribed square (diameter × 0.707) or they crowd the curve —
 "DW" bold measures ~1.86× its font size, so the font is 0.36 × the diameter.
 Below `INITIALS_MIN` in [KindIcon.tsx](../../src/workflows/components/kind-icon/kind-icon.tsx) the avatar falls back to a
-filled person glyph, which reads at any scale; in practice only the run panel's
+filled person glyph, which reads at any scale; in practice only the details panel's
 34px avatar keeps its letters. The name itself lives in the node's text and the
 inspector, where there is room to read it. A _dashed_ outline person is something
 else again: a step routed to a role rather than to someone in particular.
@@ -160,19 +160,25 @@ draws `content` itself, so the layout has to be able to see it.
 `flow` is a sixth step kind: a step that runs another workflow and waits for it.
 It usually carries `progress`, counted in that workflow's stages.
 
-## Both panels collapse
+## One menu, and a details panel that collapses
 
-The run panel collapses from the chevron in its own header and comes back from a
-hamburger at the app's top-left corner. The details panel closes from its X or
-from the toggle in the top bar, and reopens whenever a step is selected —
-choosing a step is a request to look at it.
+The run outline is not a panel of the page. It is a section of the platform's
+side menu — the one menu every page uses — and the page adds it with
+[`InSideMenu`](../../src/components/side-menu/slot.tsx): the stages and "Needs you"
+under the destinations when the menu is expanded, the stage markers and a badge
+when it is folded to its rail. It is a portal, so the outline keeps the page's
+state and callbacks while it is drawn in the menu. The menu's own button
+expands and folds it; the page has no control for that.
 
-At desktop widths both animate width rather than unmounting, so the canvas reflows and React Flow
-re-measures as they move. The wrapper carries a negative margin when closed,
-otherwise the flex gap leaves a 16px dent where the panel used to be.
+The details panel closes from its X or from the toggle in the top bar, and
+reopens whenever a step is selected — choosing a step is a request to look at it.
+At desktop widths it animates width rather than unmounting, so the canvas reflows
+and React Flow re-measures as it moves. The wrapper carries a negative margin
+when closed, otherwise the flex gap leaves a 16px dent where the panel used to be.
 
-Below 1280px the recipe opens each panel in a modal instead. The canvas keeps
-its width, controls stay in the viewport, and closing restores trigger focus.
+Below 1280px the recipe opens the details in a modal instead, and the shell
+starts its menu as a rail so the canvas keeps its width. Controls stay in the
+viewport, and closing restores trigger focus.
 
 ## The top bar sheds content in order
 
@@ -277,7 +283,7 @@ decision the server will refuse.
 Nothing keys on a step _id_ any more. "Needs you" is every step at `waiting`,
 because a run can stop on two approvals at once — the onboarding variant does,
 and the old single hardcoded card made the second one invisible. For the same
-reason the sidebar's stage list is the part that scrolls and "Needs you" is the
+reason the outline's stage list is the part that scrolls and "Needs you" is the
 part that doesn't.
 
 ## Written once
@@ -290,7 +296,7 @@ an old gradient:
 | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
 | [AmbientGlow](../../src/primitives/ambient-glow/ambient-glow.tsx)                                   | Four byte-identical copies across the demo pages                                |
 | [SectionLabel](../../src/primitives/section-label/section-label.tsx)                                | The small-caps heading, written out five times                                  |
-| [CollapsiblePanel](../../src/components/collapsible-panel/collapsible-panel.tsx)                    | The width-animating wrapper, twice, with the explanation only on one            |
+| [CollapsiblePanel](../../src/components/collapsible-panel/collapsible-panel.tsx)                    | The width-animating wrapper, with the explanation only on one                   |
 | `DECISION_BUTTON` in [DecisionForm](../../src/workflows/components/decision-form/decision-form.tsx) | Three near-identical buttons whose alignment depended on which siblings existed |
 
 That last one is worth a note: a gate offers a _subset_ of the three answers, so
@@ -299,7 +305,7 @@ to know which of its siblings rendered.
 
 ## Picking a stage
 
-A stage is selectable from two places — the outline in the run panel and the lane
+A stage is selectable from two places — the outline in the platform menu and the lane
 header on the canvas — and both do the same thing: highlight it, show it in the
 details panel, and frame it on the canvas. (A folded stage's header and node do
 something else: they unfold it.)

@@ -180,7 +180,7 @@ export type WireEdge = { from: string; to: string; rule: EdgeRule }
 /** A gate that is open: which step, and what it will accept. */
 export type OpenGate = { stepId: string; decisions: Decision[]; dueLabel?: string }
 
-/** The run card at the top of the left panel. */
+/** The run card at the top of the run's section of the menu. */
 export type RunHeader = { primary: string; secondary: string; tertiary: string }
 
 /** Whose seat this is. Decisions made in the fixture source are logged under this name. */

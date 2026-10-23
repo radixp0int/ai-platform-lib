@@ -7,7 +7,7 @@
 //  1. Five provisioning calls run at once, in one column. At ROW_PITCH that is a
 //     720px column — which is why the canvas's stage lanes take their height
 //     from the run rather than from a constant.
-//  2. Two approvals open together. "Needs you" reads 2, the sidebar lists both,
+//  2. Two approvals open together. "Needs you" reads 2, the menu lists both,
 //     and neither can be the one hardcoded step the old page looked for.
 
 import { io, PEOPLE } from './io-spec'

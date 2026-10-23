@@ -1,5 +1,6 @@
 import { MenuItem } from './menu-item'
 import { RailItem } from './rail-item'
+import { useSideMenuSlots } from './slot-context'
 import type { SideMenuProps } from './types'
 
 /**
@@ -10,6 +11,9 @@ import type { SideMenuProps } from './types'
  * In the rail, an item with sub-sections opens them in a flyout beside its
  * icon rather than expanding in place — there is no room in 64px — and an item
  * without any is a plain link with a tooltip for its name.
+ *
+ * It is also the one place a page's own navigation lives: a page adds a
+ * section under the destinations with `InSideMenu`, in both modes.
  */
 export function SideMenu({
   sections,
@@ -22,6 +26,7 @@ export function SideMenu({
   className = '',
 }: SideMenuProps) {
   const rail = mode === 'rail'
+  const slots = useSideMenuSlots()
   const toggle = (id: string) =>
     onOpenIdsChange(openIds.includes(id) ? openIds.filter((x) => x !== id) : [...openIds, id])
 
@@ -61,6 +66,15 @@ export function SideMenu({
           </div>
         ))}
       </nav>
+      {/* Where a page adds its own section — see InSideMenu. Empty, it takes no room. */}
+      {rail ? (
+        <div
+          ref={slots?.setRail}
+          className="flex w-full flex-1 flex-col items-center empty:hidden"
+        />
+      ) : (
+        <div ref={slots?.setExpanded} className="flex min-h-0 flex-1 flex-col empty:hidden" />
+      )}
     </aside>
   )
 }

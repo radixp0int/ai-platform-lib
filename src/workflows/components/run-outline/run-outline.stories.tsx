@@ -2,20 +2,20 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { fn } from 'storybook/test'
 import { STORY_RUN } from '../../fixtures/storyRun'
 import { RECENT_RUNS } from '../../fixtures/workflowSummaries'
-import { RunSidebar } from './run-sidebar'
+import { RunOutline } from './run-outline'
 const meta = {
-  title: 'Workflows/Components/Run sidebar',
-  component: RunSidebar,
+  title: 'Workflows/Components/Run outline',
+  component: RunOutline,
   tags: ['autodocs'],
   decorators: [
     (Story) => (
-      <div className="h-[720px] w-72">
+      // Drawn the way the platform menu holds it: the menu's width and padding.
+      <aside className="flex h-[720px] w-62 flex-col border-r border-line bg-panel-solid p-3">
         <Story />
-      </div>
+      </aside>
     ),
   ],
   args: {
-    appName: 'Acme',
     header: STORY_RUN.graph.header,
     stages: STORY_RUN.graph.stages,
     needs: [{ stepId: 'approve', title: 'Credit approval', sub: 'Dana Whitfield · due 3h 40m' }],
@@ -26,9 +26,8 @@ const meta = {
     onVariant: fn(),
     onOpenStep: fn(),
     selectedStepId: 'approve',
-    onCollapse: fn(),
   },
-} satisfies Meta<typeof RunSidebar>
+} satisfies Meta<typeof RunOutline>
 export default meta
 type Story = StoryObj<typeof meta>
 export const Default: Story = {}
@@ -47,7 +46,7 @@ export const TwoApprovals: Story = {
   },
 }
 
-/** With more than one workflow to show, a picker appears under the app name. */
+/** With more than one workflow to show, a picker appears under the run's own card. */
 export const WithVariants: Story = {
   args: {
     variants: [
@@ -67,7 +66,7 @@ export const WithFolds: Story = {
   args: { foldedStageIds: ['intake', 'gather'], onToggleFold: fn(), selectedStageId: null },
 }
 
-/** Given other runs to switch to, the panel splits into Stages and Recent. */
+/** Given other runs to switch to, the section splits into Stages and Recent. */
 export const WithRecent: Story = {
   args: {
     recent: RECENT_RUNS,

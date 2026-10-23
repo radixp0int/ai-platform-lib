@@ -17,6 +17,7 @@ import { Suspense, useCallback, useEffect, useMemo, useState, type ReactNode } f
 import { PinnedPages, type PinnedPage } from '../../components/pinned-pages'
 import {
   SideMenu,
+  SideMenuSlotProvider,
   flattenMenu,
   matchDestination,
   parentOf,
@@ -52,7 +53,9 @@ const SWITCHER_PAGE = 6
 
 /** Pages that bring their own side panel, so the platform menu is not docked
  *  beside them — it opens over the page from the top bar instead. */
-const FOCUSED = [/^\/chat(\/|$)/, /^\/workflows\/(demo|live)(\/|$)/]
+const FOCUSED = [/^\/chat(\/|$)/]
+/** Below this a docked menu leaves a canvas too little room, so it starts as a rail. */
+const TABLET = '(max-width: 1279px)'
 /** A wizard: no menu at all, a close button, and the tenant shown as a label. */
 const WIZARD = /^\/ingestion\/new(\/|$)/
 
@@ -83,7 +86,7 @@ export type AppShellProps = {
 }
 export function AppShell({
   initialPath = `/t/${DEFAULT_TENANT_ID}/home`,
-  initialMenuMode = 'expanded',
+  initialMenuMode,
   renderSpace,
 }: AppShellProps) {
   const [pathname, navigate] = useState(initialPath)
@@ -113,7 +116,9 @@ export function AppShell({
   const active = routeTenantId ? matchDestination(sections, pathname) : undefined
 
   // ── Side menu ────────────────────────────────────────────────────────────
-  const [mode, setMode] = useState<SideMenuMode>(initialMenuMode)
+  const [mode, setMode] = useState<SideMenuMode>(
+    () => initialMenuMode ?? (window.matchMedia(TABLET).matches ? 'rail' : 'expanded'),
+  )
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [openIds, setOpenIds] = useState<string[]>([])
   const wizard = WIZARD.test(rest)
@@ -221,178 +226,180 @@ export function AppShell({
     <NavigateProvider value={onNavigate}>
       <DemoFeaturesProvider value={demo}>
         <PlatformContext.Provider value={value}>
-          <div className="flex h-dvh flex-col overflow-hidden bg-canvas text-ink">
-            <TopBar
-              appName={APP_NAME}
-              homeHref={`${base}/home`}
-              onNavigate={onNavigate}
-              leading={
-                wizard ? (
-                  <TopBarButton
-                    aria-label="Close and discard this source"
-                    onClick={() => navigate(`${base}/ingestion`)}
-                  >
-                    <XIcon width={20} height={20} />
-                  </TopBarButton>
-                ) : (
-                  toggle
-                )
-              }
-              trailing={
-                <>
-                  <TenantSwitcher
-                    tenants={listed.map((item) => ({
-                      id: item.id,
-                      name: item.name,
-                      initials: item.initials,
-                      description:
-                        item.status === 'active'
-                          ? describeSpaces(item.spaces)
-                          : `${item.status === 'pending' ? 'Pending' : 'Suspended'} · ${describeSpaces(item.spaces)}`,
-                    }))}
-                    currentId={tenant.id}
-                    onSelect={switchTo}
-                    readOnly={wizard}
-                    remaining={tenants.length - listed.length}
-                    pageSize={SWITCHER_PAGE}
-                    onLoadMore={() => setLoaded((count) => count + SWITCHER_PAGE)}
-                    onViewAll={() => navigate('/tenants')}
-                    onEditTenant={(id) => navigate(`/tenants?edit=${id}`)}
-                  />
-                  {!wizard && (
-                    <>
-                      {/* Search is not built yet. The control keeps its place in
+          <SideMenuSlotProvider>
+            <div className="flex h-dvh flex-col overflow-hidden bg-canvas text-ink">
+              <TopBar
+                appName={APP_NAME}
+                homeHref={`${base}/home`}
+                onNavigate={onNavigate}
+                leading={
+                  wizard ? (
+                    <TopBarButton
+                      aria-label="Close and discard this source"
+                      onClick={() => navigate(`${base}/ingestion`)}
+                    >
+                      <XIcon width={20} height={20} />
+                    </TopBarButton>
+                  ) : (
+                    toggle
+                  )
+                }
+                trailing={
+                  <>
+                    <TenantSwitcher
+                      tenants={listed.map((item) => ({
+                        id: item.id,
+                        name: item.name,
+                        initials: item.initials,
+                        description:
+                          item.status === 'active'
+                            ? describeSpaces(item.spaces)
+                            : `${item.status === 'pending' ? 'Pending' : 'Suspended'} · ${describeSpaces(item.spaces)}`,
+                      }))}
+                      currentId={tenant.id}
+                      onSelect={switchTo}
+                      readOnly={wizard}
+                      remaining={tenants.length - listed.length}
+                      pageSize={SWITCHER_PAGE}
+                      onLoadMore={() => setLoaded((count) => count + SWITCHER_PAGE)}
+                      onViewAll={() => navigate('/tenants')}
+                      onEditTenant={(id) => navigate(`/tenants?edit=${id}`)}
+                    />
+                    {!wizard && (
+                      <>
+                        {/* Search is not built yet. The control keeps its place in
                         the bar so the layout does not shift when it arrives. */}
-                      <TopBarButton
-                        aria-label="Search (not available yet)"
-                        title="Search is not available yet"
-                        aria-disabled
-                        className="max-sm:hidden"
-                      >
-                        <SearchIcon width={20} height={20} />
-                      </TopBarButton>
-                      {/* The one theme switch for every page under this bar, so
+                        <TopBarButton
+                          aria-label="Search (not available yet)"
+                          title="Search is not available yet"
+                          aria-disabled
+                          className="max-sm:hidden"
+                        >
+                          <SearchIcon width={20} height={20} />
+                        </TopBarButton>
+                        {/* The one theme switch for every page under this bar, so
                         no page needs to carry its own. Restyled from the
                         primitive's glass disc to sit among the bar's buttons. */}
-                      <ThemeToggle className="!size-11 shrink-0 !rounded-control !border-0 !bg-transparent !text-brand-100 !backdrop-filter-none hover:!bg-white/10 hover:!text-white max-sm:hidden" />
-                      <TopBarButton
-                        aria-label="Notifications"
-                        title="Notifications"
-                        className="max-sm:hidden"
-                      >
-                        <BellIcon width={20} height={20} />
-                      </TopBarButton>
-                    </>
-                  )}
-                  <AccountButton
-                    onOpenUserSettings={() => setDialog('user')}
-                    onOpenFeatureToggles={() => setDialog('features')}
-                  />
-                </>
-              }
-            >
-              {wizard ? (
-                <span className="truncate px-2 text-sm font-semibold text-brand-100">
-                  Ingestion <span aria-hidden>›</span> Add a source
-                </span>
-              ) : (
-                <PinnedPages
-                  pages={pinned}
-                  activeId={active?.id}
-                  current={active ? toPinned(active.id) : undefined}
-                  onPagesChange={setPinned}
-                  onNavigate={onNavigate}
-                  max={MAX_PINS}
-                />
-              )}
-            </TopBar>
-
-            <div className="relative flex min-h-0 flex-1">
-              {docked && (
-                <SideMenu
-                  sections={sections}
-                  activeId={active?.id}
-                  mode={mode}
-                  openIds={openIds}
-                  onOpenIdsChange={setOpenIds}
-                  onNavigate={onNavigate}
-                />
-              )}
-              <SlideOver
-                open={!docked && drawerOpen}
-                onClose={() => setDrawerOpen(false)}
-                label="Menu"
+                        <ThemeToggle className="!size-11 shrink-0 !rounded-control !border-0 !bg-transparent !text-brand-100 !backdrop-filter-none hover:!bg-white/10 hover:!text-white max-sm:hidden" />
+                        <TopBarButton
+                          aria-label="Notifications"
+                          title="Notifications"
+                          className="max-sm:hidden"
+                        >
+                          <BellIcon width={20} height={20} />
+                        </TopBarButton>
+                      </>
+                    )}
+                    <AccountButton
+                      onOpenUserSettings={() => setDialog('user')}
+                      onOpenFeatureToggles={() => setDialog('features')}
+                    />
+                  </>
+                }
               >
-                <SideMenu
-                  sections={sections}
-                  activeId={active?.id}
-                  openIds={openIds}
-                  onOpenIdsChange={setOpenIds}
-                  onNavigate={onNavigate}
-                />
-              </SlideOver>
-              {/* The workflow pages were built to fill the viewport (`h-dvh`).
+                {wizard ? (
+                  <span className="truncate px-2 text-sm font-semibold text-brand-100">
+                    Ingestion <span aria-hidden>›</span> Add a source
+                  </span>
+                ) : (
+                  <PinnedPages
+                    pages={pinned}
+                    activeId={active?.id}
+                    current={active ? toPinned(active.id) : undefined}
+                    onPagesChange={setPinned}
+                    onNavigate={onNavigate}
+                    max={MAX_PINS}
+                  />
+                )}
+              </TopBar>
+
+              <div className="relative flex min-h-0 flex-1">
+                {docked && (
+                  <SideMenu
+                    sections={sections}
+                    activeId={active?.id}
+                    mode={mode}
+                    openIds={openIds}
+                    onOpenIdsChange={setOpenIds}
+                    onNavigate={onNavigate}
+                  />
+                )}
+                <SlideOver
+                  open={!docked && drawerOpen}
+                  onClose={() => setDrawerOpen(false)}
+                  label="Menu"
+                >
+                  <SideMenu
+                    sections={sections}
+                    activeId={active?.id}
+                    openIds={openIds}
+                    onOpenIdsChange={setOpenIds}
+                    onNavigate={onNavigate}
+                  />
+                </SlideOver>
+                {/* The workflow pages were built to fill the viewport (`h-dvh`).
                 Under the top bar that is one bar too tall, so here — and only
                 here — a full-viewport page is told to fill this box instead.
                 Done from the outside so those pages, and their stories, still
                 stand on their own. */}
-              <div className="relative min-w-0 flex-1 overflow-y-auto [&>.h-dvh]:h-full [&>.min-h-dvh]:min-h-full">
-                {unavailable ? (
-                  <SpaceUnavailablePage space={unavailable} />
-                ) : (
-                  <Suspense
-                    fallback={
-                      <div
-                        role="status"
-                        className="grid h-full place-items-center text-sm text-ink-soft"
-                      >
-                        Loading…
-                      </div>
-                    }
-                  >
-                    {pathname.split('?')[0] === '/tenants' ? (
-                      <TenantsPage
-                        editId={new URLSearchParams(pathname.split('?')[1]).get('edit')}
-                        onClearEdit={() => navigate('/tenants')}
-                      />
-                    ) : rest === '/home' || !rest ? (
-                      <HomePage />
-                    ) : rest === '/tasks' ? (
-                      <TasksPage />
-                    ) : wizard ? (
-                      <WizardPage />
-                    ) : space ? (
-                      (renderSpace?.({
-                        space,
-                        path: rest,
-                        tenant,
-                        base,
-                        onOpenUserSettings: () => setDialog('user'),
-                        onOpenFeatureToggles: () => setDialog('features'),
-                      }) ??
-                      (space === 'workflows' ? (
-                        <RunsPage />
-                      ) : (
-                        <PlaceholderPage
-                          title={
-                            active?.label ??
-                            (space === 'chat'
-                              ? 'Chat'
-                              : space === 'insights'
-                                ? 'Insights'
-                                : 'Ingestion')
-                          }
-                          addSource={space === 'ingestion'}
+                <div className="relative min-w-0 flex-1 overflow-y-auto [&>.h-dvh]:h-full [&>.min-h-dvh]:min-h-full">
+                  {unavailable ? (
+                    <SpaceUnavailablePage space={unavailable} />
+                  ) : (
+                    <Suspense
+                      fallback={
+                        <div
+                          role="status"
+                          className="grid h-full place-items-center text-sm text-ink-soft"
+                        >
+                          Loading…
+                        </div>
+                      }
+                    >
+                      {pathname.split('?')[0] === '/tenants' ? (
+                        <TenantsPage
+                          editId={new URLSearchParams(pathname.split('?')[1]).get('edit')}
+                          onClearEdit={() => navigate('/tenants')}
                         />
-                      )))
-                    ) : (
-                      <PlaceholderPage title="Page unavailable" />
-                    )}
-                  </Suspense>
-                )}
+                      ) : rest === '/home' || !rest ? (
+                        <HomePage />
+                      ) : rest === '/tasks' ? (
+                        <TasksPage />
+                      ) : wizard ? (
+                        <WizardPage />
+                      ) : space ? (
+                        (renderSpace?.({
+                          space,
+                          path: rest,
+                          tenant,
+                          base,
+                          onOpenUserSettings: () => setDialog('user'),
+                          onOpenFeatureToggles: () => setDialog('features'),
+                        }) ??
+                        (space === 'workflows' ? (
+                          <RunsPage />
+                        ) : (
+                          <PlaceholderPage
+                            title={
+                              active?.label ??
+                              (space === 'chat'
+                                ? 'Chat'
+                                : space === 'insights'
+                                  ? 'Insights'
+                                  : 'Ingestion')
+                            }
+                            addSource={space === 'ingestion'}
+                          />
+                        )))
+                      ) : (
+                        <PlaceholderPage title="Page unavailable" />
+                      )}
+                    </Suspense>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          </SideMenuSlotProvider>
 
           <UserSettingsModal open={dialog === 'user'} onClose={() => setDialog(null)} />
           <FeatureTogglesModal open={dialog === 'features'} onClose={() => setDialog(null)} />
