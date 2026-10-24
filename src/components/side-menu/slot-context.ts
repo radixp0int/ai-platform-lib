@@ -1,15 +1,13 @@
 import { createContext, useContext } from 'react'
 
 export type Slots = {
-  expanded: HTMLElement | null
-  rail: HTMLElement | null
-  setExpanded: (element: HTMLElement | null) => void
-  setRail: (element: HTMLElement | null) => void
+  panel: HTMLElement | null
+  setPanel: (element: HTMLElement | null) => void
 }
 
 export const SlotsContext = createContext<Slots | null>(null)
 
-/** For `SideMenu`: where to report its two containers. Null outside a provider. */
+/** For `SideMenu`: where to report the container under its panel's content. Null outside a provider. */
 export function useSideMenuSlots() {
   return useContext(SlotsContext)
 }

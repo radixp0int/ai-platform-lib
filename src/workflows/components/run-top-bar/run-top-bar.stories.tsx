@@ -15,6 +15,8 @@ function TopBar({ phase, waitingCount = 1 }: { phase: RunPhase; waitingCount?: n
         waitingCount={waitingCount}
         phase={phase}
         onControl={fn()}
+        runPanelOpen
+        onShowRunPanel={fn()}
         detailsOpen={details}
         onToggleDetails={() => setDetails((d) => !d)}
         logOpen={log}

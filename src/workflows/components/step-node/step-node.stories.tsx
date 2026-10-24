@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ReactFlow, ReactFlowProvider } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import { placeRun } from '../../engine/layout'
-import { rfpResponse } from '../../fixtures/rfpResponse'
 import { APPROVAL, STORY_RUN } from '../../fixtures/storyRun'
+import type { WireStage, WireStep, WireStepContent, WireStepKind } from '../../engine/wireProtocol'
 import { buildStepNodes } from '../build'
 import type { StatusMap, StepStatus } from '../types'
 import { EDGE_TOKENS } from '../workflow-canvas'
@@ -22,12 +22,59 @@ const STATUSES: StepStatus[] = [
   'skipped',
 ]
 const agent = STORY_RUN.graph.stepById.get('risk')!
-// The steps of the RFP run that carry content, laid out by the engine so the
-// story also shows the spacing `stepHeight` asks for.
-const RICH = ['price', 'quote', 'margin', 'size', 'review', 'legal', 'vendor', 'assemble']
+// Steps that carry `content`, laid out by the engine so the story also shows the
+// spacing `stepHeight` asks for. One of each shape the canvas can draw.
+const withContent = (
+  id: string,
+  kind: WireStepKind,
+  title: string,
+  column: number,
+  row: number,
+  content?: WireStepContent,
+): WireStep => ({
+  id,
+  kind,
+  stageId: ['gather', 'analyze', 'approve'][Math.min(column, 2)],
+  title,
+  meta: 'Queued',
+  column,
+  row,
+  content,
+  detail: { summary: '', rows: [] },
+})
+const CONTENT_STAGES: WireStage[] = ['gather', 'analyze', 'approve'].map((id) => ({
+  id,
+  name: id,
+  sub: '',
+  status: 'upcoming',
+}))
 const rich = placeRun(
-  rfpResponse.steps.filter((s) => RICH.includes(s.id)),
-  rfpResponse.stages,
+  [
+    withContent('pull', 'tool', 'credit_bureau.pull', 0, 0, {
+      facts: [
+        ['Request', 'POST /bureau/pull'],
+        ['Result', '201 Created'],
+      ],
+    }),
+    withContent('spread', 'agent', 'Spread financials', 0, 1, {
+      progress: { done: 2, total: 3, label: '2 of 3 years' },
+      tools: ['docs.read', 'ocr.extract'],
+    }),
+    withContent('policy', 'decision', 'Policy check', 1, 0, {
+      branches: [
+        { when: 'Exception', to: 'Senior review', taken: true },
+        { when: 'Clear', to: 'Approve' },
+      ],
+    }),
+    withContent('kyc', 'flow', 'Verify owners', 1, 1, {
+      progress: { done: 1, total: 2, label: '1 of 2 stages' },
+    }),
+    withContent('approve', 'human', 'Approve credit memo', 2, 0, {
+      note: 'Approve with conditions',
+    }),
+    withContent('senior', 'human', 'Senior officer review', 2, 1),
+  ],
+  CONTENT_STAGES,
 ).steps
 const SETS = {
   approval: {
@@ -58,14 +105,12 @@ const SETS = {
   content: {
     steps: rich.map((s) => ({ ...s, x: s.x - rich[0].x })),
     statuses: {
-      price: 'done',
-      quote: 'done',
-      margin: 'done',
-      size: 'done',
-      review: 'waiting',
-      legal: 'skipped',
-      vendor: 'done',
-      assemble: 'queued',
+      pull: 'done',
+      spread: 'running',
+      policy: 'done',
+      kyc: 'running',
+      approve: 'waiting',
+      senior: 'skipped',
     } as StatusMap,
     selected: null,
   },

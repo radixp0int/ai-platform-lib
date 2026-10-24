@@ -2,16 +2,36 @@ import { Skeleton } from '../../../primitives/skeleton'
 // The first paint, while React Flow and this section's chunk load.
 //
 // It lives OUTSIDE the lazy chunk on purpose — a fallback that had to be fetched
-// before it could be shown would defeat the point. It draws the page the real
-// one resolves into (canvas, inspector) so the layout doesn't jump, and it
-// borrows the app's own motion: the shimmer sweep. The run outline is in the
-// platform menu, which is already on screen.
+// before it could be shown would defeat the point. It draws the shell the real
+// page resolves into (panel, canvas, inspector) so the layout doesn't jump, and
+// it borrows the app's own motion: the drifting orb and the shimmer sweep.
 import { AmbientGlow } from '../../../primitives/ambient-glow'
 
 export function WorkflowSkeleton() {
   return (
     <div className="relative flex h-dvh gap-4 overflow-hidden bg-canvas p-4" aria-hidden>
       <AmbientGlow />
+
+      <aside className="glass flex w-72 shrink-0 flex-col rounded-surface">
+        <div className="flex items-center gap-3 px-6 pt-6 pb-5">
+          <Skeleton className="h-4 w-14" />
+        </div>
+        <div className="px-5">
+          <div className="rounded-surface bg-panel-solid p-4 shadow-sm ring-1 ring-line">
+            <Skeleton className="h-3.5 w-40" />
+            <Skeleton className="mt-2 h-3 w-32" />
+            <Skeleton className="mt-1.5 h-3 w-28" />
+          </div>
+        </div>
+        <div className="flex flex-col gap-3 px-7 pt-7">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <div key={i} className="flex items-center gap-3">
+              <span className="size-[18px] shrink-0 rounded-full bg-tint/10" />
+              <Skeleton className="h-3 flex-1" style={{ maxWidth: 120 + ((i * 23) % 60) }} />
+            </div>
+          ))}
+        </div>
+      </aside>
 
       <main className="glass relative flex min-w-0 flex-1 overflow-hidden rounded-surface">
         <div className="flex min-w-0 flex-1 flex-col">

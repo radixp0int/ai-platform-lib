@@ -38,7 +38,7 @@ export const Narrow: Story = {
 /** A workflow started by a monitor: every input is optional. */
 export const AllOptional: Story = {
   args: {
-    inputs: RUN_CONTRACTS['incident-triage'].inputs.map((i) => ({ ...i, required: false })),
-    outputs: RUN_CONTRACTS['incident-triage'].outputs,
+    inputs: RUN_CONTRACTS['loan-review'].inputs.map((i) => ({ ...i, required: false })),
+    outputs: RUN_CONTRACTS['loan-review'].outputs,
   },
 }

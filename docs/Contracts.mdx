@@ -133,8 +133,11 @@ keep native browser behavior.
 `AccountMenu` accepts a user, action items, and an optional footer; choose its
 `avatar` or `row` trigger. `TenantSwitcher` accepts loaded tenant options and
 optional paging/edit callbacks. `PinnedPages` reports a complete next list and
-refuses additions at its maximum. `SideMenu` takes sections and controlled open
-ids; neither component owns persistence.
+refuses additions at its maximum. `SideMenu` takes the destinations, the ids that
+get a place in its rail, and a panel for each app that has one; the panel can be
+controlled open or folded, and neither component owns persistence. A page whose
+panel depends on its own state adds to it with `InSideMenu`, inside a
+`SideMenuSlotProvider` (the `AppShell` has one).
 
 `PageHeader`, `RecordList`, `DescriptionList`, and `StatTile` preserve the
 platform pages' open layout through explicit class props. `SideDialog` uses a
@@ -145,7 +148,8 @@ focus inside a contained drawer and returns focus to its trigger.
 
 Import workflow components and the run engine from `ai-platform-lib/workflows`.
 Load `ai-platform-lib/workflows.css` after the brand and generic stylesheets.
-`RunOutline` is the run's section of the platform menu: the page hands it to `InSideMenu`, so it has to sit inside a `SideMenuSlotProvider` (the `AppShell` has one). `WorkflowCanvas` takes the graph,
+`RunSidebar` is the run's own panel beside the platform's rail, so it carries no
+brand of its own. `WorkflowCanvas` takes the graph,
 statuses, density, and controlled selection. The exported `EDGE_TOKENS` classes
 bind the graph's edge states to contrast-checked brand tokens.
 

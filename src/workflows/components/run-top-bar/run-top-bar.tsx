@@ -12,7 +12,7 @@ import type { RunTopBarProps } from './types'
 // truncate. The details toggle is never dropped: a narrow window is exactly when
 // someone wants that 400px back. See docs/workflows/design.md.
 import { IconButton } from '../../../primitives/icon-button'
-import { ChevronRightIcon, HistoryIcon, RefreshIcon } from '../../../primitives/icons'
+import { ChevronRightIcon, HistoryIcon, MenuIcon, RefreshIcon } from '../../../primitives/icons'
 import {
   PanelRightIcon,
   WorkflowPauseIcon,
@@ -24,6 +24,8 @@ export function RunTopBar({
   waitingCount,
   phase,
   onControl,
+  runPanelOpen,
+  onShowRunPanel,
   detailsOpen,
   onToggleDetails,
   logOpen,
@@ -33,7 +35,24 @@ export function RunTopBar({
   const over = phase === 'finished' || phase === 'failed'
 
   return (
-    <div className="flex h-[72px] shrink-0 items-center gap-3 overflow-hidden border-b border-line pr-5 pl-6">
+    <div
+      className={`flex h-[72px] shrink-0 items-center gap-3 overflow-hidden border-b border-line pr-5 ${
+        runPanelOpen ? 'pl-6' : 'pl-3'
+      }`}
+    >
+      {/* With the run panel collapsed this is the app's top-left corner, which is
+          where people reach for the menu. */}
+      {!runPanelOpen && (
+        <IconButton
+          shape="rounded"
+          onClick={onShowRunPanel}
+          className="shrink-0"
+          aria-label="Show run panel"
+          title="Show run panel"
+        >
+          <MenuIcon width={18} height={18} />
+        </IconButton>
+      )}
       {/* First to go when the column gets tight — the page title says it anyway. */}
       <span className="shrink-0 text-[13px] text-ink-soft @max-[880px]:hidden">Workflows</span>
       <ChevronRightIcon
@@ -44,7 +63,7 @@ export function RunTopBar({
       <h1 className="min-w-0 truncate text-base font-bold tracking-tight text-ink-strong">
         {title}
       </h1>
-      {/* Sheds words, then disappears — the menu's "Needs you" count carries
+      {/* Sheds words, then disappears — the sidebar's "Needs you" count carries
           the same fact, so this is the first thing that can go. */}
       {waitingCount > 0 && (
         <span className="ml-2 inline-flex h-7 shrink-0 items-center gap-2 rounded-control bg-notify/12 px-3 text-xs font-bold whitespace-nowrap text-ink-strong @max-[620px]:hidden">

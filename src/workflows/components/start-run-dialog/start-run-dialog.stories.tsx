@@ -51,7 +51,7 @@ export const Default: Story = {}
 
 /** From the workflows table: pick which one first. */
 export const PickAWorkflow: Story = {
-  args: { workflows: STARTABLE_WORKFLOWS, workflowId: 'rfp-response' },
+  args: { workflows: STARTABLE_WORKFLOWS, workflowId: 'loan-review' },
 }
 
 /** The source refused the start — a server that found a required input missing. */

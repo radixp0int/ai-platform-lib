@@ -3,6 +3,51 @@
 Changes to the component library as seen from Storybook. Newest first. Each
 entry names the modules it touches so the sidebar entry is easy to find.
 
+## 2026-10-23 — Workflows: one worked example, the commercial loan review
+
+- **The incident triage, employee onboarding and RFP response examples are
+  gone:** their stories, e2e tests and scripted runs (`incidentTriage`,
+  `onboarding`, `rfpResponse` in `fixtures/`), and the fixture-run harness only
+  they used (`FixtureWorkflow`, `createFixtureRunSource`, `RunScript`). The loan
+  review is the one run the stories, tests and `npm run test:static-workflows`
+  walk through; that script now checks its approve, decline and request-changes
+  paths.
+- **Kept as data, not examples:** the table's twenty workflow summaries, and the
+  wire protocol's variant ids, which a server may still send. `RUN_CONTRACTS`
+  now holds the loan review's contract only. The step-node "With content" story
+  carries a few steps of its own, since the RFP run was where its content came
+  from.
+
+## 2026-10-23 — The standard side menu: an app rail and a panel you can drag
+
+- **`SideMenu` is now a rail of the apps and a panel for the one you are in.**
+  The rail (68px, always there) has an icon and a short name for each app, a
+  badge on Tasks, and Settings at the foot. Pressing the icon of the app you
+  are in folds its panel away and brings it back; with the panel folded,
+  resting on the icon opens a card with the short version, and **Pin panel**
+  brings the panel back. The grid at the top opens **All apps**: every
+  destination as a tile, a search, and pages visited lately. The panel's edge
+  is a handle: drag it, use the arrow keys, or double-click to reset (200 to
+  420px). Its props changed: `sections` and `activeId` stay; `rail`, `panels`,
+  `appsHeading`, `places`, `footLinks`, `panelOpen` are new; `mode`, `openIds`
+  and `onOpenIdsChange` are gone.
+- **New pieces for what a panel holds:** `MenuPanelSearch`, `MenuPanelLabel`
+  and `MenuPanelRow`, so the panels of different apps read alike. `MenuBadge`
+  is removed. `MenuDestination` gains `shortLabel`.
+- **`AppShell` docks that menu on every page.** The Workflows panel has a
+  search, Views and Recently viewed. The Chat panel is filled by the chat page
+  through `InSideMenu` (children only now; the `rail` prop is gone): New chat,
+  search, filters and recent chats, from the new **`ChatMenuBody`**, which the
+  standalone `ChatMenu` frames in its own sidebar. `ChatMenu` loses `embedded`.
+  The shell's top-bar button opens the menu only on a narrow screen.
+  `initialMenuMode` is now `initialPanelOpen`. On a run's canvas the app panel
+  starts folded, because the run has a panel of its own.
+- **The run's panel is back beside the rail** and has no brand: **`RunSidebar`**
+  loses `appName`, and its header reads "Run". This reverses the previous
+  entry's move of the outline into the menu: **`RunOutline`**, **`RunOutlineRail`**
+  and `InAppShell` are removed.
+- **New icons:** `AppsIcon`, `HelpIcon`, `PanelCollapseIcon`.
+
 ## 2026-10-22 — One side menu: the run outline moves into it
 
 - **The live run page no longer has a side panel of its own.** Its run card,

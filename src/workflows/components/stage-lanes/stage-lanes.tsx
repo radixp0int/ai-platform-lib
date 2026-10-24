@@ -5,8 +5,8 @@ import type { StageLanesProps } from './types'
 // the graph without adding anything for React Flow to measure or hit-test.
 //
 // `top`/`bottom` are props rather than constants because a lane is only as tall
-// as the run it stands behind: the onboarding variant's five-wide provisioning
-// column is 720px, and a fixed height would leave its nodes hanging outside.
+// as the run it stands behind: a run with a tall column of steps needs more
+// than a fixed height, which would leave its nodes hanging outside.
 //
 // A lane is one of two widths. An open one keeps its full
 // header and gains a control that folds it; a folded one has no room for a

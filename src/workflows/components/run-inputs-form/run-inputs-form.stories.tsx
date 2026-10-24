@@ -5,7 +5,6 @@ import { RUN_CONTRACTS } from '../../fixtures/runContracts'
 import { RunInputsForm } from './run-inputs-form'
 
 const loan = RUN_CONTRACTS['loan-review']
-const rfp = RUN_CONTRACTS['rfp-response']
 
 /** One input of every type, so each field can be seen in one place. */
 const EVERY_TYPE: RunInputSpec[] = [
@@ -63,7 +62,7 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {}
 
 /** Opened with what is already known about the run. */
-export const Prefilled: Story = { args: { inputs: rfp.inputs, initialValues: rfp.defaults } }
+export const Prefilled: Story = { args: { inputs: loan.inputs, initialValues: loan.defaults } }
 
 /** Every input type, and the field each one gets. */
 export const EveryType: Story = { args: { inputs: EVERY_TYPE } }
@@ -73,5 +72,5 @@ export const NothingToFill: Story = { args: { inputs: [] } }
 
 /** The start has been sent: the button is held until the source answers. */
 export const Busy: Story = {
-  args: { inputs: rfp.inputs, initialValues: rfp.defaults, busy: true },
+  args: { inputs: loan.inputs, initialValues: loan.defaults, busy: true },
 }
