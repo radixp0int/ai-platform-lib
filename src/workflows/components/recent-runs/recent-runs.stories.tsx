@@ -14,7 +14,7 @@ const meta = {
       </div>
     ),
   ],
-  args: { runs: RECENT_RUNS, activeId: 'rfp-response', onOpen: fn() },
+  args: { runs: RECENT_RUNS, activeId: 'loan-origination', onOpen: fn() },
 } satisfies Meta<typeof RecentRuns>
 export default meta
 type Story = StoryObj<typeof meta>

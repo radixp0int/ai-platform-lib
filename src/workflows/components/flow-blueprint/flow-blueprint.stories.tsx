@@ -25,7 +25,10 @@ export const WaitingOnAPerson: Story = {}
 
 /** Ten stages in the same width: the lanes narrow, the bars stay readable. */
 export const TenStages: Story = {
-  args: { stages: stagesOf('rfp-response'), label: 'RFP response: stage 8 of 10, Review' },
+  args: {
+    stages: stagesOf('loan-origination'),
+    label: 'Commercial loan origination: stage 7 of 10, Approve',
+  },
 }
 
 /** Two steps in progress; the lines into them are dashed. */

@@ -18,7 +18,7 @@ import {
   type FilterTermField,
 } from '../../../components/filter-bar'
 import type { FilterField } from '../../../components/filter-panel'
-import { PageHeader } from '../../../components/page-header'
+import { PageHeader, pageColumn } from '../../../components/page-header'
 import { Pagination } from '../../../components/pagination'
 import type { Sort } from '../../../components/paging'
 import { Avatar } from '../../../primitives/avatar'
@@ -28,7 +28,7 @@ import { StatusDot } from '../../../primitives/status-dot'
 import { FlowBlueprint } from '../../components/flow-blueprint'
 import { StageProgress } from '../../components/stage-progress'
 import { WORKFLOW_SUMMARIES } from '../../fixtures/workflowSummaries'
-import type { WorkflowState, WorkflowsTablePageProps, WorkflowSummary } from './types'
+import type { WorkflowState, RunsListPageProps, WorkflowSummary } from './types'
 
 const STATE_LABEL: Record<WorkflowState, string> = {
   waiting: 'Needs a person',
@@ -132,11 +132,12 @@ const COLUMNS: Column<WorkflowSummary>[] = [
   },
 ]
 
-export function WorkflowsTablePage({
+export function RunsListPage({
   workflows = WORKFLOW_SUMMARIES,
   hrefFor = (workflow) => `#${workflow.id}`,
+  detailHrefFor,
   onStart,
-}: WorkflowsTablePageProps) {
+}: RunsListPageProps) {
   // Typed conditions (searches and narrowings) and the one filter the panel
   // holds. `FilterBar` draws both as chips, so neither needs a second home.
   const [terms, setTerms] = useState<FilterTerm[]>([])
@@ -192,7 +193,7 @@ export function WorkflowsTablePage({
   ]
 
   return (
-    <div className="mx-auto flex w-full max-w-[84rem] flex-col gap-5 px-8 py-7 max-md:px-4">
+    <div className={`${pageColumn} max-w-[84rem] gap-5`}>
       <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
         <PageHeader
           title={<>Workflows</>}
@@ -279,9 +280,16 @@ export function WorkflowsTablePage({
                       : 'Running without a person.'}
                   </span>
                 )}
-                <ButtonLink href={hrefFor(w)} variant="secondary" size="lg" className="ml-auto">
-                  Open live view
-                </ButtonLink>
+                <span className="ml-auto flex flex-wrap items-center gap-2">
+                  {detailHrefFor?.(w) && (
+                    <ButtonLink href={detailHrefFor(w)!} variant="ghost" size="lg">
+                      Workflow details
+                    </ButtonLink>
+                  )}
+                  <ButtonLink href={hrefFor(w)} variant="secondary" size="lg">
+                    Open live view
+                  </ButtonLink>
+                </span>
               </div>
               <div className="overflow-x-auto rounded-surface border border-line bg-canvas">
                 <FlowBlueprint

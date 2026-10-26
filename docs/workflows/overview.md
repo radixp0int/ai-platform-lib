@@ -34,8 +34,8 @@ controls. Production hosts supply their own source or use
 URL, and app routing belong to the host.
 
 `createStaticRunSource()` supplies the authored loan run without a server. The
-loan, loading, unavailable, and runs-list recipes show the surrounding screen
-states. The sibling `chat-interfaces` demo uses this library for its
+loan, loading, unavailable, runs-list, and run detail recipes show the
+surrounding screen states. The sibling `chat-interfaces` demo uses this library for its
 `/workflow-demo` and `/workflow-live` routes; those routes are not library APIs.
 
 ## Inputs and outputs
@@ -71,6 +71,60 @@ approval stays interactive.
 
 Run `npm run test:static-workflows` after `npm run build-storybook` to check that
 approval, and `npm run test:tablet-workflow` for the tablet and desktop layout.
+
+## The workflow detail page
+
+The runs list shows every workflow at a glance; the workflow detail recipe is
+the page behind one of them. A row's **Workflow details** opens it, and the
+row's **Open live view** still goes to the live page.
+
+The page is a header (`WorkflowHeader`: name, purpose, Edit workflow, Start a
+run, the facts that identify it, and a banner that opens the run in progress)
+over three tabs:
+
+- **Overview** shows how every run is built (`WorkflowShape`, a blueprint with
+  numbered lanes; a step that only runs sometimes is dashed), what a run needs to
+  start and hands back (`RunContract`), what each stage does
+  (`WorkflowStageList`, each stage opening to one `WorkflowStepCard` per step),
+  and three cards beside them (`WorkflowApprovers`, `WorkflowSystems`,
+  `WorkflowStats`).
+- **Runs** (`WorkflowRunsTable`) lists the latest runs. A row with a trace opens
+  it; one without is a plain row, not a dead link.
+- **Versions** (`WorkflowVersions`) lists the versions under "Start a draft".
+
+The page takes a `WorkflowSpec` as data (`components/workflow-spec`): stages with
+their steps, typed inputs and outputs, approvers, systems, stats, runs and
+versions. `shapeOf` turns it into the blueprint. The commercial loan review,
+`COMMERCIAL_LOAN_SPEC`, is the one worked example; its step and stage ids and
+step I/O are the scripted loan run's own.
+
+## The run detail page
+
+The canvas draws a run's shape; the run detail recipe is the page for reading one
+run's **trace**: what each step did, how long it took, and what went in and came
+out. The workflow detail page's Runs tab opens it.
+
+A row of stage tiles (`TraceStageStrip`) says where the run is. The steps of the
+chosen stage (`TraceStepList`) sit beside one step opened up
+(`TraceInspector`): the calls it made against the clock (`TraceSequence`), an
+agent's own account of its reasoning, its input and output, and the raw record.
+It opens on the stage and step the run is waiting at, or on the failed one.
+
+The page takes a `RunTrace` as data (`components/run-trace`): stages, and steps
+with their status, timings, calls and token usage. Nothing in it is on the run
+wire protocol yet, so a host supplies a trace from its own request.
+`summarizeStages`, `currentStageId` and `currentStepId` derive what the tiles
+and the opening view read. The commercial loan review run for Harbor Street
+Bakery, `COMMERCIAL_LOAN_TRACE`, is twenty-three minutes in and waiting on its
+analyst. It exercises work in parallel, a review skipped because the loan is too
+small, and minutes of waiting on a person. `COMMERCIAL_LOAN_TRACE_BUREAU_FAILED`
+is the same run with the credit pull timed out and the run carried on past it.
+No React Flow is loaded.
+
+In the stories the pages are reached through the shell: the **Runs list** story
+**In app shell** walks from the list, through **Workflow details**, to a run's
+trace. The shared `renderWorkflowsSpace` does that routing; a host does the same
+with its router.
 
 ## Source layout
 

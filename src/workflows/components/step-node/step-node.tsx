@@ -12,17 +12,8 @@ import { KindIcon } from '../kind-icon'
 import { StageProgress } from '../stage-progress'
 import { StatusMark } from '../status-mark'
 import type { StepContent, StepKind, StepStatus } from '../types'
-import { DEFAULT_STATUS_LABEL } from '../types'
+import { DEFAULT_STATUS_LABEL, STEP_KIND_LABEL } from '../types'
 import { useZoomTier } from '../zoom'
-
-const KIND_LABEL: Record<StepKind, string> = {
-  agent: 'Agent',
-  human: 'Approval',
-  tool: 'System call',
-  decision: 'Decision',
-  trigger: 'Trigger',
-  flow: 'Sub-workflow',
-}
 
 /* One hue, four weights of emphasis. A person's step is the loudest because it
    is the one that stops the run. */
@@ -154,7 +145,7 @@ function StepNodeView({ data, selected }: StepNodeProps) {
             <span
               className={`inline-flex h-5 items-center rounded-control px-2 text-[11px] font-bold whitespace-nowrap ${KIND_CHIP[kind]}`}
             >
-              {KIND_LABEL[kind]}
+              {STEP_KIND_LABEL[kind]}
             </span>
             <StatusMark status={status} text={statusText} />
           </div>

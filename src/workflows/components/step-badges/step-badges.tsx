@@ -8,16 +8,7 @@ import type { StepBadgesProps } from './types'
 // arrangement, not these blocks: the panel stacks them in one narrow column,
 // the page lays them out in two.
 import type { StepStatus } from '../index'
-import { KindIcon } from '../index'
-
-const KIND_LABEL = {
-  agent: 'Agent',
-  human: 'Approval',
-  tool: 'System call',
-  decision: 'Decision',
-  trigger: 'Trigger',
-  flow: 'Sub-workflow',
-} as const
+import { KindIcon, STEP_KIND_LABEL } from '../index'
 
 const STATUS_LABEL: Record<StepStatus, string> = {
   done: 'Done',
@@ -36,7 +27,7 @@ export function StepBadges({ step, status }: StepBadgesProps) {
     <div className="flex items-center gap-2.5">
       <span className="inline-flex h-5 items-center gap-1.5 rounded-control bg-chip px-2 text-[11px] font-bold text-chip-fg">
         <KindIcon kind={step.kind} initials={step.initials} size={14} />
-        {KIND_LABEL[step.kind]}
+        {STEP_KIND_LABEL[step.kind]}
       </span>
       {status === 'waiting' ? (
         <span className="ml-auto inline-flex h-5 items-center rounded-control bg-notify px-2 text-[11px] font-bold text-on-notify">

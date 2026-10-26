@@ -2,7 +2,6 @@ import { SlideOver } from '../../components/slide-over'
 import { NavigateProvider } from '../../primitives/link'
 import { HomePage } from './pages/HomePage'
 import { PlaceholderPage } from './pages/PlaceholderPage'
-import { RunsPage } from './pages/RunsPage'
 import { TasksPage } from './pages/TasksPage'
 import { TenantsPage } from './pages/TenantsPage'
 import { WizardPage } from './pages/WizardPage'
@@ -407,10 +406,9 @@ export function AppShell({
                           base,
                           onOpenUserSettings: () => setDialog('user'),
                           onOpenFeatureToggles: () => setDialog('features'),
-                        }) ??
-                        (space === 'workflows' ? (
-                          <RunsPage />
-                        ) : (
+                        }) ?? (
+                          // The workflows list is the workflows recipe's: a host
+                          // supplies it through `renderSpace`, as the stories do.
                           <PlaceholderPage
                             title={
                               active?.label ??
@@ -418,11 +416,13 @@ export function AppShell({
                                 ? 'Chat'
                                 : space === 'insights'
                                   ? 'Insights'
-                                  : 'Ingestion')
+                                  : space === 'workflows'
+                                    ? 'Workflows'
+                                    : 'Ingestion')
                             }
                             addSource={space === 'ingestion'}
                           />
-                        )))
+                        ))
                       ) : (
                         <PlaceholderPage title="Page unavailable" />
                       )}
