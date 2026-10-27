@@ -12,7 +12,7 @@ changing it.
 
 | Folder                        | What it is                                                                                                  | Built as                                                 |
 | ----------------------------- | ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| `designs/platform-shell/`     | The platform shell: top bar, pinned pages, tenant switcher, side menu, and the pages around them            | **Recipes / App shell** and the components it is made of |
+| `designs/platform-shell/`     | The platform shell: chat with its own menu, the wizard, the side-menu reference, the rejected revisions     | **Recipes / App shell** and the components it is made of |
 | `designs/agentic-flows/`      | The workflow run canvas: horizontal lanes, the flow console, node kit                                       | **Workflows / Recipes / Loan review run**                |
 | `designs/responsive-review/`  | The tablet and phone review: which widths are supported, how to decide what gives way, evidence screenshots | Rules every component and recipe follows                 |
 | `designs/assistant-greeting/` | The Ghost prompt greeting, its widget and error states, and the Aristotle avatar options                    | **Chat / Components / Conversation**, empty state        |
@@ -38,16 +38,20 @@ handling are still to come.
 
 ## Platform shell
 
-The canvas has four pages. The current direction is **Mercury direction 2.0**
+The canvas has three pages. The current direction is **Mercury direction 2.0**
 (files prefixed `M2`): Mercury-style pages under a navy top bar that carries
 the menu toggle, the logo, up to three pinned pages, the tenant switcher, a
 search icon, notifications and the account menu.
 
+The boards that drew the old 248px side menu (Spaces and Data groups, chevron
+sub-items) have been removed; they are in git history. New designs use the
+unified menu, a 68px app rail beside a 260px panel. The boards left are chat
+with only its own menu, and the wizard, which hides the side menu.
+
 | Canvas page           | Files     | Status                                                                              |
 | --------------------- | --------- | ----------------------------------------------------------------------------------- |
-| Airtable direction    | no prefix | First pass. Its top bar carried into 2.0.                                           |
-| Mercury direction     | `M…`      | Second pass, with the controls in the page rather than a top bar.                   |
-| Mercury direction 2.0 | `M2…`     | **Current.** What the app shell recipe implements.                                  |
+| Mercury direction     | `MWizard` | Second pass. Only the wizard board is left.                                         |
+| Mercury direction 2.0 | `M2…`     | **Current.** What the app shell recipe implements. Chat and wizard boards remain.   |
 | Component revisions   | `Rev…`    | **Rejected.** A Mercury-style restyle of eight components. Kept for reference only. |
 
 Decisions that came out of the reviews and are easy to undo by accident:
