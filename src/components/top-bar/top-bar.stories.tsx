@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Breadcrumbs } from '../../primitives/breadcrumbs'
 import { BellIcon, SearchIcon, SideMenuIcon } from '../../primitives/icons'
 import { TopBar } from './top-bar'
 import { TopBarButton } from './top-bar-button'
@@ -63,9 +64,11 @@ export const FocusedFlow: Story = {
       </TopBarButton>
     ),
     children: (
-      <span className="truncate px-2 text-sm font-semibold text-brand-100">
-        Ingestion › Add a source
-      </span>
+      <Breadcrumbs
+        tone="inverse"
+        className="px-2 [&>ol]:flex-nowrap"
+        items={[{ label: 'Ingestion' }, { label: 'Add a source' }]}
+      />
     ),
     trailing: (
       <span className="flex h-11 items-center rounded-control border border-white/20 px-3.5 text-sm font-bold">

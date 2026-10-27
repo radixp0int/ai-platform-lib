@@ -7,10 +7,12 @@ export {
   Breadcrumbs,
 } from './breadcrumbs'
 export type {
+  BreadcrumbEntry,
   BreadcrumbItemProps,
   BreadcrumbLinkProps,
   BreadcrumbListProps,
   BreadcrumbPageProps,
   BreadcrumbSeparatorProps,
   BreadcrumbsProps,
+  BreadcrumbsTone,
 } from './types'

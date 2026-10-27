@@ -9,8 +9,8 @@
 // comes in as data, so a real one swaps the fixture for a request and changes
 // nothing else.
 import { useMemo, useState } from 'react'
-import { BreadcrumbTrail } from '../../../components/breadcrumb-trail'
 import { PageHeader, pageColumn } from '../../../components/page-header'
+import { Breadcrumbs } from '../../../primitives/breadcrumbs'
 import { ButtonLink } from '../../../primitives/button'
 import { Pill } from '../../../primitives/pill'
 import {
@@ -76,7 +76,7 @@ export function RunDetailPage({
 
   return (
     <div className={`${pageColumn} max-w-[84rem] gap-5`}>
-      <BreadcrumbTrail
+      <Breadcrumbs
         items={[
           { label: 'Workflows', href: listHref },
           ...(workflowHref ? [{ label: trace.workflow, href: workflowHref }] : []),
