@@ -37,6 +37,9 @@ test.describe('TopBar', () => {
     const bar = page.getByRole('banner')
     await expect(bar.getByRole('button', { name: 'Close and discard this source' })).toBeVisible()
     await expect(bar).toContainText('Add a source')
+    // The title is a trail, so it is a landmark and its last step is the current page.
+    await expect(bar.getByRole('navigation', { name: 'Breadcrumb' })).toContainText('Ingestion')
+    await expect(bar.locator('[aria-current="page"]')).toHaveText('Add a source')
     expect((await bar.boundingBox())!.height).toBe(60)
   })
 

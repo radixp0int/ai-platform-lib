@@ -3,6 +3,29 @@
 Changes to the component library as seen from Storybook. Newest first. Each
 entry names the modules it touches so the sidebar entry is easy to find.
 
+## 2026-10-27 — Breadcrumbs: one component for every trail
+
+- **`Breadcrumb trail` is part of `Breadcrumbs`.** Pass `items` (`BreadcrumbEntry`:
+  `label`, optional `href`) and `Breadcrumbs` draws the trail; pass children and
+  you compose `BreadcrumbList`, `BreadcrumbItem`, `BreadcrumbLink`,
+  `BreadcrumbPage` and `BreadcrumbSeparator` yourself, as before. The
+  `BreadcrumbTrail` component, its `BreadcrumbTrailItem` and `BreadcrumbTrailProps`
+  types and the Components/Breadcrumb trail stories are gone. It was never in the
+  package entry points, so only a deep import of `components/breadcrumb-trail`
+  breaks: use `<Breadcrumbs items={…} />`, and `aria-label` in place of `label`.
+- **Links go through `NavigateProvider`.** `BreadcrumbLink` is now a `Link`, so a
+  client-side router takes the click wherever a trail is drawn. Ancestors read
+  in the soft ink colour, as the trail did, rather than full ink.
+- **A step without an `href` is plain text.** The old trail marked it as the
+  current page; only the last step is, now.
+- **New `tone="inverse"`** for a trail on a dark brand band. The focused flow's
+  "Ingestion › Add a source" in the top bar (Components/Top bar → Focused flow,
+  Recipes/Top bar, App shell → Wizard) is now a real breadcrumb landmark with
+  the last step as the current page, instead of text with a hand-drawn arrow.
+  It is 13px, not 14px semibold.
+- **Stories:** Primitives/Breadcrumbs gains Three levels, Long last item, Step
+  without a link, On a brand band, With a router and Composed by hand.
+
 ## 2026-10-26 — FilterBar: the quick picks are the default
 
 - **`simple` and `advanced` swap places.** `simple`, still the default, is now

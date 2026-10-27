@@ -34,6 +34,7 @@ import {
 } from '../../fixtures/platform/tenants'
 import { APP_NAME } from '../../fixtures/platform/user'
 import { runsFor, tasksFor } from '../../fixtures/platform/work'
+import { Breadcrumbs } from '../../primitives/breadcrumbs'
 import {
   BellIcon,
   SearchIcon,
@@ -344,9 +345,11 @@ export function AppShell({
                 }
               >
                 {wizard ? (
-                  <span className="truncate px-2 text-sm font-semibold text-brand-100">
-                    Ingestion <span aria-hidden>›</span> Add a source
-                  </span>
+                  <Breadcrumbs
+                    tone="inverse"
+                    className="px-2 [&>ol]:flex-nowrap"
+                    items={[{ label: 'Ingestion' }, { label: 'Add a source' }]}
+                  />
                 ) : (
                   <PinnedPages
                     pages={pinned}

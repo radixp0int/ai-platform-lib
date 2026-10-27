@@ -6,6 +6,7 @@ import { TopBar, TopBarButton } from '../../components/top-bar'
 import { buildMenu } from '../../fixtures/platform/menu'
 import { INITIAL_TENANTS, describeSpaces } from '../../fixtures/platform/tenants'
 import { APP_NAME } from '../../fixtures/platform/user'
+import { Breadcrumbs } from '../../primitives/breadcrumbs'
 import { BellIcon, SearchIcon, SideMenuIcon, XIcon } from '../../primitives/icons'
 import { AccountButton } from './account-button'
 export function TopBarRecipe({
@@ -64,9 +65,11 @@ export function TopBarRecipe({
       }
     >
       {wizard ? (
-        <span className="truncate px-2 text-sm font-semibold text-brand-100">
-          Ingestion <span aria-hidden>›</span> Add a source
-        </span>
+        <Breadcrumbs
+          tone="inverse"
+          className="px-2 [&>ol]:flex-nowrap"
+          items={[{ label: 'Ingestion' }, { label: 'Add a source' }]}
+        />
       ) : (
         <PinnedPages pages={pages} onPagesChange={setPages} />
       )}

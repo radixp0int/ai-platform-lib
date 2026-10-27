@@ -10,9 +10,9 @@
 // The workflow comes in as data, so a real one swaps the fixture for a request
 // and changes nothing else. No React Flow is loaded: the shape is a blueprint.
 import { useState } from 'react'
-import { BreadcrumbTrail } from '../../../components/breadcrumb-trail'
 import { PageHeader, pageColumn } from '../../../components/page-header'
 import { SectionCard } from '../../../components/section-card'
+import { Breadcrumbs } from '../../../primitives/breadcrumbs'
 import { Button } from '../../../primitives/button'
 import { DescriptionList } from '../../../primitives/description-list'
 import { ArrowRightIcon, PencilIcon, PlayIcon } from '../../../primitives/icons'
@@ -61,7 +61,7 @@ export function WorkflowDetailPage({
 
   return (
     <div className={`${pageColumn} max-w-[76rem] gap-5.5`}>
-      <BreadcrumbTrail items={[{ label: 'Workflows', href: listHref }, { label: spec.name }]} />
+      <Breadcrumbs items={[{ label: 'Workflows', href: listHref }, { label: spec.name }]} />
 
       <header className="flex flex-col gap-3.5">
         <div className="flex flex-wrap items-start gap-x-6 gap-y-4">
