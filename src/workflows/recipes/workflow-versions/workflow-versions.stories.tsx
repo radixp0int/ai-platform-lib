@@ -6,7 +6,7 @@ import { WorkflowVersions } from './workflow-versions'
 const spec = COMMERCIAL_LOAN_SPEC
 
 const meta = {
-  title: 'Workflows/Components/Workflow versions',
+  title: 'Workflows/Recipes/Workflow versions',
   component: WorkflowVersions,
   tags: ['autodocs'],
   decorators: [

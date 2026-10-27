@@ -28,6 +28,25 @@ test.describe('WorkflowDetailPage', () => {
     await expect(page.getByRole('link', { name: /Live run/ })).toHaveCount(0)
   })
 
+  test('the banner takes the brand colour when the run needs no one', async ({ story, page }) => {
+    await story.open('workflows-recipes-workflow-detail--running')
+    await expect(page.getByRole('link', { name: /Live run · Ridgeline Dental/ })).toContainText(
+      'running, no one needed yet',
+    )
+  })
+
+  test('offers to edit and to start a run, and keeps them on screen beside a long description', async ({
+    story,
+    page,
+  }) => {
+    await story.open('workflows-recipes-workflow-detail--long-description')
+    await expect(page.getByRole('button', { name: 'Edit workflow' })).toBeVisible()
+    const start = page.getByRole('button', { name: 'Start a run' })
+    await expect(start).toBeVisible()
+    const box = (await start.boundingBox())!
+    expect(box.x + box.width).toBeLessThanOrEqual(page.viewportSize()!.width)
+  })
+
   test('the Overview shows the shape, what a run needs, and what each stage does', async ({
     story,
     page,

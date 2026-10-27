@@ -37,6 +37,30 @@ export const NoLiveRun: Story = {
   args: { spec: { ...COMMERCIAL_LOAN_SPEC, liveRun: undefined } },
 }
 
+/** A run with nobody to wait for: the banner takes the brand colour, not orange. */
+export const Running: Story = {
+  args: {
+    spec: {
+      ...COMMERCIAL_LOAN_SPEC,
+      liveRun: {
+        state: 'running',
+        title: 'Live run · Ridgeline Dental · $220,000',
+        sub: 'Stage 2 of 5, Gather · running, no one needed yet',
+      },
+    },
+  },
+}
+
+/** A long description wraps beside the buttons and never pushes them off the row. */
+export const LongDescription: Story = {
+  args: {
+    spec: {
+      ...COMMERCIAL_LOAN_SPEC,
+      description: `${COMMERCIAL_LOAN_SPEC.description} Every application over $500,000 also goes to a senior credit officer, and a run that is declined keeps its memo in the loan file so the decision can be reviewed later.`,
+    },
+  },
+}
+
 /** The page under the Workflows menu: from the list, through "Workflow details", to a run's trace. */
 export const InAppShell: Story = {
   render: () => (

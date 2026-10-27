@@ -10,11 +10,12 @@ entry names the modules it touches so the sidebar entry is easy to find.
   Overview, Runs and Versions tabs. Overview shows the shape, what a run needs
   and hands back, what each stage does, and who decides, which systems it reaches
   and how the last month went. Runs open a run's trace; "Start a run" opens the
-  start form. Stories: Overview, Runs, Versions, No live run, In app shell.
-- **New components, all under Workflows/Components:** `WorkflowHeader`,
-  `WorkflowShape`, `WorkflowStageList` (with `WorkflowStepCard`),
-  `WorkflowApprovers` / `WorkflowSystems` / `WorkflowStats` (Workflow side
-  cards), `WorkflowRunsTable` and `WorkflowVersions`. `FlowBlueprint` gains
+  start form. Stories: Overview, Runs, Versions, No live run, Running, Long description, In
+  app shell.
+- **New components, all under Workflows/Components:** `WorkflowShape`,
+  `WorkflowStageList` (with `WorkflowStepCard`), `WorkflowApprovers` / `WorkflowSystems` / `WorkflowStats` (Workflow side
+  cards), and `WorkflowRunsTable`. The page's header is part of the recipe, and
+  `WorkflowVersions` is a recipe beside it. `FlowBlueprint` gains
   `appearance="definition"`: numbered lanes, one pale fill, dashed for a step
   that only sometimes runs.
 - **New contract: `WorkflowSpec`** (`WorkflowStageSpec`, `WorkflowStepSpec`,

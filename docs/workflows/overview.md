@@ -78,9 +78,9 @@ The runs list shows every workflow at a glance; the workflow detail recipe is
 the page behind one of them. A row's **Workflow details** opens it, and the
 row's **Open live view** still goes to the live page.
 
-The page is a header (`WorkflowHeader`: name, purpose, Edit workflow, Start a
-run, the facts that identify it, and a banner that opens the run in progress)
-over three tabs:
+The page is a header (name, purpose, Edit workflow, Start a run, the facts that
+identify it, and a banner that opens the run in progress; it is part of the
+recipe, not a component) over three tabs:
 
 - **Overview** shows how every run is built (`WorkflowShape`, a blueprint with
   numbered lanes; a step that only runs sometimes is dashed), what a run needs to
@@ -90,7 +90,7 @@ over three tabs:
   `WorkflowStats`).
 - **Runs** (`WorkflowRunsTable`) lists the latest runs. A row with a trace opens
   it; one without is a plain row, not a dead link.
-- **Versions** (`WorkflowVersions`) lists the versions under "Start a draft".
+- **Versions** (`WorkflowVersions`, a recipe beside the page) lists the versions under "Start a draft".
 
 The page takes a `WorkflowSpec` as data (`components/workflow-spec`): stages with
 their steps, typed inputs and outputs, approvers, systems, stats, runs and

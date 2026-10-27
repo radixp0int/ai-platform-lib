@@ -1,4 +1,4 @@
-import type { WorkflowVersionRow } from '../workflow-spec'
+import type { WorkflowVersionRow } from '../../components/workflow-spec'
 
 export type WorkflowVersionsProps = {
   /** Newest first. */
