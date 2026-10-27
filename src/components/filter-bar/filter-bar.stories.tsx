@@ -17,7 +17,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'The toolbar above a table: a Filters button, the omnibox, and the panel the button opens. All three read one list of `fields`, so a filter set anywhere is set everywhere. The omnibox shows every set filter as a chip and suggests dates and values as you type. In the `advanced` style it also offers quick picks while it is empty and focused. The panel floats over the table or docks beside it when pinned. The stories use a table of runs, wide on purpose.',
+          'The toolbar above a table: a Filters button, the omnibox, and the panel the button opens. All three read one list of `fields`, so a filter set anywhere is set everywhere. The omnibox shows every set filter as a chip and suggests dates and values as you type. In the default `simple` style it also offers quick picks while it is empty and focused; `advanced` leaves it to typing. The panel floats over the table or docks beside it when pinned. The stories use a table of runs, wide on purpose.',
       },
     },
   },
@@ -35,9 +35,9 @@ type Story = StoryObj<typeof meta>
 /** Everything adjustable: the style, whether the panel starts open, and whether it starts pinned. */
 export const Playground: Story = {}
 
-/** The Filters button and an omnibox that suggests as you type. Nothing else on the toolbar. */
+/** The default. Click the omnibox: a row of picks for every date, and for every filter small enough to be a row. */
 export const Simple: Story = {
-  args: { initial: { started: { from: day(-29), to: day(0) }, status: ['completed'] } },
+  args: { initial: { started: { from: day(-29), to: day(0) } } },
 }
 
 /** The panel floating over the table. Dates share one section, one row each. */
@@ -46,9 +46,12 @@ export const PanelFloating: Story = { args: { defaultOpen: true } }
 /** The same panel docked beside the table. The pin survives closing and reopening it. */
 export const PanelPinned: Story = { args: { defaultOpen: true, defaultPinned: true } }
 
-/** Click the omnibox: a row of picks for every date, and for every filter small enough to be a row. */
+/** For typing: the Filters button and an omnibox that suggests search, field narrowings, dates and values as you type. No quick picks. */
 export const Advanced: Story = {
-  args: { filterStyle: 'advanced', initial: { started: { from: day(-29), to: day(0) } } },
+  args: {
+    filterStyle: 'advanced',
+    initial: { started: { from: day(-29), to: day(0) }, status: ['completed'] },
+  },
 }
 
 /** A dozen filters at once. The chips wrap onto more lines and the field grows. */
@@ -97,7 +100,6 @@ export const LongLabels: Story = {
 export const NoPanel: Story = {
   args: {
     showPanel: false,
-    filterStyle: 'advanced',
     initial: { started: { from: day(-29), to: day(0) } },
   },
 }

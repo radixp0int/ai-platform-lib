@@ -143,8 +143,8 @@ export function RunsListPage({
   const [terms, setTerms] = useState<FilterTerm[]>([])
   const [states, setStates] = useState<WorkflowState[]>([])
   // Three statuses is few enough to offer as quick picks the moment the field
-  // is focused, which is what `advanced` adds.
-  const [filterStyle, setFilterStyle] = useState<FilterStyle>('advanced')
+  // is focused, which is what the default `simple` style does.
+  const [filterStyle, setFilterStyle] = useState<FilterStyle>('simple')
   const [sort, setSort] = useState<Sort[]>([])
   const [page, setPage] = useState(1)
   const [size, setSize] = useState(10)

@@ -4,11 +4,12 @@ import type { FilterField } from '../filter-panel'
 /**
  * How much of the filtering is on show.
  *
- * `simple` is the Filters button and its panel, plus an omnibox that suggests
- * dates and values as you type. `advanced` keeps all of that and adds quick
- * picks to the omnibox: focus it and choose a preset for any date, or a value
- * for any filter, in one click. Same filters either way, so switching loses
- * nothing.
+ * `simple` is the default: the Filters button and its panel, plus an omnibox
+ * that offers quick picks the moment it is focused: choose a preset for any
+ * date, or a value for any filter, in one click. `advanced` is for typing: the
+ * same button and panel, and an omnibox that suggests search, field narrowings,
+ * and the dates and values that match as you type. Same filters either way, so
+ * switching loses nothing.
  */
 export type FilterStyle = 'simple' | 'advanced'
 
@@ -35,9 +36,9 @@ export type FilterBarLabels = {
   narrowToField: string
   dates: string
   values: string
-  /** Placeholder while no filter is set and the style is `simple`. */
+  /** Placeholder while no filter is set and the style is `simple` (the quick picks). */
   placeholderSimple: string
-  /** Placeholder while no filter is set and the style is `advanced`. */
+  /** Placeholder while no filter is set and the style is `advanced` (typing). */
   placeholderAdvanced: string
   custom: string
   /** Label for the quick pick of a yes-or-no filter, which has no label column of its own. */
@@ -67,7 +68,7 @@ export type FilterBarProps = {
   /** What "Narrow to a field" offers. Empty hides that group. */
   termFields?: FilterTermField[]
   filterStyle?: FilterStyle
-  /** Given, the panel and the quick picks carry a link to the other style. */
+  /** Given, the panel and the quick picks carry a link to the other style. Defaults to `simple`. */
   onFilterStyleChange?: (style: FilterStyle) => void
   /** Clears the panel's fields. Wired to the panel's Reset. */
   onReset?: () => void
