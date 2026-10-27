@@ -37,12 +37,12 @@ const box = async (locator: Locator) => {
   return b
 }
 
-test.describe('FilterBar, simple', () => {
+test.describe('FilterBar, advanced', () => {
   test('every filter that is set is a chip in the omnibox, and the button counts them', async ({
     story,
     page,
   }) => {
-    await open(story, page, 'simple')
+    await open(story, page, 'advanced')
     await expect(chip(page, 'started: Last 30 days')).toBeVisible()
     await expect(chip(page, 'status: Completed')).toBeVisible()
     await expect(filtersButton(page)).toContainText('2')
@@ -52,7 +52,7 @@ test.describe('FilterBar, simple', () => {
     story,
     page,
   }) => {
-    await open(story, page, 'simple')
+    await open(story, page, 'advanced')
     await expect(chip(page, 'started: Last 30 days')).toContainText('Sep 9 – Oct 8, 2026')
   })
 
@@ -60,7 +60,7 @@ test.describe('FilterBar, simple', () => {
     story,
     page,
   }) => {
-    await open(story, page, 'simple')
+    await open(story, page, 'advanced')
     await omnibox(page).fill('30')
     const options = page.getByRole('option')
     await expect(options.first()).toContainText('Search for “30”')
@@ -78,7 +78,7 @@ test.describe('FilterBar, simple', () => {
     story,
     page,
   }) => {
-    await open(story, page, 'simple')
+    await open(story, page, 'advanced')
     await omnibox(page).fill('due')
     await page.getByRole('option', { name: /Due · Next 7 days/ }).click()
     await expect(chip(page, 'due: Next 7 days')).toContainText('Oct 8 – Oct 14, 2026')
@@ -90,7 +90,7 @@ test.describe('FilterBar, simple', () => {
     story,
     page,
   }) => {
-    await open(story, page, 'simple')
+    await open(story, page, 'advanced')
     await omnibox(page).fill('fail')
     await expect(page.getByRole('option', { name: /Status · Failed/ })).toBeVisible()
     await page.getByRole('option', { name: /Status · Failed/ }).click()
@@ -98,7 +98,7 @@ test.describe('FilterBar, simple', () => {
   })
 
   test('arrow keys and Enter choose a suggestion', async ({ story, page }) => {
-    await open(story, page, 'simple')
+    await open(story, page, 'advanced')
     await omnibox(page).fill('due')
     await omnibox(page).press('ArrowDown')
     await omnibox(page).press('ArrowDown')
@@ -112,7 +112,7 @@ test.describe('FilterBar, simple', () => {
     story,
     page,
   }) => {
-    await open(story, page, 'simple')
+    await open(story, page, 'advanced')
     // Status is listed before Started, so Started is the last chip and goes first.
     await omnibox(page).click()
     await omnibox(page).press('Backspace')
@@ -123,7 +123,7 @@ test.describe('FilterBar, simple', () => {
   })
 
   test('Ctrl+K focuses the omnibox from anywhere', async ({ story, page }) => {
-    await open(story, page, 'simple')
+    await open(story, page, 'advanced')
     // The listener is attached just after the first paint, so keep pressing until it is there.
     await expect(async () => {
       await page.keyboard.press('Control+k')
@@ -131,8 +131,8 @@ test.describe('FilterBar, simple', () => {
     }).toPass()
   })
 
-  test('the simple style offers nothing until something is typed', async ({ story, page }) => {
-    await open(story, page, 'simple')
+  test('the advanced style offers nothing until something is typed', async ({ story, page }) => {
+    await open(story, page, 'advanced')
     await omnibox(page).click()
     await expect(quick(page)).toHaveCount(0)
     await expect(page.getByRole('listbox')).toHaveCount(0)
@@ -289,12 +289,12 @@ test.describe('FilterBar, the panel and its pin', () => {
   })
 })
 
-test.describe('FilterBar, advanced', () => {
+test.describe('FilterBar, simple', () => {
   test('focusing the empty omnibox offers a row of picks for each date and each small filter', async ({
     story,
     page,
   }) => {
-    await open(story, page, 'advanced')
+    await open(story, page, 'simple')
     await omnibox(page).click()
     const picks = quick(page)
     await expect(picks).toBeVisible()
@@ -321,7 +321,7 @@ test.describe('FilterBar, advanced', () => {
     story,
     page,
   }) => {
-    await open(story, page, 'advanced')
+    await open(story, page, 'simple')
     await omnibox(page).click()
     const updated = quick(page).getByRole('group', { name: 'Last updated' })
     await updated.getByRole('button', { name: '7D' }).click()
@@ -332,7 +332,7 @@ test.describe('FilterBar, advanced', () => {
   })
 
   test('a quick pick for a filter shows how many it would match', async ({ story, page }) => {
-    await open(story, page, 'advanced')
+    await open(story, page, 'simple')
     await omnibox(page).click()
     const failed = quick(page)
       .getByRole('group', { name: 'Status' })
@@ -346,7 +346,7 @@ test.describe('FilterBar, advanced', () => {
     story,
     page,
   }) => {
-    await open(story, page, 'advanced')
+    await open(story, page, 'simple')
     await omnibox(page).click()
     await omnibox(page).press('ArrowDown')
     const started = quick(page).getByRole('group', { name: 'Started' })
@@ -364,7 +364,7 @@ test.describe('FilterBar, advanced', () => {
     story,
     page,
   }) => {
-    await open(story, page, 'advanced')
+    await open(story, page, 'simple')
     await omnibox(page).fill('renew')
     await expect(quick(page)).toHaveCount(0)
     await expect(page.getByRole('listbox')).toBeVisible()
@@ -373,7 +373,7 @@ test.describe('FilterBar, advanced', () => {
   })
 
   test('Custom opens the panel on that date and closes the dropdown', async ({ story, page }) => {
-    await open(story, page, 'advanced')
+    await open(story, page, 'simple')
     await omnibox(page).click()
     await quick(page)
       .getByRole('group', { name: 'Due' })
@@ -385,14 +385,14 @@ test.describe('FilterBar, advanced', () => {
   })
 
   test('the style switches both ways and every filter comes with it', async ({ story, page }) => {
-    await open(story, page, 'advanced')
+    await open(story, page, 'simple')
     await omnibox(page).click()
-    await quick(page).getByRole('button', { name: 'Use simple filters' }).click()
+    await quick(page).getByRole('button', { name: 'Switch to advanced' }).click()
     await expect(chip(page, 'started: Last 30 days')).toBeVisible()
     await omnibox(page).click()
     await expect(quick(page)).toHaveCount(0)
     await filtersButton(page).click()
-    await panel(page).getByRole('button', { name: 'Switch to advanced' }).click()
+    await panel(page).getByRole('button', { name: 'Use simple filters' }).click()
     await expect(chip(page, 'started: Last 30 days')).toBeVisible()
     await omnibox(page).click()
     await expect(quick(page)).toBeVisible()

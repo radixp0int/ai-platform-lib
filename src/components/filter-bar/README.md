@@ -22,20 +22,22 @@ the button opens. One list of `fields` drives all three.
 
 ## What it derives from `fields`
 
-| Surface                | Built from                                                                                                                 |
-| ---------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| The panel              | Every field, drawn by its type. Two or more `dateRange` fields share one "Dates" section.                                  |
-| Chips in the omnibox   | Every field that is set: one chip per chosen option, one per date, with a dimmed field name in front.                      |
-| Typed suggestions      | Search, then narrowing to a field, then the dates and values that match what was typed. Each names the parameter it makes. |
-| Quick picks (advanced) | A row per date (its presets that have a `short` label) and a row per filter with six options or fewer.                     |
+| Surface              | Built from                                                                                                                 |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| The panel            | Every field, drawn by its type. Two or more `dateRange` fields share one "Dates" section.                                  |
+| Chips in the omnibox | Every field that is set: one chip per chosen option, one per date, with a dimmed field name in front.                      |
+| Typed suggestions    | Search, then narrowing to a field, then the dates and values that match what was typed. Each names the parameter it makes. |
+| Quick picks (simple) | A row per date (its presets that have a `short` label) and a row per filter with six options or fewer.                     |
 
 So there is one place to say what a filter is, and the four cannot disagree.
 
 ## Two styles
 
-`simple` is the button, the panel and the suggestions. `advanced` adds quick
-picks to the omnibox: focus it while it is empty and every date and small filter
-is one click away. Both read the same `fields`, so switching loses nothing.
+`simple` is the default: the button, the panel, and quick picks in the omnibox.
+Focus it while it is empty and every date and small filter is one click away.
+`advanced` is for typing: the omnibox suggests search, field narrowings, and the
+dates and values that match, and offers no quick picks. Both read the same
+`fields`, so switching loses nothing.
 The style is a per-person preference, so the host holds it and persists it.
 
 ## Dates

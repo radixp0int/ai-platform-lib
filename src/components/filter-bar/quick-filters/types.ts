@@ -15,7 +15,7 @@ export type QuickFiltersProps = {
    * when there is no panel and the button is left out.
    */
   onCustom?: (fieldId: string) => void
-  /** The link to the simple style, when the host offers a choice. */
+  /** The link to the other style, when the host offers a choice. */
   switchLabel?: string
   onSwitch?: () => void
 }

@@ -3,6 +3,20 @@
 Changes to the component library as seen from Storybook. Newest first. Each
 entry names the modules it touches so the sidebar entry is easy to find.
 
+## 2026-10-26 — FilterBar: the quick picks are the default
+
+- **`simple` and `advanced` swap places.** `simple`, still the default, is now
+  the style with quick picks: focus the omnibox while it is empty and every date
+  and small filter is one click away. `advanced` is the style for typing: the
+  omnibox suggests search, field narrowings, and the dates and values that match,
+  and offers no quick picks. The Filters button and panel are the same in both,
+  and switching never loses a filter. Anyone who passed `filterStyle="advanced"`
+  for the quick picks should drop it or pass `"simple"`; anyone who relied on the
+  old default for typing should pass `"advanced"`. The placeholders and the
+  switch links follow: the quick picks now offer "Switch to advanced", and the
+  panel offers "Use simple filters". The Tenants page and the Runs list use the
+  default.
+
 ## 2026-10-26 — Workflows: the workflow detail page, the run detail page, and one list
 
 - **New recipe: Workflow detail** (Workflows/Recipes/Workflow detail), from the

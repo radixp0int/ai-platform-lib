@@ -20,8 +20,8 @@ const LABELS: FilterBarLabels = {
   narrowToField: 'Narrow to a field',
   dates: 'Dates',
   values: 'Filters',
-  placeholderSimple: 'Search, or type to narrow to a field…',
-  placeholderAdvanced: 'Search, or pick a date or filter…',
+  placeholderSimple: 'Search, or pick a date or filter…',
+  placeholderAdvanced: 'Search, or type to narrow to a field…',
   custom: 'Custom',
   only: 'Show only',
   switchToAdvanced: 'Switch to advanced',
@@ -40,8 +40,9 @@ const kbd =
  *
  * Three things share one list of fields. The Filters button opens a panel that
  * draws them. The omnibox shows every one that is set as a chip, and suggests
- * the dates and values that match what you type. In the `advanced` style the
- * omnibox also offers quick picks while it is empty. Because all three read
+ * the dates and values that match what you type. In the default `simple` style
+ * the omnibox also offers quick picks while it is empty; `advanced` leaves it
+ * to typing. Because all three read
  * the same `fields`, setting a filter anywhere is setting it everywhere.
  *
  * The panel floats over the table, or docks beside it when pinned. `open` and
@@ -77,7 +78,7 @@ export function FilterBar({
   const [open, setOpen] = useState(defaultOpen)
   const [pinned, setPinned] = useState(defaultPinned)
   const [expandedDate, setExpandedDate] = useState<string | undefined>()
-  const advanced = filterStyle === 'advanced'
+  const quickPicks = filterStyle === 'simple'
 
   // With no header there is nothing to open or pin the panel with, so what is
   // left of it is a rail that is always docked and always open.
@@ -172,9 +173,9 @@ export function FilterBar({
     <Button
       variant="ghost"
       size="sm"
-      onClick={() => onFilterStyleChange(advanced ? 'simple' : 'advanced')}
+      onClick={() => onFilterStyleChange(quickPicks ? 'advanced' : 'simple')}
     >
-      {advanced ? labels.switchToSimple : labels.switchToAdvanced}
+      {quickPicks ? labels.switchToAdvanced : labels.switchToSimple}
     </Button>
   )
 
@@ -231,7 +232,7 @@ export function FilterBar({
           <Omnibox
             label={label}
             className="min-w-[min(100%,16rem)] basis-64 grow"
-            placeholder={advanced ? labels.placeholderAdvanced : labels.placeholderSimple}
+            placeholder={quickPicks ? labels.placeholderSimple : labels.placeholderAdvanced}
             value={draft}
             onValueChange={setDraft}
             chips={chips}
@@ -243,7 +244,7 @@ export function FilterBar({
               if (shown && !pinned) setOpen(false)
             }}
             quick={
-              advanced
+              quickPicks
                 ? ({ close }) => (
                     <QuickFilters
                       rows={buildQuickRows(fields, today)}
@@ -253,8 +254,8 @@ export function FilterBar({
                       hint={labels.quickHint}
                       onlyLabel={labels.only}
                       onCustom={showPanel ? (fieldId) => openCustom(fieldId, close) : undefined}
-                      switchLabel={onFilterStyleChange ? labels.switchToSimple : undefined}
-                      onSwitch={() => onFilterStyleChange?.('simple')}
+                      switchLabel={onFilterStyleChange ? labels.switchToAdvanced : undefined}
+                      onSwitch={() => onFilterStyleChange?.('advanced')}
                     />
                   )
                 : undefined
