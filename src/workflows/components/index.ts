@@ -42,7 +42,7 @@ export * from './flow-blueprint'
 export * from './stage-progress'
 export * from './status-mark'
 export * from './step-node'
-export { DEFAULT_STATUS_LABEL } from './types'
+export { DEFAULT_STATUS_LABEL, STEP_KIND_LABEL } from './types'
 export type {
   AppNode,
   EdgeState,

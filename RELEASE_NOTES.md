@@ -3,6 +3,60 @@
 Changes to the component library as seen from Storybook. Newest first. Each
 entry names the modules it touches so the sidebar entry is easy to find.
 
+## 2026-10-26 — Workflows: the workflow detail page, the run detail page, and one list
+
+- **New recipe: Workflow detail** (Workflows/Recipes/Workflow detail), from the
+  Workflow Agents to Live View design. A header with a live-run banner, then
+  Overview, Runs and Versions tabs. Overview shows the shape, what a run needs
+  and hands back, what each stage does, and who decides, which systems it reaches
+  and how the last month went. Runs open a run's trace; "Start a run" opens the
+  start form. Stories: Overview, Runs, Versions, No live run, Running, Long description, In
+  app shell.
+- **New components, all under Workflows/Components:** `WorkflowShape`,
+  `WorkflowStageList` (with `WorkflowStepCard`), `WorkflowApprovers` / `WorkflowSystems` / `WorkflowStats` (Workflow side
+  cards), and `WorkflowRunsTable`. The page's header is part of the recipe, and
+  `WorkflowVersions` is a recipe beside it. `FlowBlueprint` gains
+  `appearance="definition"`: numbered lanes, one pale fill, dashed for a step
+  that only sometimes runs.
+- **New contract: `WorkflowSpec`** (`WorkflowStageSpec`, `WorkflowStepSpec`,
+  `WorkflowRunRow`, …) with `shapeOf` and `shapeLine`. The `COMMERCIAL_LOAN_SPEC`
+  fixture reuses the loan run's own step ids and typed inputs and outputs.
+- **New recipe: Run detail** (Workflows/Recipes/Run detail). One run's trace: a
+  row of stage tiles, the steps of the chosen stage, and one step opened up with
+  its calls against the clock, the agent's reasoning, its input and output, and
+  the raw record. It opens on the stage and step the run is waiting at. The
+  workflow's Runs tab opens it, and its trail goes back to the workflow.
+- **New components for it:** `TraceStageStrip`, `TraceStepList`, `TraceInspector`,
+  `TraceSequence` and `TraceStatusIcon` / `TraceKindTag` (Trace status). Each has
+  a status shape as well as a colour.
+- **New contract: `RunTrace`** with `summarizeStages`, `currentStageId`,
+  `currentStepId`, `formatDuration` and `spanRecord`. Nothing in it is on the run
+  wire protocol yet. `COMMERCIAL_LOAN_TRACE` is the Harbor Street Bakery run
+  waiting on its analyst; `COMMERCIAL_LOAN_TRACE_BUREAU_FAILED` is the same run
+  with a credit pull that timed out and was carried on past.
+- **Shared pieces, not repeats.** New **Breadcrumb trail** and **Section card**
+  components (Components/) replace markup the workflow pages each wrote by hand,
+  and the pages now use `pageColumn`, `DescriptionList` and the `STEP_KIND_LABEL`
+  vocabulary. That vocabulary lives in one place for the step node, its badges,
+  the workflow's step cards and the trace page; the trace page's kind tag now
+  says **Approval** and **System call** like the canvas does, not Person and Tool
+  call.
+- **The RFP response example is gone**, from the table's summaries and the stories
+  and tests that used it, in favour of more of the commercial loan review: the
+  table's tenth workflow is now **Commercial loan origination**, a ten-stage run
+  waiting on a credit committee. The wire protocol's `rfp-response` variant id
+  stays, since a server may still send it.
+- **The Runs list is the workflows table, in one place.** The Workflows table
+  and Runs list recipes are merged into **Workflows/Recipes/Runs list**
+  (`RunsListPage`, was `WorkflowsTablePage`). A row opens to the run's blueprint,
+  "Open live view" still goes to the live page, and **Workflow details** goes to
+  the workflow's page where there is one (`detailHrefFor`). Stories: Runs, **In
+  app shell**, Empty, Needs a person, Start a workflow. The page title is
+  **Workflows**, not Runs. The shell's own `RunsPage` is gone, so `AppShell`
+  shows a placeholder for Workflows until a host gives it a page through
+  `renderSpace`; the app shell's **Runs** story is removed. The Workflows
+  menu's first view and its pinned label read **All workflows**.
+
 ## 2026-10-23 — Workflows: one worked example, the commercial loan review
 
 - **The incident triage, employee onboarding and RFP response examples are

@@ -51,7 +51,20 @@ function lineFor(status: StepStatus): Line {
 
 type Placed = BlueprintStep & { column: number; y: number }
 
-export function FlowBlueprint({ stages, edges, label, className = '' }: FlowBlueprintProps) {
+/** The workflow itself: one pale fill for a step, an outline for one that only sometimes runs. */
+const BAR_DEFINITION: Record<'done' | 'queued', string> = {
+  done: 'bg-brand-solid/25',
+  queued: 'border border-dashed border-ink-soft/70 bg-panel-solid',
+}
+
+export function FlowBlueprint({
+  stages,
+  edges,
+  label,
+  appearance = 'run',
+  className = '',
+}: FlowBlueprintProps) {
+  const definition = appearance === 'definition'
   const columns = stages.flatMap((stage) => stage.columns)
   const total = Math.max(1, columns.length)
   const rows = Math.max(1, ...columns.map((column) => column.length))
@@ -105,7 +118,7 @@ export function FlowBlueprint({ stages, edges, label, className = '' }: FlowBlue
   let before = 0
   return (
     <div role="img" aria-label={label} className={`relative ${className}`} style={{ height }}>
-      {stages.map((stage) => {
+      {stages.map((stage, index) => {
         const left = before
         before += stage.columns.length
         return (
@@ -121,7 +134,13 @@ export function FlowBlueprint({ stages, edges, label, className = '' }: FlowBlue
             }}
           >
             <div className="flex items-center gap-1.5 px-2" style={{ height: LABEL_H }}>
-              <StageMarker status={stage.status} size={12} />
+              {definition ? (
+                <span className="shrink-0 font-mono text-[11px] text-ink-soft">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+              ) : (
+                <StageMarker status={stage.status} size={12} />
+              )}
               <span className="min-w-0 truncate text-xs font-bold text-ink-strong">
                 {stage.name}
               </span>
@@ -153,7 +172,11 @@ export function FlowBlueprint({ stages, edges, label, className = '' }: FlowBlue
         <span
           key={step.id}
           aria-hidden
-          className={`absolute rounded-[4px] ${BAR[step.status]}`}
+          className={`absolute rounded-[4px] ${
+            definition
+              ? BAR_DEFINITION[step.status === 'queued' ? 'queued' : 'done']
+              : BAR[step.status]
+          }`}
           style={{
             top: step.y,
             height: BAR_H,

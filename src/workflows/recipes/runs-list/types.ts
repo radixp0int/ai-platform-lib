@@ -27,10 +27,15 @@ export type WorkflowSummary = {
   needs: WorkflowNeed[]
 }
 
-export type WorkflowsTablePageProps = {
+export type RunsListPageProps = {
   /** Defaults to the ten authored summaries. */
   workflows?: WorkflowSummary[]
   /** Where a row's "Open live view" goes. */
   hrefFor?: (workflow: WorkflowSummary) => string
+  /**
+   * Where a row's "Workflow details" goes. Return nothing for a workflow with no
+   * detail page, and its row offers only the live view.
+   */
+  detailHrefFor?: (workflow: WorkflowSummary) => string | undefined
   onStart?: () => void
 }

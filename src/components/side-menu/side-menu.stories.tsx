@@ -19,14 +19,14 @@ const workflows: SideMenuPanel = {
       <MenuPanelRow dot="bg-notify" name="Needs a person" count={6} />
       <MenuPanelRow dot="bg-accent" name="Running" count={10} />
       <MenuPanelLabel>Recently viewed</MenuPanelLabel>
-      <MenuPanelRow dot="bg-notify" name="RFP response" sub="Waiting on Kofi A." />
+      <MenuPanelRow dot="bg-notify" name="Commercial loan origination" sub="Waiting on Marcus L." />
       <MenuPanelRow dot="bg-notify" name="Commercial loan review" sub="Waiting on Dana W." />
     </div>
   ),
   flyout: (
     <>
       <MenuPanelLabel>Recently viewed</MenuPanelLabel>
-      <MenuPanelRow dot="bg-notify" name="RFP response" count="1 day" />
+      <MenuPanelRow dot="bg-notify" name="Commercial loan origination" count="1 day" />
       <MenuPanelRow dot="bg-notify" name="Commercial loan review" count="3h 40m" />
     </>
   ),
@@ -48,7 +48,11 @@ const meta = {
     panels: { workflows },
     appsHeading: 'Alderfinch Treasury',
     places: [
-      { label: 'Workflows › RFP response', href: `${base}/workflows`, icon: <WorkflowIcon /> },
+      {
+        label: 'Workflows › Commercial loan review',
+        href: `${base}/workflows`,
+        icon: <WorkflowIcon />,
+      },
     ],
     footLinks: [{ id: 'settings', label: 'Settings', icon: <SlidersIcon />, onSelect: () => {} }],
   },

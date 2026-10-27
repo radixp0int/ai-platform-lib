@@ -15,6 +15,19 @@ export type StepStatus =
   | 'approved'
   | 'changes'
 
+/**
+ * Who does the work, in words. One copy, so the step node, its badges, the
+ * workflow's step cards and the trace page cannot drift apart.
+ */
+export const STEP_KIND_LABEL: Record<StepKind, string> = {
+  agent: 'Agent',
+  human: 'Approval',
+  tool: 'System call',
+  decision: 'Decision',
+  trigger: 'Trigger',
+  flow: 'Sub-workflow',
+}
+
 export type EdgeState = 'done' | 'active' | 'pending' | 'skipped'
 
 export type StageStatus = 'done' | 'current' | 'upcoming'

@@ -52,7 +52,7 @@ export function WorkflowsPanel({ base, runs, activeId, onNavigate }: PanelProps)
             href={`${base}/workflows`}
             current={activeId === 'runs'}
             dot="bg-ink-strong"
-            name="Runs"
+            name="All workflows"
             count={runs.length}
             onNavigate={onNavigate}
           />

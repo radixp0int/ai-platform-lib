@@ -13,7 +13,7 @@
 import type { BlueprintStage } from '../components/flow-blueprint'
 import type { RecentRun } from '../components/recent-runs'
 import type { StepStatus } from '../components/types'
-import type { WorkflowNeed, WorkflowState, WorkflowSummary } from '../recipes/workflows-table/types'
+import type { WorkflowNeed, WorkflowState, WorkflowSummary } from '../recipes/runs-list/types'
 
 type Spec = {
   id: string
@@ -40,14 +40,14 @@ const SPECS: Spec[] = [
     flow: 'Intake: r Application received, a Intake agent | Gather: t credit_bureau.pull, a Spread financials, t kyc.verify | Analyze: a Risk scoring, a Draft credit memo | Approve: d Policy check / h Approve credit memo, h- Senior officer review | Decide: a Draft decision letter, t portal.notify',
   },
   {
-    id: 'rfp-response',
-    name: 'RFP response',
-    run: 'Meridian Health',
-    startedBy: 'Kofi Adeyemi',
+    id: 'loan-origination',
+    name: 'Commercial loan origination',
+    run: 'Copperleaf Farms · $780,000',
+    startedBy: 'Marcus Lee',
     state: 'waiting',
-    at: 7,
-    people: [['KA', 'Kofi A.', 'tomorrow']],
-    flow: 'Intake: r RFP received, a Read the RFP | Qualify: a Score fit | Questions: a Split into questions | Library: t answers.search | Draft: a Draft answers | Security: a Fill security questionnaire, f Vendor risk review | Pricing: a Build price table, t cpq.quote, a Check margin | Review: d Deal size / h Review response, h- Legal sign-off | Assemble: a Assemble document / t pdf.render | Submit: t portal.submit',
+    at: 6,
+    people: [['ML', 'Marcus L.', 'tomorrow']],
+    flow: 'Application: r Application received, a Intake agent | Financials: a Spread financials, t tax.transcript | Credit: t credit_bureau.pull, t kyc.verify | Collateral: t appraisal.order, a Review collateral | Covenants: a Propose covenants | Risk: a Risk scoring, a Draft credit memo | Approve: d Loan size / h Credit committee review | Documents: a Draft loan documents / t esign.send | Booking: t core.book_loan | Notify: t portal.notify',
   },
   {
     id: 'onboarding',

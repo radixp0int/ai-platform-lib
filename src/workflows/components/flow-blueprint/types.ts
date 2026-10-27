@@ -17,7 +17,14 @@ export type FlowBlueprintProps = {
    * is right for a run whose stages follow one another.
    */
   edges?: { from: string; to: string }[]
-  /** Accessible name, e.g. "RFP response: stage 8 of 10, Review". */
+  /** Accessible name, e.g. "Commercial loan review: stage 4 of 5, Approve". */
   label: string
+  /**
+   * `run` (default) shows a run's progress: a marker on each lane and a fill
+   * per status. `definition` shows the workflow itself, with nothing done or
+   * waiting: each lane is numbered, steps share one pale fill, and a step that
+   * only runs sometimes keeps its dashed outline.
+   */
+  appearance?: 'run' | 'definition'
   className?: string
 }
