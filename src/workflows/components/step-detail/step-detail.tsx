@@ -21,10 +21,12 @@ import { PolicyException } from '../policy-exception'
 import { Recommendation } from '../recommendation'
 import { StepBadges } from '../step-badges'
 import { StepDetails } from '../step-details'
+import { StepInputsOutputs } from '../step-inputs-outputs'
 
 export function StepDetail({
   step,
   status,
+  io,
   runTitle,
   next,
   decisions,
@@ -90,6 +92,7 @@ export function StepDetail({
             </div>
 
             <div className="flex flex-col gap-7">
+              {io && <StepInputsOutputs io={io} />}
               <StepDetails step={step} />
 
               {canDecide && (

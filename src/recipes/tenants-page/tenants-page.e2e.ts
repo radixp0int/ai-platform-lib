@@ -55,21 +55,23 @@ test.describe('Tenants page', () => {
     await expect(page.getByRole('button', { name: 'Close filters' })).toBeVisible()
   })
 
-  test('advanced adds quick dates to the omnibox, and the switch back keeps every filter', async ({
+  test('simple offers quick dates in the omnibox, and the switch to advanced keeps every filter', async ({
     story,
     page,
   }) => {
     await story.open(ID)
     await omnibox(page).fill('bank')
     await omnibox(page).press('Enter')
-    await page.getByRole('button', { name: 'Switch to advanced' }).click()
     await omnibox(page).click()
     const picks = page.getByRole('group', { name: 'Search and filter tenants' })
     await picks.getByRole('group', { name: 'Created' }).getByRole('button', { name: '90D' }).click()
     await expect(page.getByTitle('created: Last 90 days')).toBeVisible()
-    await picks.getByRole('button', { name: 'Use simple filters' }).click()
+    await omnibox(page).click()
+    await picks.getByRole('button', { name: 'Switch to advanced' }).click()
     await expect(page.getByTitle('search: bank')).toBeVisible()
     await expect(page.getByTitle('created: Last 90 days')).toBeVisible()
+    await omnibox(page).click()
+    await expect(picks).toHaveCount(0)
   })
 
   test('a search with nothing behind it says so and offers to clear', async ({ story, page }) => {
@@ -77,6 +79,8 @@ test.describe('Tenants page', () => {
     await omnibox(page).fill('zzzz')
     await omnibox(page).press('Enter')
     await expect(page.getByText('No tenants match')).toBeVisible()
+    // The empty, focused omnibox offers its quick picks again; put them away.
+    await page.keyboard.press('Escape')
     await page.getByRole('button', { name: 'Clear all filters' }).click()
     await expect(page.getByText('No tenants match')).toHaveCount(0)
   })

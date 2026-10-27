@@ -1,4 +1,3 @@
-import { Orb } from '../../../primitives/orb'
 import { Skeleton } from '../../../primitives/skeleton'
 // The first paint, while React Flow and this section's chunk load.
 //
@@ -15,8 +14,7 @@ export function WorkflowSkeleton() {
 
       <aside className="glass flex w-72 shrink-0 flex-col rounded-surface">
         <div className="flex items-center gap-3 px-6 pt-6 pb-5">
-          <Orb className="orb block size-[30px] shrink-0 animate-orb-drift rounded-full" />
-          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-4 w-14" />
         </div>
         <div className="px-5">
           <div className="rounded-surface bg-panel-solid p-4 shadow-sm ring-1 ring-line">

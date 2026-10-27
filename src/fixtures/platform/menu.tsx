@@ -21,10 +21,11 @@ export function buildMenu(tenant: Tenant, waiting: number): MenuSection[] {
     spaces.push({
       id: 'workflows',
       label: 'Workflows',
+      shortLabel: 'Flows',
       href: `${base}/workflows`,
       icon: <WorkflowIcon />,
       children: [
-        { id: 'runs', label: 'Runs', href: `${base}/workflows` },
+        { id: 'runs', label: 'All workflows', href: `${base}/workflows` },
         { id: 'runs-live', label: 'Live runs', href: `${base}/workflows/live` },
       ],
     })

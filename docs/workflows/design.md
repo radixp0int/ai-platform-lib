@@ -8,12 +8,12 @@ For _what the demo does_ rather than why, see [Overview](./overview.md).
 
 ## Layout and boundaries
 
-| Folder                                        | What it contains                                                                       |
-| --------------------------------------------- | -------------------------------------------------------------------------------------- |
-| [components/](../../src/workflows/components) | The canvas kit and host panels: nodes, edges, zoom, sidebar, inspector, lanes, and log |
-| [engine/](../../src/workflows/engine)         | Wire types, placement, reducer, and run sources                                        |
-| [fixtures/](../../src/workflows/fixtures)     | Authored loan, incident, onboarding, and story data                                    |
-| [recipes/](../../src/workflows/recipes)       | Screen composition and fixture-only helpers                                            |
+| Folder                                        | What it contains                                                                         |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| [components/](../../src/workflows/components) | The canvas kit and host panels: nodes, edges, zoom, run panel, inspector, lanes, and log |
+| [engine/](../../src/workflows/engine)         | Wire types, placement, reducer, and run sources                                          |
+| [fixtures/](../../src/workflows/fixtures)     | The authored loan run and story data                                                     |
+| [recipes/](../../src/workflows/recipes)       | Screen composition                                                                       |
 
 [WorkflowDemoPage.tsx](../../src/workflows/recipes/loan-review-run/loan-review-run.tsx) is composition and selection only;
 [WorkflowCanvas.tsx](../../src/workflows/components/workflow-canvas/workflow-canvas.tsx) holds React Flow, because it is the
@@ -163,7 +163,7 @@ It usually carries `progress`, counted in that workflow's stages.
 ## Both panels collapse
 
 The run panel collapses from the chevron in its own header and comes back from a
-hamburger at the app's top-left corner. The details panel closes from its X or
+button at the canvas's top-left corner. The details panel closes from its X or
 from the toggle in the top bar, and reopens whenever a step is selected —
 choosing a step is a request to look at it.
 
@@ -188,6 +188,40 @@ someone wants that 400px back.
 The [loading recipe](../../src/workflows/recipes/loading-skeleton/loading-skeleton.tsx)
 draws the same three-panel shell so the layout doesn't jump, and uses the library's
 own motion (`animate-orb-drift`, `shimmer-text`, `animate-fade-up`).
+
+## Steps have inputs and outputs
+
+A step's `io` says what it reads and what it produces, as typed fields. An
+input names its source: an output of an earlier step, or one of the run's own
+inputs. The step panels show both, with this run's values, in
+[`StepInputsOutputs`](../../src/workflows/components/step-inputs-outputs).
+
+- **Values are stored once, on outputs.** An input never carries a value. The
+  client reads it off the source's output, and only once the source step is
+  `done` or `approved` — [`resolveStepIO`](../../src/workflows/engine/io.ts).
+  So a run cannot show an input that disagrees with the output it came from,
+  and "Not ready yet" is not something a server can forget to clear.
+- **Status decides what shows, not the value's presence.** An output of a step
+  sent back for changes may still hold last time's value; it reads "Sent back
+  for changes" all the same. Every status has its own pending word, in one
+  table (`PENDING_OUTPUT`).
+- **I/O stays off the canvas.** It sits beside the steps on `RunGraph.io`, not
+  on the seeds: the seeds are the kit's type and the kit never reads I/O, and
+  an `io`-only patch leaves `steps` alone so nothing on the canvas rebuilds. It
+  cannot change a node's size, so the layout never has to see it.
+- **Wiring is checked, not trusted.** [`validateIO`](../../src/workflows/engine/io.ts)
+  reports every input whose source step is unknown, does not come before it
+  along the edges, or does not declare that output — and every run input that
+  is not declared. The fixtures' tests run it over all four runs.
+
+A run declares its own inputs (required or optional, typed) and outputs (with
+where each goes). They ride on `VariantInfo`, so the start form —
+[`StartRunDialog`](../../src/workflows/components/start-run-dialog) around
+[`RunInputsForm`](../../src/workflows/components/run-inputs-form) — can be drawn
+before a run exists. Each type picks its field: a date gets `DateField`, a
+choice or a person a `Select`, a list a `Textarea`, a file its name. Errors wait
+for the first attempt to start, and submit stays enabled so that pressing it is
+how a reader finds out what is missing.
 
 ## The source seam
 
@@ -241,9 +275,9 @@ way to learn what that step will accept, and would otherwise draw buttons for a
 decision the server will refuse.
 
 Nothing keys on a step _id_ any more. "Needs you" is every step at `waiting`,
-because a run can stop on two approvals at once — the onboarding variant does,
-and the old single hardcoded card made the second one invisible. For the same
-reason the sidebar's stage list is the part that scrolls and "Needs you" is the
+because a run can stop on two approvals at once, and the old single hardcoded
+card made the second one invisible. For the same
+reason the run panel's stage list is the part that scrolls and "Needs you" is the
 part that doesn't.
 
 ## Written once

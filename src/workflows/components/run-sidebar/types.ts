@@ -4,7 +4,6 @@ import type { RecentRun } from '../recent-runs'
 import type { NeedsItem } from './run-sidebar'
 
 export type RunSidebarProps = {
-  appName: string
   header: RunHeader
   stages: StageSeed[]
   needs: NeedsItem[]

@@ -15,7 +15,6 @@ const meta = {
     ),
   ],
   args: {
-    appName: 'Acme',
     header: STORY_RUN.graph.header,
     stages: STORY_RUN.graph.stages,
     needs: [{ stepId: 'approve', title: 'Credit approval', sub: 'Dana Whitfield · due 3h 40m' }],

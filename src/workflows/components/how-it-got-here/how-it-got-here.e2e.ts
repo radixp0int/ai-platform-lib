@@ -14,10 +14,18 @@ test.describe('HowItGotHere', () => {
 
   test('times are in a fixed-width face so the column lines up', async ({ story }) => {
     const root = await story.open('workflows-components-how-it-got-here--long-trail')
-    const starts = await root
-      .locator('ol > li > span:first-child')
-      .evaluateAll((cells) => cells.map((cell) => cell.getBoundingClientRect().width))
-    expect(new Set(starts).size).toBe(1)
+    // evaluateAll does not wait, so wait for the trail before measuring it.
+    const times = root.locator('ol > li > span:first-child')
+    await expect(times).toHaveCount(8)
+    // The text, not the cell: the cell has a fixed width whatever the face.
+    const widths = await times.evaluateAll((cells) =>
+      cells.map((cell) => {
+        const range = document.createRange()
+        range.selectNodeContents(cell)
+        return range.getBoundingClientRect().width
+      }),
+    )
+    expect(new Set(widths).size).toBe(1)
   })
 
   test('a single entry is still a list', async ({ story }) => {

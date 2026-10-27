@@ -1,3 +1,4 @@
+import { resolveStepIO } from '../engine/io'
 import { createStaticRunSource } from '../engine/staticSource'
 import type { RunEvent } from '../engine/types'
 type Snapshot = Extract<RunEvent, { type: 'snapshot' }>
@@ -12,3 +13,4 @@ function snapshot(): Snapshot {
 }
 export const STORY_RUN = snapshot()
 export const APPROVAL = STORY_RUN.graph.stepById.get('approve')!
+export const APPROVAL_IO = resolveStepIO(STORY_RUN.graph, STORY_RUN.statuses, 'approve')

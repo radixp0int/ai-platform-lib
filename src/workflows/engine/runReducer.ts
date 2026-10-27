@@ -53,7 +53,7 @@ function appendLog(
 
 /** Applies a step change to the graph's copy of that step, keeping identity when it can. */
 function patchGraph(state: RunState, stepId: string, change: StepChange): RunState['graph'] {
-  const graph = state.graph
+  const graph = withIO(state.graph, stepId, change)
   if (!graph) return graph
   // `status` lives in the status map, not on the seed — so a status-only patch
   // leaves the graph untouched and the memoised node build sees a stable object.
@@ -84,6 +84,16 @@ function patchGraph(state: RunState, stepId: string, change: StepChange): RunSta
     // Structure is unchanged, so the canvas must not refit.
     epoch: graph.epoch,
   }
+}
+
+/**
+ * I/O lives beside the steps, so an `io`-only patch leaves `steps` alone: the
+ * memoised node build never sees it, which is right — nothing on the canvas
+ * draws it.
+ */
+function withIO(graph: RunState['graph'], stepId: string, change: StepChange): RunState['graph'] {
+  if (!graph || change.io === undefined || !graph.stepById.has(stepId)) return graph
+  return { ...graph, io: { ...graph.io, [stepId]: change.io } }
 }
 
 export function runReducer(state: RunState, event: RunAction): RunState {

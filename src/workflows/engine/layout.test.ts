@@ -1,7 +1,5 @@
 import { describe, expect, it } from 'vitest'
 import { FOLD_W, foldHeight, RICH_W, STEP_H, stepHeight } from '../components/build'
-import { onboarding } from '../fixtures/onboarding'
-import { rfpResponse } from '../fixtures/rfpResponse'
 import { FOLD_GUTTER, foldRun, LANE_BLEED, placeRun, ROW_AXIS, ROW_PITCH } from './layout'
 import type { WireStage, WireStep } from './wireProtocol'
 
@@ -23,6 +21,22 @@ const STAGES: WireStage[] = ['a', 'b', 'c'].map((id) => ({
   sub: '',
   status: 'upcoming',
 }))
+
+/** A longer run than the loan's: five stages, two steps in the middle one. */
+const LONG_STAGES: WireStage[] = ['intake', 'qualify', 'draft', 'review', 'submit'].map((id) => ({
+  id,
+  name: id,
+  sub: '',
+  status: 'upcoming',
+}))
+const LONG_STEPS: WireStep[] = [
+  step('received', 'intake', 0),
+  step('fit', 'qualify', 1),
+  step('write', 'draft', 2),
+  step('check', 'review', 3, 0),
+  step('legal', 'review', 3, 1),
+  step('send', 'submit', 4),
+]
 
 const byId = (steps: { id: string; x: number; y: number }[]) => new Map(steps.map((s) => [s.id, s]))
 
@@ -93,8 +107,8 @@ describe('placeRun', () => {
   })
 
   it('keeps an unfolded run exactly where it was', () => {
-    const before = placeRun(onboarding.steps, onboarding.stages)
-    const after = placeRun(onboarding.steps, onboarding.stages, { folded: new Set() })
+    const before = placeRun(LONG_STEPS, LONG_STAGES)
+    const after = placeRun(LONG_STEPS, LONG_STAGES, { folded: new Set() })
     expect(after.steps.map((s) => [s.x, s.y])).toEqual(before.steps.map((s) => [s.x, s.y]))
     expect(after.lanes).toEqual(before.lanes)
   })
@@ -102,17 +116,17 @@ describe('placeRun', () => {
 
 describe('foldRun', () => {
   it('reads the grid back off a placed run, so folding nothing moves nothing', () => {
-    const placed = placeRun(rfpResponse.steps, rfpResponse.stages)
-    const again = foldRun({ steps: placed.steps, stages: rfpResponse.stages }, new Set())
+    const placed = placeRun(LONG_STEPS, LONG_STAGES)
+    const again = foldRun({ steps: placed.steps, stages: LONG_STAGES }, new Set())
     expect(again.steps.map((s) => [s.id, s.x, s.y])).toEqual(
       placed.steps.map((s) => [s.id, s.x, s.y]),
     )
   })
 
   it('folds every stage it is asked to, and only those', () => {
-    const placed = placeRun(rfpResponse.steps, rfpResponse.stages)
+    const placed = placeRun(LONG_STEPS, LONG_STAGES)
     const folded = foldRun(
-      { steps: placed.steps, stages: rfpResponse.stages },
+      { steps: placed.steps, stages: LONG_STAGES },
       new Set(['intake', 'qualify', 'submit']),
     )
     expect(Object.keys(folded.folds).sort()).toEqual(['intake', 'qualify', 'submit'])

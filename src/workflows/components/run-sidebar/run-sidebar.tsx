@@ -1,12 +1,12 @@
-import { Orb } from '../../../primitives/orb'
 import { StatusDot } from '../../../primitives/status-dot'
 import type { RunSidebarProps } from './types'
-// Left panel: what this run is, where it has got to, and what is waiting on you.
-// Who is signed in is not here: that belongs to the app's top bar.
+// The run's panel, beside the platform's rail: what this run is, where it has got
+// to, and what is waiting on you. The brand, the account and the way to other
+// apps are the rail's and the top bar's; this is only the run-shaped part.
 //
 // Everything run-shaped arrives as props. "Needs you" is a *list*, not a
-// boolean: a run can stop on two approvals at once (the onboarding variant
-// does), and the old single hardcoded card made the second one invisible.
+// boolean: a run can stop on two approvals at once, and the old single
+// hardcoded card made the second one invisible.
 import { useState } from 'react'
 import { IconButton } from '../../../primitives/icon-button'
 import { ChevronDownIcon, ChevronLeftIcon, EyeIcon, EyeOffIcon } from '../../../primitives/icons'
@@ -19,7 +19,6 @@ import { StageMarker } from '../index'
 export type NeedsItem = { stepId: string; title: string; sub: string }
 
 export function RunSidebar({
-  appName,
   header,
   stages,
   needs,
@@ -47,10 +46,8 @@ export function RunSidebar({
   return (
     // Sized by the collapsing wrapper in WorkflowDemoPage, not by itself.
     <aside className="glass flex h-full w-full flex-col rounded-surface">
-      <div className="flex items-center gap-3 px-6 pt-6 pb-5">
-        <Orb className="orb block size-[30px] shrink-0 rounded-full" aria-hidden />
-        {/* The app's name, not the run's — so it stays a constant. */}
-        <span className="text-[19px] font-bold tracking-tight text-ink-strong">{appName}</span>
+      <div className="flex items-center gap-3 px-6 pt-5 pb-4">
+        <h2 className="text-[17px] font-bold tracking-tight text-ink-strong">Run</h2>
         <IconButton
           shape="rounded"
           onClick={onCollapse}

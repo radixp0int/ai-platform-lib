@@ -12,7 +12,7 @@ test.describe('StepInspector', () => {
     await expect(panel.getByRole('button', { name: 'Hide step details' })).toBeVisible()
   })
 
-  test('the blocks appear in reading order: details, recommendation, exception, trail', async ({
+  test('the blocks appear in reading order: inputs, outputs, details, recommendation, exception, trail', async ({
     story,
     page,
   }) => {
@@ -20,6 +20,8 @@ test.describe('StepInspector', () => {
     const panel = page.getByRole('complementary')
     const y = async (text: string) =>
       (await panel.getByText(text, { exact: true }).boundingBox())!.y
+    expect(await y('Inputs')).toBeLessThan(await y('Outputs'))
+    expect(await y('Outputs')).toBeLessThan(await y('Details'))
     expect(await y('Details')).toBeLessThan(await y('Agent recommendation'))
     expect(await y('Agent recommendation')).toBeLessThan(await y('Policy exception'))
     expect(await y('Policy exception')).toBeLessThan(await y('How it got here'))

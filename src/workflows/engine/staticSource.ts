@@ -5,12 +5,15 @@
 // were hand-tuned (see docs/workflows/design.md), and re-deriving them would move nodes that
 // were placed deliberately.
 import {
+  APPROVAL_OUTPUTS,
   applyDecision,
   EDGE_SEEDS,
   INITIAL_STATUS,
+  RUN_INPUTS,
   STAGE_LANES,
   STAGES,
   STEP_BY_ID,
+  STEP_IO,
   STEPS,
 } from '../fixtures/loanRun'
 import type { Decision, LogEntry, RunEvent, RunGraph, RunSource } from './types'
@@ -37,6 +40,8 @@ const GRAPH: RunGraph = {
   laneTop: LANE_TOP,
   laneBottom: LANE_BOTTOM,
   focusStepId: 'approve',
+  io: STEP_IO,
+  inputs: RUN_INPUTS,
   epoch: 0,
 }
 
@@ -157,6 +162,12 @@ export function createStaticRunSource(): RunSource {
         log('info', 'memo', 'Draft credit memo', 'Revising the memo with your notes')
         emit({ type: 'phase', phase: 'running' })
       } else {
+        // The approval's outputs are what the letter is written from.
+        emit({
+          type: 'step',
+          stepId: 'approve',
+          change: { io: { ...STEP_IO.approve, outputs: APPROVAL_OUTPUTS } },
+        })
         log('info', 'letter', 'Draft decision letter', 'Preparing the approval letter')
         emit({ type: 'phase', phase: 'running' })
       }

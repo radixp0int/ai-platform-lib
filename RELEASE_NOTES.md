@@ -3,6 +3,174 @@
 Changes to the component library as seen from Storybook. Newest first. Each
 entry names the modules it touches so the sidebar entry is easy to find.
 
+## 2026-10-26 — FilterBar: the quick picks are the default
+
+- **`simple` and `advanced` swap places.** `simple`, still the default, is now
+  the style with quick picks: focus the omnibox while it is empty and every date
+  and small filter is one click away. `advanced` is the style for typing: the
+  omnibox suggests search, field narrowings, and the dates and values that match,
+  and offers no quick picks. The Filters button and panel are the same in both,
+  and switching never loses a filter. Anyone who passed `filterStyle="advanced"`
+  for the quick picks should drop it or pass `"simple"`; anyone who relied on the
+  old default for typing should pass `"advanced"`. The placeholders and the
+  switch links follow: the quick picks now offer "Switch to advanced", and the
+  panel offers "Use simple filters". The Tenants page and the Runs list use the
+  default.
+
+## 2026-10-26 — Workflows: the workflow detail page, the run detail page, and one list
+
+- **New recipe: Workflow detail** (Workflows/Recipes/Workflow detail), from the
+  Workflow Agents to Live View design. A header with a live-run banner, then
+  Overview, Runs and Versions tabs. Overview shows the shape, what a run needs
+  and hands back, what each stage does, and who decides, which systems it reaches
+  and how the last month went. Runs open a run's trace; "Start a run" opens the
+  start form. Stories: Overview, Runs, Versions, No live run, Running, Long description, In
+  app shell.
+- **New components, all under Workflows/Components:** `WorkflowShape`,
+  `WorkflowStageList` (with `WorkflowStepCard`), `WorkflowApprovers` / `WorkflowSystems` / `WorkflowStats` (Workflow side
+  cards), and `WorkflowRunsTable`. The page's header is part of the recipe, and
+  `WorkflowVersions` is a recipe beside it. `FlowBlueprint` gains
+  `appearance="definition"`: numbered lanes, one pale fill, dashed for a step
+  that only sometimes runs.
+- **New contract: `WorkflowSpec`** (`WorkflowStageSpec`, `WorkflowStepSpec`,
+  `WorkflowRunRow`, …) with `shapeOf` and `shapeLine`. The `COMMERCIAL_LOAN_SPEC`
+  fixture reuses the loan run's own step ids and typed inputs and outputs.
+- **New recipe: Run detail** (Workflows/Recipes/Run detail). One run's trace: a
+  row of stage tiles, the steps of the chosen stage, and one step opened up with
+  its calls against the clock, the agent's reasoning, its input and output, and
+  the raw record. It opens on the stage and step the run is waiting at. The
+  workflow's Runs tab opens it, and its trail goes back to the workflow.
+- **New components for it:** `TraceStageStrip`, `TraceStepList`, `TraceInspector`,
+  `TraceSequence` and `TraceStatusIcon` / `TraceKindTag` (Trace status). Each has
+  a status shape as well as a colour.
+- **New contract: `RunTrace`** with `summarizeStages`, `currentStageId`,
+  `currentStepId`, `formatDuration` and `spanRecord`. Nothing in it is on the run
+  wire protocol yet. `COMMERCIAL_LOAN_TRACE` is the Harbor Street Bakery run
+  waiting on its analyst; `COMMERCIAL_LOAN_TRACE_BUREAU_FAILED` is the same run
+  with a credit pull that timed out and was carried on past.
+- **Shared pieces, not repeats.** New **Breadcrumb trail** and **Section card**
+  components (Components/) replace markup the workflow pages each wrote by hand,
+  and the pages now use `pageColumn`, `DescriptionList` and the `STEP_KIND_LABEL`
+  vocabulary. That vocabulary lives in one place for the step node, its badges,
+  the workflow's step cards and the trace page; the trace page's kind tag now
+  says **Approval** and **System call** like the canvas does, not Person and Tool
+  call.
+- **The RFP response example is gone**, from the table's summaries and the stories
+  and tests that used it, in favour of more of the commercial loan review: the
+  table's tenth workflow is now **Commercial loan origination**, a ten-stage run
+  waiting on a credit committee. The wire protocol's `rfp-response` variant id
+  stays, since a server may still send it.
+- **The Runs list is the workflows table, in one place.** The Workflows table
+  and Runs list recipes are merged into **Workflows/Recipes/Runs list**
+  (`RunsListPage`, was `WorkflowsTablePage`). A row opens to the run's blueprint,
+  "Open live view" still goes to the live page, and **Workflow details** goes to
+  the workflow's page where there is one (`detailHrefFor`). Stories: Runs, **In
+  app shell**, Empty, Needs a person, Start a workflow. The page title is
+  **Workflows**, not Runs. The shell's own `RunsPage` is gone, so `AppShell`
+  shows a placeholder for Workflows until a host gives it a page through
+  `renderSpace`; the app shell's **Runs** story is removed. The Workflows
+  menu's first view and its pinned label read **All workflows**.
+
+## 2026-10-23 — Workflows: one worked example, the commercial loan review
+
+- **The incident triage, employee onboarding and RFP response examples are
+  gone:** their stories, e2e tests and scripted runs (`incidentTriage`,
+  `onboarding`, `rfpResponse` in `fixtures/`), and the fixture-run harness only
+  they used (`FixtureWorkflow`, `createFixtureRunSource`, `RunScript`). The loan
+  review is the one run the stories, tests and `npm run test:static-workflows`
+  walk through; that script now checks its approve, decline and request-changes
+  paths.
+- **Kept as data, not examples:** the table's twenty workflow summaries, and the
+  wire protocol's variant ids, which a server may still send. `RUN_CONTRACTS`
+  now holds the loan review's contract only. The step-node "With content" story
+  carries a few steps of its own, since the RFP run was where its content came
+  from.
+
+## 2026-10-23 — The standard side menu: an app rail and a panel you can drag
+
+- **`SideMenu` is now a rail of the apps and a panel for the one you are in.**
+  The rail (68px, always there) has an icon and a short name for each app, a
+  badge on Tasks, and Settings at the foot. Pressing the icon of the app you
+  are in folds its panel away and brings it back; with the panel folded,
+  resting on the icon opens a card with the short version, and **Pin panel**
+  brings the panel back. The grid at the top opens **All apps**: every
+  destination as a tile, a search, and pages visited lately. The panel's edge
+  is a handle: drag it, use the arrow keys, or double-click to reset (200 to
+  420px). Its props changed: `sections` and `activeId` stay; `rail`, `panels`,
+  `appsHeading`, `places`, `footLinks`, `panelOpen` are new; `mode`, `openIds`
+  and `onOpenIdsChange` are gone.
+- **New pieces for what a panel holds:** `MenuPanelSearch`, `MenuPanelLabel`
+  and `MenuPanelRow`, so the panels of different apps read alike. `MenuBadge`
+  is removed. `MenuDestination` gains `shortLabel`.
+- **`AppShell` docks that menu on every page.** The Workflows panel has a
+  search, Views and Recently viewed. The Chat panel is filled by the chat page
+  through `InSideMenu` (children only now; the `rail` prop is gone): New chat,
+  search, filters and recent chats, from the new **`ChatMenuBody`**, which the
+  standalone `ChatMenu` frames in its own sidebar. `ChatMenu` loses `embedded`.
+  The shell's top-bar button opens the menu only on a narrow screen.
+  `initialMenuMode` is now `initialPanelOpen`. On a run's canvas the app panel
+  starts folded, because the run has a panel of its own.
+- **The run's panel is back beside the rail** and has no brand: **`RunSidebar`**
+  loses `appName`, and its header reads "Run". This reverses the previous
+  entry's move of the outline into the menu: **`RunOutline`**, **`RunOutlineRail`**
+  and `InAppShell` are removed.
+- **New icons:** `AppsIcon`, `HelpIcon`, `PanelCollapseIcon`.
+
+## 2026-10-22 — One side menu: the run outline moves into it
+
+- **The live run page no longer has a side panel of its own.** Its run card,
+  workflow picker, stages and "Needs you" are now a **This run** section of the
+  platform's side menu, under the destinations, so the page uses the same menu
+  as every other. Folded to the rail, the section is the stage markers and a
+  badge for what needs you. The shell docks the menu on workflow pages (they
+  are no longer in its `FOCUSED` list) and starts it folded below 1280px.
+- **`SideMenu` takes a page's own section.** New **`InSideMenu`** (children for
+  the expanded menu, `rail` for the rail) and **`SideMenuSlotProvider`**; the
+  section is a portal, so it keeps the page's state. `AppShell` provides the
+  slot. `MenuBadge` is now exported.
+- **Breaking for hosts:** `RunSidebar` is gone, replaced by **`RunOutline`** and
+  **`RunOutlineRail`** (no `appName`, no `onCollapse`). `WorkflowDemoPage` has to
+  sit inside a `SideMenuSlotProvider` to show its outline, which `AppShell` is.
+  `RunTopBar` loses `runPanelOpen` and `onShowRunPanel`: the menu's own button
+  folds and opens it. The tablet "Run outline" dialog is gone with it.
+- **Stories:** the whole-run stories now render inside the shell
+  (`InAppShell`), so the outline has a menu to be drawn in.
+
+## 2026-10-22 — Workflows: inputs and outputs
+
+- **Steps say what they read and produce.** The Step details panel and the
+  full-width step view show a step's **Inputs** (each with where it came from)
+  and **Outputs**, with this run's values. A value the run has not reached reads
+  "Not ready yet", "Waiting on this step", "Being produced" and so on, by
+  status. New component **`StepInputsOutputs`**; `StepInspector` and
+  `StepDetail` take an optional `io`.
+- **Starting a run asks for its inputs.** New **`RunInputsForm`** (one field per
+  input, by type; it will not submit with a required field empty) and
+  **`StartRunDialog`** (the form in a modal, with a workflow picker when there
+  is a choice, a refusal notice, and a "Run started" state). The run page's
+  workflow switcher goes through the form when a workflow asks for inputs.
+- **New component: `RunContract`,** a workflow's inputs (required or optional)
+  and outputs (and where each goes), for the workflow detail page.
+- **New component: `IoTypePill`,** the mono type tag beside a field's name.
+- **Engine: `resolveStepIO`, `validateIO`, `PENDING_OUTPUT`.** An input's value
+  is read off its source's output once that step is done, never stored twice.
+  `RunGraph` gains `io` and `inputs`; `StepChange` gains `io`;
+  `RunSource.start` and `useRun().start` take the start values.
+- **Wire protocol** (coordinate with `workflow-ws-server` and
+  `chat-workflow-mock-api`): `WireStep.io`, `StepPatch.io`, `WireRun.inputs`,
+  `VariantInfo.inputs`/`outputs`, `run.start` `inputs`, and the `IoType`,
+  `StepInput`, `StepOutput`, `RunInputSpec` and `RunOutputSpec` types. All
+  optional on read.
+- **Fixtures.** Every step of the loan, RFP, onboarding and incident runs has
+  I/O, written one line each way through the new `io()` helper; each run
+  declares its start inputs and outputs. The fixture source holds output values
+  back until a step finishes.
+- **Recipes:** a **Start a workflow** story on Workflows table.
+- **Tests.** Unit tests for `resolveStepIO`, `validateIO`, the reducer's `io`
+  patch, and the wiring of all four fixtures; browser tests for each new
+  component, the RFP run's panel before and after approval, and starting a
+  workflow from the table.
+
 ## 2026-10-21 — Chat: the humanized assistant, a marble bust
 
 - **The Marble bust won the avatar review.** The humanized assistant is
