@@ -2,37 +2,6 @@
  "v": 3,
  "attachments": {},
  "boards": {
-  "ChatSpace.dc.html": {
-   "h": 900,
-   "is_interactive": true,
-   "title": "Chat · section expanded — /t/alderfinch-treasury/chat",
-   "w": 1440,
-   "x": 0,
-   "y": 1340
-  },
-  "HomeChatOnly.dc.html": {
-   "h": 900,
-   "is_interactive": true,
-   "title": "Chat-only tenant — /t/alderfinch-retail/chat",
-   "w": 1440,
-   "x": 3040,
-   "y": 1340
-  },
-  "HomeCollapsed.dc.html": {
-   "h": 900,
-   "is_interactive": true,
-   "title": "Home · menu collapsed, section flyout open",
-   "w": 1440,
-   "x": 1520,
-   "y": 0
-  },
-  "HomeDark.dc.html": {
-   "h": 900,
-   "title": "Home · dark",
-   "w": 1440,
-   "x": 0,
-   "y": 2680
-  },
   "M2Chat.dc.html": {
    "h": 900,
    "is_interactive": true,
@@ -75,84 +44,6 @@
    "x": 0,
    "y": 1340
   },
-  "M2Favorites.dc.html": {
-   "h": 900,
-   "is_interactive": true,
-   "page": "mercury2",
-   "title": "Favorites open · all three slots used",
-   "w": 1440,
-   "x": 1520,
-   "y": 0
-  },
-  "M2Home.dc.html": {
-   "h": 900,
-   "is_interactive": true,
-   "page": "mercury2",
-   "title": "Home · top bar with three favorites — /t/alderfinch-treasury/home",
-   "w": 1440,
-   "x": 0,
-   "y": 0
-  },
-  "M2HomeDarkDeep.dc.html": {
-   "h": 900,
-   "page": "mercury2",
-   "title": "Home · dark, Deep palette",
-   "w": 1440,
-   "x": 1520,
-   "y": 2680
-  },
-  "M2HomeDarkGraphite.dc.html": {
-   "h": 900,
-   "page": "mercury2",
-   "title": "Home · dark, Graphite palette",
-   "w": 1440,
-   "x": 3040,
-   "y": 2680
-  },
-  "M2HomeDarkNavy.dc.html": {
-   "h": 900,
-   "page": "mercury2",
-   "title": "Home · dark, Navy palette",
-   "w": 1440,
-   "x": 0,
-   "y": 2680
-  },
-  "M2Tasks.dc.html": {
-   "h": 900,
-   "is_interactive": true,
-   "page": "mercury2",
-   "title": "Tasks · a favorite page, active in the top bar",
-   "w": 1440,
-   "x": 4560,
-   "y": 0
-  },
-  "M2TenantSwitcher.dc.html": {
-   "h": 900,
-   "is_interactive": true,
-   "page": "mercury2",
-   "title": "Tenant switcher open",
-   "w": 1440,
-   "x": 3040,
-   "y": 0
-  },
-  "M2TenantSwitcherAdmin.dc.html": {
-   "h": 900,
-   "is_interactive": true,
-   "page": "mercury2",
-   "title": "Tenant switcher · platform admin: load more, view all, edit",
-   "w": 1440,
-   "x": 0,
-   "y": -1480
-  },
-  "M2Tenants.dc.html": {
-   "h": 1000,
-   "is_interactive": true,
-   "page": "mercury2",
-   "title": "All tenants · data table with inline edit — /tenants",
-   "w": 1440,
-   "x": 1520,
-   "y": -1480
-  },
   "M2Wizard.dc.html": {
    "h": 900,
    "is_interactive": true,
@@ -162,108 +53,6 @@
    "x": 6080,
    "y": 1340
   },
-  "M2Workflows.dc.html": {
-   "h": 900,
-   "is_interactive": true,
-   "page": "mercury2",
-   "title": "Runs · menu collapsed",
-   "w": 1440,
-   "x": 4560,
-   "y": 1340
-  },
-  "MChat.dc.html": {
-   "h": 900,
-   "is_interactive": true,
-   "page": "mercury",
-   "title": "Chat · section expanded — /t/alderfinch-treasury/chat",
-   "w": 1440,
-   "x": 0,
-   "y": 1340
-  },
-  "MChatDarkDeep.dc.html": {
-   "h": 900,
-   "page": "mercury",
-   "title": "Chat · dark, Deep palette",
-   "w": 1440,
-   "x": 1520,
-   "y": 4020
-  },
-  "MChatDarkGraphite.dc.html": {
-   "h": 900,
-   "page": "mercury",
-   "title": "Chat · dark, Graphite palette",
-   "w": 1440,
-   "x": 3040,
-   "y": 4020
-  },
-  "MChatDarkNavy.dc.html": {
-   "h": 900,
-   "page": "mercury",
-   "title": "Chat · dark, Navy palette",
-   "w": 1440,
-   "x": 0,
-   "y": 4020
-  },
-  "MHome.dc.html": {
-   "h": 900,
-   "is_interactive": true,
-   "page": "mercury",
-   "title": "Home — /t/alderfinch-treasury/home",
-   "w": 1440,
-   "x": 0,
-   "y": 0
-  },
-  "MHomeDarkDeep.dc.html": {
-   "h": 900,
-   "page": "mercury",
-   "title": "Home · dark, Deep palette",
-   "w": 1440,
-   "x": 1520,
-   "y": 2680
-  },
-  "MHomeDarkGraphite.dc.html": {
-   "h": 900,
-   "page": "mercury",
-   "title": "Home · dark, Graphite palette",
-   "w": 1440,
-   "x": 3040,
-   "y": 2680
-  },
-  "MHomeDarkNavy.dc.html": {
-   "h": 900,
-   "page": "mercury",
-   "title": "Home · dark, Navy palette",
-   "w": 1440,
-   "x": 0,
-   "y": 2680
-  },
-  "MHomeTopBar.dc.html": {
-   "h": 900,
-   "is_interactive": true,
-   "page": "mercury",
-   "title": "Home · light, with a top bar",
-   "w": 1440,
-   "x": 4560,
-   "y": 0
-  },
-  "MTasks.dc.html": {
-   "h": 900,
-   "is_interactive": true,
-   "page": "mercury",
-   "title": "Tasks · list with detail panel — /t/alderfinch-treasury/tasks",
-   "w": 1440,
-   "x": 3040,
-   "y": 0
-  },
-  "MTenantSwitcher.dc.html": {
-   "h": 900,
-   "is_interactive": true,
-   "page": "mercury",
-   "title": "Tenant switcher open",
-   "w": 1440,
-   "x": 1520,
-   "y": 0
-  },
   "MWizard.dc.html": {
    "h": 900,
    "is_interactive": true,
@@ -271,62 +60,6 @@
    "title": "Wizard · side menu hidden — /t/alderfinch-treasury/ingestion/new",
    "w": 1440,
    "x": 3040,
-   "y": 1340
-  },
-  "MWorkflows.dc.html": {
-   "h": 900,
-   "is_interactive": true,
-   "page": "mercury",
-   "title": "Runs · menu collapsed — /t/alderfinch-treasury/workflows",
-   "w": 1440,
-   "x": 1520,
-   "y": 1340
-  },
-  "Main.dc.html": {
-   "h": 900,
-   "is_interactive": true,
-   "title": "Home · menu expanded with sub-sections — /t/alderfinch-treasury/home",
-   "w": 1440,
-   "x": 0,
-   "y": 0
-  },
-  "NoAccess.dc.html": {
-   "h": 900,
-   "is_interactive": true,
-   "title": "Deep link into a space the tenant lacks — /t/alderfinch-retail/workflows",
-   "w": 1440,
-   "x": 4560,
-   "y": 1340
-  },
-  "Routes.dc.html": {
-   "h": 900,
-   "title": "Route table",
-   "w": 1440,
-   "x": 1520,
-   "y": 2680
-  },
-  "TenantSwitcher.dc.html": {
-   "h": 900,
-   "is_interactive": true,
-   "title": "Tenant switcher open, in the top bar",
-   "w": 1440,
-   "x": 3040,
-   "y": 0
-  },
-  "Wizard.dc.html": {
-   "h": 900,
-   "is_interactive": true,
-   "title": "Wizard · side menu hidden — /t/alderfinch-treasury/ingestion/new",
-   "w": 1440,
-   "x": 4560,
-   "y": 0
-  },
-  "WorkflowsSpace.dc.html": {
-   "h": 900,
-   "is_interactive": true,
-   "title": "Workflows · menu collapsed — /t/alderfinch-treasury/workflows",
-   "w": 1440,
-   "x": 1520,
    "y": 1340
   },
   "M2ChatWide.dc.html": {
@@ -477,38 +210,11 @@
   "page": "revisions"
  },
  "notes": {
-  "m-row-dark-chat": {
-   "kind": "title1",
-   "maxW": 4480,
-   "page": "mercury",
-   "text": "Chat in the three dark palettes",
-   "w": 240,
-   "x": 0,
-   "y": 3720
-  },
-  "m-row-dark-home": {
-   "kind": "title1",
-   "maxW": 4480,
-   "page": "mercury",
-   "text": "Home in the three dark palettes",
-   "w": 240,
-   "x": 0,
-   "y": 2380
-  },
-  "m-row-home": {
-   "kind": "title1",
-   "maxW": 6000,
-   "page": "mercury",
-   "text": "Home, tenant switcher, tasks, top-bar variant",
-   "w": 240,
-   "x": 0,
-   "y": -300
-  },
   "m-row-spaces": {
    "kind": "title1",
    "maxW": 4480,
    "page": "mercury",
-   "text": "Spaces and wizard",
+   "text": "Wizard",
    "w": 240,
    "x": 0,
    "y": 1040
@@ -522,62 +228,11 @@
    "x": 0,
    "y": 3720
   },
-  "m2-row-dark-home": {
-   "kind": "title1",
-   "maxW": 4480,
-   "page": "mercury2",
-   "text": "Home in the three dark palettes",
-   "w": 240,
-   "x": 0,
-   "y": 2380
-  },
-  "m2-row-features": {
-   "kind": "title1",
-   "maxW": 2960,
-   "page": "mercury2",
-   "text": "Tenant admin: switcher actions and the tenants data table",
-   "w": 240,
-   "x": 0,
-   "y": -1780
-  },
   "m2-row-pages": {
    "kind": "title1",
    "maxW": 7520,
    "page": "mercury2",
-   "text": "Chat with only its own menu, runs, wizard",
-   "w": 240,
-   "x": 0,
-   "y": 1040
-  },
-  "m2-row-shell": {
-   "kind": "title1",
-   "maxW": 6000,
-   "page": "mercury2",
-   "text": "Top bar with favorites, tenant switcher, tasks",
-   "w": 240,
-   "x": 0,
-   "y": -300
-  },
-  "row-alt": {
-   "kind": "title1",
-   "maxW": 2960,
-   "text": "Dark variant and routes",
-   "w": 240,
-   "x": 0,
-   "y": 2380
-  },
-  "row-home": {
-   "kind": "title1",
-   "maxW": 6000,
-   "text": "Side menu, tenant switcher in the top bar, wizard",
-   "w": 240,
-   "x": 0,
-   "y": -300
-  },
-  "row-spaces": {
-   "kind": "title1",
-   "maxW": 6000,
-   "text": "Inside a space",
+   "text": "Chat with only its own menu, wizard",
    "w": 240,
    "x": 0,
    "y": 1040
@@ -602,45 +257,13 @@
   }
  },
  "order": [
-  "Main.dc.html",
-  "HomeCollapsed.dc.html",
-  "TenantSwitcher.dc.html",
-  "Wizard.dc.html",
-  "ChatSpace.dc.html",
-  "WorkflowsSpace.dc.html",
-  "HomeChatOnly.dc.html",
-  "NoAccess.dc.html",
-  "HomeDark.dc.html",
-  "Routes.dc.html",
-  "MHome.dc.html",
-  "MTenantSwitcher.dc.html",
-  "MTasks.dc.html",
-  "MChat.dc.html",
-  "MWorkflows.dc.html",
   "MWizard.dc.html",
-  "MHomeTopBar.dc.html",
-  "MHomeDarkNavy.dc.html",
-  "MChatDarkNavy.dc.html",
-  "MHomeDarkDeep.dc.html",
-  "MChatDarkDeep.dc.html",
-  "MHomeDarkGraphite.dc.html",
-  "MChatDarkGraphite.dc.html",
-  "M2Home.dc.html",
-  "M2Favorites.dc.html",
-  "M2TenantSwitcher.dc.html",
-  "M2Tasks.dc.html",
   "M2ChatOngoing.dc.html",
   "M2Chat.dc.html",
-  "M2Workflows.dc.html",
   "M2Wizard.dc.html",
-  "M2HomeDarkNavy.dc.html",
   "M2ChatDarkNavy.dc.html",
-  "M2HomeDarkDeep.dc.html",
   "M2ChatDarkDeep.dc.html",
-  "M2HomeDarkGraphite.dc.html",
   "M2ChatDarkGraphite.dc.html",
-  "M2TenantSwitcherAdmin.dc.html",
-  "M2Tenants.dc.html",
   "M2ChatWide.dc.html",
   "Rev1ButtonToday.dc.html",
   "Rev1ButtonProposed.dc.html",
@@ -660,10 +283,6 @@
   "Rev8ModalProposed.dc.html"
  ],
  "pages": [
-  {
-   "id": "airtable",
-   "name": "Airtable direction"
-  },
   {
    "id": "mercury",
    "name": "Mercury direction"

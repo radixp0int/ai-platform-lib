@@ -8,7 +8,7 @@ plain HTML that opens in a browser, sharing `avatars.js`.
 
 | Folder               | What it is                                                                       | Built as                                               |
 | -------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| `platform-shell/`    | Top bar, pinned pages, tenant switcher, side menu, and the pages around them     | `src/recipes/app-shell` and the components it is made of |
+| `platform-shell/`    | Chat with its own menu, the wizard, the side-menu reference, and the rejected component revisions | `src/recipes/app-shell` and the components it is made of |
 | `agentic-flows/`     | The workflow run canvas: horizontal lanes, the flow console, the node kit        | `src/workflows`                                        |
 | `responsive-review/` | The tablet and phone review: supported widths, what gives way, evidence          | Rules every component and recipe follows               |
 | `assistant-greeting/` | The Ghost prompt greeting and its compact and error states; the Aristotle avatar options | **Chat / Components / Conversation** (empty state), `Greeting`, `AssistantAvatar` |
