@@ -11,8 +11,8 @@ import type { FilterField } from '../filter-panel'
 import type { Sort } from '../paging'
 import { DataGrid } from './data-grid'
 import { COLUMNS, EXPORT_COLUMNS, ROWS, TERM_FIELDS } from './data-grid.fixtures'
-import { downloadFile, EXPORT_MIME, toCsv, toJson } from './export'
-import { findMatches } from './filterModel'
+import { downloadRows } from './export'
+import { findMatches, termMatches } from './filterModel'
 import type { DataGridProps, ExportFormat, FilterTerm } from './types'
 
 type Status = Tenant['status']
@@ -23,6 +23,8 @@ const NONE: DateRange = { from: null, to: null }
 export type TenantsGridProps = {
   /** Rows to start from. Pass `[]` for a list with nothing in it yet. */
   rows?: Tenant[]
+  /** The filter panel and quick picks. Off, search and sorting are all there is. */
+  filters?: boolean
   maxSelections?: number
   selectable?: boolean
   exportFormats?: ExportFormat[]
@@ -43,6 +45,7 @@ export type TenantsGridProps = {
 /** The tenants list, wired end to end. */
 export function TenantsGrid({
   rows: source = ROWS,
+  filters = true,
   maxSelections,
   selectable = true,
   exportFormats = ['csv', 'json'],
@@ -79,14 +82,11 @@ export function TenantsGrid({
         if (tiers.length && !tiers.includes(t.tier)) return false
         if (created.from && t.created < created.from) return false
         if (created.to && t.created > created.to) return false
-        return terms.every((term) => {
-          const needle = term.value.trim().toLowerCase()
-          if (term.field) {
-            const value = String(t[term.field as FieldKey]).toLowerCase()
-            return term.exact ? value === needle : value.includes(needle)
-          }
-          return [t.name, t.contact, t.email].some((v) => v.toLowerCase().includes(needle))
-        })
+        return terms.every((term) =>
+          term.field
+            ? termMatches(term, t[term.field as FieldKey])
+            : [t.name, t.contact, t.email].some((v) => termMatches(term, v)),
+        )
       }),
     [source, statuses, tiers, created, terms],
   )
@@ -148,7 +148,7 @@ export function TenantsGrid({
       rows={pageRows}
       rowId={(t) => t.id}
       rowLabel={(t) => t.name}
-      fields={fields}
+      fields={filters ? fields : undefined}
       terms={terms}
       onTermsChange={(next) => {
         setTerms(next)
@@ -186,11 +186,14 @@ export function TenantsGrid({
       }}
       exportFormats={exportFormats}
       totalCount={sorted.length}
-      onExport={(format, scope) => {
-        const rows = scope === 'selected' ? sorted.filter((t) => selected.includes(t.id)) : sorted
-        const body = format === 'json' ? toJson(rows, EXPORT_COLUMNS) : toCsv(rows, EXPORT_COLUMNS)
-        downloadFile(`tenants.${format}`, body, EXPORT_MIME[format])
-      }}
+      onExport={(format, scope) =>
+        downloadRows(
+          'tenants',
+          format,
+          scope === 'selected' ? sorted.filter((t) => selected.includes(t.id)) : sorted,
+          EXPORT_COLUMNS,
+        )
+      }
       pagination={{
         page: safePage,
         size,

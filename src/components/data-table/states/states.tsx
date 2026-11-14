@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { IconTile } from '../../../primitives/icon-tile'
 
 /**
  * Loading keeps the frame and the column widths — only the cell contents go
@@ -41,63 +42,68 @@ export function SkeletonRows({
   )
 }
 
+type StateMessageProps = {
+  icon?: ReactNode
+  /** `danger` for a load that failed: the tile turns red and the message is an alert. */
+  tone?: 'brand' | 'danger'
+  title: ReactNode
+  body?: ReactNode
+  /** Anything between the body and the actions: the filters that are on, say. */
+  children?: ReactNode
+  actions?: ReactNode
+  /** A CSS length, or `none`. */
+  minHeight?: string
+}
+
 /**
  * A message in place of the rows: empty, no matches, or an error.
  *
- * It keeps the header and the frame, and it is never shorter than `minHeight`
- * (a little over seven rows by default). A table that collapses to a thin strip
- * when nothing comes back makes the page jump, and looks broken next to the
- * same table loading, which draws its rows at full height.
+ * Never shorter than `minHeight` (a little over seven rows by default). A table
+ * that collapses to a thin strip when nothing comes back makes the page jump,
+ * and looks broken next to the same table loading, which draws its rows at
+ * full height.
  *
  * Says why it is empty and offers the way forward. "No results" on its own is a
  * dead end: the reader has to work out which of their filters did it.
  */
-export function StateRow({
-  colSpan,
+export function StateMessage({
   icon,
   tone = 'brand',
   title,
   body,
+  children,
   actions,
   minHeight,
-}: {
-  colSpan: number
-  icon?: ReactNode
-  /** `danger` for a load that failed. */
-  tone?: 'brand' | 'danger'
-  title: ReactNode
-  body?: ReactNode
-  actions?: ReactNode
-  /** A CSS length, or `none`. */
-  minHeight?: string
-}) {
+}: StateMessageProps) {
+  return (
+    <div
+      role={tone === 'danger' ? 'alert' : undefined}
+      className="flex flex-col items-center justify-center gap-3 px-6 py-12 text-center"
+      style={minHeight && minHeight !== 'none' ? { minHeight } : undefined}
+    >
+      {icon && (
+        <IconTile tone={tone === 'danger' ? 'danger' : 'chip'} size={44}>
+          {icon}
+        </IconTile>
+      )}
+      <span className="text-[15.5px] font-extrabold text-ink-strong">{title}</span>
+      {body && (
+        <div className="max-w-[46ch] text-[13.5px] leading-relaxed text-ink-soft">{body}</div>
+      )}
+      {children}
+      {actions && (
+        <div className="mt-1 flex flex-wrap items-center justify-center gap-2">{actions}</div>
+      )}
+    </div>
+  )
+}
+
+/** `StateMessage` as a row that spans the table. */
+export function StateRow({ colSpan, ...message }: StateMessageProps & { colSpan: number }) {
   return (
     <tr>
       <td colSpan={colSpan} className="p-0">
-        <div
-          role={tone === 'danger' ? 'alert' : undefined}
-          className="flex flex-col items-center justify-center gap-3 px-6 py-12 text-center"
-          style={minHeight && minHeight !== 'none' ? { minHeight } : undefined}
-        >
-          {icon && (
-            <span
-              aria-hidden="true"
-              className={[
-                'grid size-11 place-items-center rounded-[12px]',
-                tone === 'danger' ? 'bg-danger/10 text-danger-fg' : 'bg-chip text-chip-fg',
-              ].join(' ')}
-            >
-              {icon}
-            </span>
-          )}
-          <span className="text-[15.5px] font-extrabold text-ink-strong">{title}</span>
-          {body && (
-            <div className="max-w-[46ch] text-[13.5px] leading-relaxed text-ink-soft">{body}</div>
-          )}
-          {actions && (
-            <div className="mt-1 flex flex-wrap items-center justify-center gap-2">{actions}</div>
-          )}
-        </div>
+        <StateMessage {...message} />
       </td>
     </tr>
   )

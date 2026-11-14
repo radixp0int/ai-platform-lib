@@ -128,9 +128,6 @@ export const WithChips: Story = {
   ),
 }
 
-/** `hints={null}` drops the keyboard legend under the suggestions. */
-export const NoKeyboardLegend: Story = { render: () => <Host hints={null} /> }
-
 const MANY: OmniboxChip[] = [
   { id: '1', prefix: 'search:', label: 'crest' },
   { id: '2', prefix: 'status:', label: 'Active' },
@@ -142,28 +139,20 @@ const MANY: OmniboxChip[] = [
   { id: '8', prefix: 'created:', label: 'Last 90 days' },
   { id: '9', prefix: 'renewal:', label: 'Next 30 days' },
   { id: '10', prefix: 'name:', label: 'bank' },
+  {
+    id: 'long',
+    prefix: 'search:',
+    label: 'a search term that goes on far longer than any field could hold on one line',
+    title: 'search: a search term that goes on far longer than any field could hold on one line',
+  },
 ]
 
-/** More chips than one line holds. They wrap and the field grows, so none is hidden or pushed off the edge. */
+/**
+ * More chips than one line holds. They wrap and the field grows, so none is hidden or pushed off
+ * the edge. A chip longer than the field ends in an ellipsis, keeps its remove button, and shows
+ * all of itself on hover.
+ */
 export const ManyChips: Story = { render: () => <Host initialChips={MANY} /> }
-
-/** A chip longer than the field ends in an ellipsis and keeps its remove button. Hover shows all of it. */
-export const LongChip: Story = {
-  render: () => (
-    <Host
-      className="w-72"
-      initialChips={[
-        {
-          id: 'long',
-          prefix: 'search:',
-          label: 'a search term that goes on far longer than any field could hold on one line',
-          title:
-            'search: a search term that goes on far longer than any field could hold on one line',
-        },
-      ]}
-    />
-  ),
-}
 
 /**
  * `quick` is what an empty, focused field offers instead of nothing. Typing swaps it for the

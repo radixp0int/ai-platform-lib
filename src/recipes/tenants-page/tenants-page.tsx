@@ -11,14 +11,12 @@ import { DescriptionList } from '../../primitives/description-list'
 import { useMemo, useState } from 'react'
 import {
   DataGrid,
-  downloadFile,
+  downloadRows,
   findMatches,
-  EXPORT_MIME,
-  toCsv,
-  toJson,
   type ExportColumn,
   type FilterTerm,
   type FilterTermField,
+  termMatches,
 } from '../../components/data-grid'
 import { sortRows, type Column } from '../../components/data-table'
 import type { FilterField } from '../../components/filter-panel'
@@ -383,15 +381,11 @@ export function DataTablePage() {
       if (createdRange.to && t.created > createdRange.to) return false
       if (renewalRange.from && t.renewal < renewalRange.from) return false
       if (renewalRange.to && t.renewal > renewalRange.to) return false
-      return terms.every((term) => {
-        const needle = term.value.trim().toLowerCase()
-        if (term.field) {
-          const value = String(t[term.field as FieldKey]).toLowerCase()
-          // A value picked from the data is an exact match; a typed one only has to appear.
-          return term.exact ? value === needle : value.includes(needle)
-        }
-        return [t.name, t.contact, t.email, t.region].some((v) => v.toLowerCase().includes(needle))
-      })
+      return terms.every((term) =>
+        term.field
+          ? termMatches(term, t[term.field as FieldKey])
+          : [t.name, t.contact, t.email, t.region].some((v) => termMatches(term, v)),
+      )
     })
   }, [terms, statuses, tiers, region, seatedOnly, createdRange, renewalRange])
 
@@ -537,13 +531,14 @@ export function DataTablePage() {
           defaultPinned
           exportFormats={['csv', 'json']}
           totalCount={sorted.length}
-          onExport={(format, scope) => {
-            const rows =
-              scope === 'selected' ? sorted.filter((t) => selected.includes(t.id)) : sorted
-            const body =
-              format === 'csv' ? toCsv(rows, EXPORT_COLUMNS) : toJson(rows, EXPORT_COLUMNS)
-            downloadFile(`tenants.${format}`, body, EXPORT_MIME[format])
-          }}
+          onExport={(format, scope) =>
+            downloadRows(
+              'tenants',
+              format,
+              scope === 'selected' ? sorted.filter((t) => selected.includes(t.id)) : sorted,
+              EXPORT_COLUMNS,
+            )
+          }
           className="w-full min-w-0"
           caption="Tenants, with filters, sorting and pagination"
           columns={COLUMNS}

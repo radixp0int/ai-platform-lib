@@ -71,3 +71,22 @@ export function downloadFile(name: string, content: string, type = 'text/plain')
   link.remove()
   URL.revokeObjectURL(url)
 }
+
+/**
+ * The whole export in one call, for a host with the rows in hand:
+ * `onExport={(format, scope) => downloadRows('tenants', format, pick(scope), COLUMNS)}`.
+ * `csv` writes CSV, anything else JSON.
+ */
+export function downloadRows<T>(
+  name: string,
+  format: string,
+  rows: T[],
+  columns: ExportColumn<T>[],
+): void {
+  const csv = format === 'csv'
+  downloadFile(
+    `${name}.${csv ? 'csv' : 'json'}`,
+    csv ? toCsv(rows, columns) : toJson(rows, columns),
+    EXPORT_MIME[csv ? 'csv' : 'json'],
+  )
+}

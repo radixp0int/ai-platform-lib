@@ -2,7 +2,6 @@ import { useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { fn } from 'storybook/test'
 import type { DateRange } from '../../primitives/date-field'
-import { Button } from '../../primitives/button'
 import { FilterPanel } from './filter-panel'
 import type { FilterField, FilterPanelProps } from './types'
 
@@ -136,14 +135,6 @@ export const Floating: Story = {
   ),
 }
 
-export const CustomTitle: Story = {
-  render: () => (
-    <div className="w-60">
-      <Host title="Narrow tenants" />
-    </div>
-  ),
-}
-
 /** A host with three dates: two that look back and one that looks ahead. */
 function DatesHost(props: Partial<FilterPanelProps>) {
   const none: DateRange = { from: null, to: null }
@@ -195,30 +186,6 @@ export const SeveralDates: Story = {
   render: () => (
     <div className="w-64">
       <DatesHost />
-    </div>
-  ),
-}
-
-/** `expandedDate` opens a row on purpose: the "Custom range" button of a quick pick lands here. */
-export const DateOpenedByTheHost: Story = {
-  render: () => (
-    <div className="w-64">
-      <DatesHost expandedDate="renewal" />
-    </div>
-  ),
-}
-
-/** `footer` is a strip along the bottom, set off by a rule. The host decides what goes in it. */
-export const WithFooter: Story = {
-  render: () => (
-    <div className="w-64">
-      <DatesHost
-        footer={
-          <Button variant="ghost" size="sm">
-            Switch to advanced
-          </Button>
-        }
-      />
     </div>
   ),
 }

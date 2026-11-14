@@ -1,6 +1,7 @@
 import { withDefaults } from '../../lib/withDefaults'
 import { Fragment, useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { Checkbox } from '../../primitives/checkbox'
+import { RADIO_CLASS } from '../../primitives/radio-group'
 import { Pagination } from '../pagination'
 import { Button } from '../../primitives/button'
 import {
@@ -39,11 +40,7 @@ function RowRadio({
         aria-label={label}
         checked={checked}
         onChange={onPick}
-        className={[
-          'size-[18px] shrink-0 cursor-pointer appearance-none rounded-full border-2 border-ink-soft/60 bg-panel-solid transition',
-          'hover:border-brand-fg/70 checked:border-[5px] checked:border-brand-solid',
-          'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]',
-        ].join(' ')}
+        className={RADIO_CLASS}
       />
     </span>
   )

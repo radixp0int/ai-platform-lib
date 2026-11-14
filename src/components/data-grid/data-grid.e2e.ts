@@ -68,6 +68,25 @@ test.describe('DataGrid, the search box', () => {
   })
 })
 
+test.describe('DataGrid, a simple list', () => {
+  test('has search, pagination and a CSV button, and no panel or selection', async ({
+    story,
+    page,
+  }) => {
+    await story.open(id('simple-list'))
+    await expect(page.getByRole('button', { name: /^Filters/ })).toHaveCount(0)
+    await expect(table(page).getByRole('checkbox')).toHaveCount(0)
+    await expect(page.getByRole('button', { name: 'Export CSV' })).toBeVisible()
+    await expect(page.getByRole('navigation', { name: 'Pagination' })).toBeVisible()
+    // No dates or small filters: clicking the empty box offers nothing until you type.
+    await search(page).click()
+    await expect(quick(page)).toHaveCount(0)
+    await search(page).fill('crest')
+    await search(page).press('Enter')
+    await expect(bodyRows(page)).toHaveCount(1)
+  })
+})
+
 test.describe('DataGrid, the docked panel', () => {
   // A page of rows, and an empty list at its least height: either way the table decides.
   for (const name of ['everything', 'states']) {
@@ -105,22 +124,6 @@ test.describe('DataGrid, selection limits', () => {
     await expect(page.getByRole('radio', { name: 'Select Capital Trust Bank' })).toBeChecked()
     await expect(page.getByRole('radio', { name: 'Select Crestview Bank' })).not.toBeChecked()
     await expect(page.getByText('Capital Trust Bank selected')).toBeVisible()
-  })
-
-  test('maxSelections 3 keeps the three latest picks, with no select-all', async ({
-    story,
-    page,
-  }) => {
-    await story.open(id('up-to-three'))
-    await expect(page.getByRole('checkbox', { name: 'Select all rows on this page' })).toHaveCount(
-      0,
-    )
-    const boxes = table(page).locator('tbody').getByRole('checkbox')
-    for (let i = 0; i < 4; i += 1) await boxes.nth(i).check()
-    await expect(boxes.nth(0)).not.toBeChecked()
-    await expect(boxes.nth(1)).toBeChecked()
-    await expect(boxes.nth(3)).toBeChecked()
-    await expect(page.getByText('3 of 3 selected')).toBeVisible()
   })
 })
 

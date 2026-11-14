@@ -30,11 +30,6 @@ test.describe('FilterPanel', () => {
     await expect(page.getByRole('button', { name: 'Pin filters beside the table' })).toBeVisible()
   })
 
-  test("the title is the host's to word", async ({ story }) => {
-    const root = await story.open('components-filterpanel--custom-title')
-    await expect(root).toContainText('Narrow tenants')
-  })
-
   test('several dates share one Dates section, with one row open at a time', async ({
     story,
     page,
@@ -73,20 +68,5 @@ test.describe('FilterPanel', () => {
     await expect(
       page.getByRole('group', { name: 'Dates' }).locator(':scope > div > button').nth(2),
     ).toContainText('Overdue')
-  })
-
-  test('a host can open a date row on purpose', async ({ story, page }) => {
-    await story.open('components-filterpanel--date-opened-by-the-host')
-    await expect(page.getByRole('group', { name: 'Renewal presets' })).toBeVisible()
-    await expect(page.getByRole('group', { name: 'Created presets' })).toHaveCount(0)
-  })
-
-  test('the footer sits below the fields, set off from them', async ({ story, page }) => {
-    await story.open('components-filterpanel--with-footer')
-    const footer = page.getByRole('button', { name: 'Switch to advanced' })
-    const lastRow = page.getByRole('group', { name: 'Dates' }).locator(':scope > div').last()
-    const f = (await footer.boundingBox())!
-    const r = (await lastRow.boundingBox())!
-    expect(f.y, 'footer is below the last field').toBeGreaterThan(r.y + r.height)
   })
 })

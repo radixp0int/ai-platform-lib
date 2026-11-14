@@ -366,6 +366,18 @@ export function buildSuggestionGroups({
 }
 
 /**
+ * Whether one value passes one typed term: equal to it when the term was picked
+ * from the data (`exact`), containing it otherwise. Case-blind either way. A
+ * host filtering in memory calls it per field; a server does the same with
+ * `name=` and `name__icontains`.
+ */
+export function termMatches(term: FilterTerm, value: unknown): boolean {
+  const needle = lower(term.value.trim())
+  const text = lower(String(value ?? ''))
+  return term.exact ? text === needle : text.includes(needle)
+}
+
+/**
  * Values from loaded rows that contain the query, for the Matches group: up to
  * three per field and five in all, each value once. It reads the fields that
  * typing can narrow to, so it only offers what a term can filter on.

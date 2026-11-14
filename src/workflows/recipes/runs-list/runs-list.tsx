@@ -14,6 +14,7 @@ import { sortRows, type Column } from '../../../components/data-table'
 import {
   DataGrid,
   findMatches,
+  termMatches,
   type FilterTerm,
   type FilterTermField,
 } from '../../../components/data-grid'
@@ -151,15 +152,9 @@ export function RunsListPage({
       workflows.filter((w) => {
         if (states.length > 0 && !states.includes(w.state)) return false
         return terms.every((term) => {
-          const needle = term.value.trim().toLowerCase()
           const field = FIELDS.find((f) => f.key === term.field)
-          if (field) {
-            const value = w[field.key].toLowerCase()
-            return term.exact ? value === needle : value.includes(needle)
-          }
-          return [w.name, w.run, w.startedBy, w.now.title].some((v) =>
-            v.toLowerCase().includes(needle),
-          )
+          if (field) return termMatches(term, w[field.key])
+          return [w.name, w.run, w.startedBy, w.now.title].some((v) => termMatches(term, v))
         })
       }),
     [workflows, terms, states],

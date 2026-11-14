@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useMemo, useState } from 'react'
-import { fn } from 'storybook/test'
 import { STATUS_LABEL, STATUS_TONE, TENANTS, fmtDate, type Tenant } from '../../fixtures/tenants'
 import { Avatar } from '../../primitives/avatar'
 import { Button } from '../../primitives/button'
@@ -76,16 +75,6 @@ const COLUMNS: Column<Tenant>[] = [
   },
 ]
 
-function sortRows(rows: Tenant[], sort: Sort[]) {
-  const s = sort[0]
-  if (!s) return rows
-  const dir = s.direction === 'asc' ? 1 : -1
-  return [...rows].sort(
-    (a, b) =>
-      String(a[s.field as keyof Tenant]).localeCompare(String(b[s.field as keyof Tenant])) * dir,
-  )
-}
-
 function Detail({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-0.5">
@@ -119,7 +108,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'The table fetches nothing and remembers nothing. Sort, selection, expansion and paging are all props, so a client-side fixture and a paged API drive it identically. `table-fixed` columns honour their `width`; `hideBelow` sheds low-priority columns before the rest get squeezed; `minWidth` makes it scroll rather than overlap.',
+          'The table on its own: rows, sorting, selection, expandable rows, pagination, and the loading and empty states. For a list page with search, filters and export, use **DataGrid**, which is built on it. The table fetches nothing and remembers nothing. Sort, selection, expansion and paging are all props, so a client-side fixture and a paged API drive it identically. `table-fixed` columns honour their `width`; `hideBelow` sheds low-priority columns before the rest get squeezed; `minWidth` makes it scroll rather than overlap.',
       },
     },
   },
@@ -130,16 +119,8 @@ type Story = StoryObj<typeof meta>
 
 export const Basic: Story = {}
 
-export const Sortable: Story = {
-  render: function SortableStory(args) {
-    const [sort, setSort] = useState<Sort[]>([{ field: 'name', direction: 'asc' }])
-    const rows = useMemo(() => sortRows(TENANTS.slice(0, 8), sort), [sort])
-    return <DataTable {...args} rows={rows} sort={sort} onSortChange={setSort} />
-  },
-}
-
 /** Tick a row and the bulk bar replaces the header. */
-export const SelectionWithBulkActions: Story = {
+export const Selection: Story = {
   render: function SelectionStory(args) {
     const [selected, setSelected] = useState<string[]>([TENANTS[1].id, TENANTS[3].id])
     return (
@@ -167,7 +148,7 @@ export const SelectionWithBulkActions: Story = {
  * There is no caret: the open row has a rail and a filled avatar, and a closed
  * one underlines its name on hover. Actions show on hover, focus, and open rows.
  */
-export const ExpandableWithRowActions: Story = {
+export const ExpandableRows: Story = {
   render: function ExpandStory(args) {
     const [expanded, setExpanded] = useState<string[]>([TENANTS[0].id])
     return (
@@ -211,41 +192,24 @@ export const ExpandableWithRowActions: Story = {
 /** Skeleton rows keep the header and frame; match `skeletonRows` to the page size. */
 export const Loading: Story = { args: { loading: true, skeletonRows: 6 } }
 
+/** Nothing yet: it says so at full height, and offers the next step with `emptyAction`. */
 export const Empty: Story = {
   args: {
     rows: [],
     labels: {
-      emptyTitle: 'No tenants match',
-      emptyBody: <span className="text-[13px] text-ink-soft">Try removing a filter.</span>,
+      emptyTitle: 'No tenants yet',
+      emptyBody: 'Tenants you add show up here, with their contacts and seats.',
     },
-  },
-}
-
-export const CustomEmptyState: Story = {
-  args: {
-    rows: [],
-    empty: (
-      <div className="flex flex-col items-center gap-3 px-6 py-12 text-center">
-        <p className="text-[15px] font-extrabold text-ink-strong">No tenants yet</p>
-        <p className="max-w-sm text-[13px] text-ink-soft">
-          Tenants appear here once they accept an invitation.
-        </p>
-        <Button variant="primary" size="sm" onClick={fn()}>
-          Invite a tenant
-        </Button>
-      </div>
+    emptyAction: (
+      <Button variant="primary" size="sm">
+        Add tenant
+      </Button>
     ),
   },
 }
 
-/** Squeeze the canvas: columns drop at their breakpoints, then the table scrolls. */
-export const NarrowContainer: Story = {
-  args: { minWidth: '640px' },
-  decorators: [(Story) => <div className="max-w-md">{Story()}</div>],
-}
-
 /** Paged client-side with `pagination`: pages, rows per page, and the range it shows. */
-export const WithPagination: Story = {
+export const Paged: Story = {
   render: function PagedStory(args) {
     const [page, setPage] = useState(1)
     const [size, setSize] = useState(5)
@@ -344,17 +308,11 @@ const SORT_COLUMNS: Column<Tenant>[] = [
   },
 ]
 
-function SortingHost({
-  sortable = true,
-  initialSort = [],
-}: {
-  sortable?: boolean
-  initialSort?: Sort[]
-}) {
-  const [sort, setSort] = useState<Sort[]>(initialSort)
-  const rows = useMemo(() => sortByType(SORT_ROWS, sort, SORT_COLUMNS, sortable), [sort, sortable])
+function SortingHost() {
+  const [sort, setSort] = useState<Sort[]>([])
+  const rows = useMemo(() => sortByType(SORT_ROWS, sort, SORT_COLUMNS), [sort])
   // What a paged table would send. Columns that cannot sort never reach it.
-  const param = toSortParam(sort, SORT_COLUMNS, sortable)
+  const param = toSortParam(sort, SORT_COLUMNS)
   return (
     <div className="flex flex-col gap-3">
       <DataTable
@@ -364,7 +322,6 @@ function SortingHost({
         rowId={(t) => t.id}
         sort={sort}
         onSortChange={setSort}
-        sortable={sortable}
       />
       <p className="text-[12.5px] text-ink-soft">
         Request:{' '}
@@ -382,21 +339,6 @@ function SortingHost({
  * is what a paged table would send: `toSortParam` writes it from the same columns, and Email, which
  * has a `sortKey` but `sortable: false`, can never appear in it.
  */
-export const SortingByType: Story = {
+export const Sorting: Story = {
   render: () => <SortingHost />,
-}
-
-/** `sortable={false}` takes sorting off the whole table: no header is a button, and nothing is requested. */
-export const SortingTurnedOff: Story = {
-  render: () => (
-    <SortingHost sortable={false} initialSort={[{ field: 'name', direction: 'asc' }]} />
-  ),
-}
-
-/**
- * A sort left over from another view can name a column that cannot sort. The table ignores it: no
- * arrows, no `aria-sort`, rows as they came, and nothing in the request.
- */
-export const SortOnAColumnThatCannotSort: Story = {
-  render: () => <SortingHost initialSort={[{ field: 'email', direction: 'asc' }]} />,
 }

@@ -1,13 +1,15 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { withDefaults } from '../../lib/withDefaults'
 import { Button } from '../../primitives/button'
-import { CalendarIcon, FunnelIcon, XIcon } from '../../primitives/icons'
+import { FilterChip } from '../../primitives/filter-chip'
+import { CalendarIcon, FunnelIcon } from '../../primitives/icons'
 import {
   BulkBar,
   clampSelection,
   DataTableView,
   MIN_BODY_HEIGHT,
   selectionLabel,
+  StateMessage,
 } from '../data-table'
 import { FilterPanel } from '../filter-panel'
 import { Omnibox, type OmniboxChip, type OmniboxGroup } from '../omnibox'
@@ -177,6 +179,8 @@ export function DataGrid<T>({
       })),
     }))
 
+  const quickRows = buildQuickRows(fields, today)
+
   const openCustom = (fieldId: string, close: () => void) => {
     setExpandedDate(fieldId)
     setOpen(true)
@@ -198,46 +202,36 @@ export function DataGrid<T>({
   const floor = table.minBodyHeight ?? MIN_BODY_HEIGHT
   const noMatch =
     filtering && !table.loading && !table.error && table.rows.length === 0 ? (
-      <div
-        className="flex flex-col items-center justify-center gap-3 px-6 py-12 text-center"
-        style={floor === 'none' ? undefined : { minHeight: floor }}
+      <StateMessage
+        icon={<FunnelIcon width={20} height={20} />}
+        title={t.noMatchTitle}
+        body={t.noMatchBody}
+        minHeight={floor}
+        actions={
+          <Button size="sm" onClick={clearAll}>
+            {t.clearAll}
+          </Button>
+        }
       >
-        <span
-          aria-hidden="true"
-          className="grid size-11 place-items-center rounded-[12px] bg-chip text-chip-fg"
-        >
-          <FunnelIcon width={20} height={20} />
-        </span>
-        <span className="text-[15.5px] font-extrabold text-ink-strong">{t.noMatchTitle}</span>
-        <span className="max-w-[46ch] text-[13.5px] leading-relaxed text-ink-soft">
-          {t.noMatchBody}
-        </span>
         <ul className="flex max-w-[44rem] flex-wrap justify-center gap-1.5">
           {chipSpecs.map((chip) => (
-            <li
-              key={chip.id}
-              title={chip.name}
-              className="inline-flex max-w-full min-w-0 items-center gap-1 rounded-control bg-chip py-0.5 pr-1 pl-2 text-[12.5px] font-bold text-chip-fg"
-            >
-              {chip.prefix && (
-                <span className="shrink-0 font-semibold opacity-65">{chip.prefix}</span>
-              )}
-              <span className="min-w-0 truncate">{chip.text}</span>
-              <button
-                type="button"
-                onClick={chip.remove}
-                aria-label={t.removeFilter(chip.name)}
-                className="inline-grid size-[18px] shrink-0 place-items-center rounded transition hover:bg-chip-hover"
-              >
-                <XIcon width={10} height={10} />
-              </button>
+            <li key={chip.id} title={chip.name}>
+              <FilterChip
+                // The chip draws its own colon after a field name. A phrase ("name is") is
+                // not a field name, so it stays part of the label.
+                prefix={chip.prefix.endsWith(':') ? chip.prefix.slice(0, -1) : undefined}
+                label={
+                  chip.prefix && !chip.prefix.endsWith(':')
+                    ? `${chip.prefix} ${chip.text}`
+                    : chip.text
+                }
+                onRemove={chip.remove}
+                removeLabel={t.removeFilter(chip.name)}
+              />
             </li>
           ))}
         </ul>
-        <Button size="sm" onClick={clearAll} className="mt-1">
-          {t.clearAll}
-        </Button>
-      </div>
+      </StateMessage>
     ) : undefined
 
   const panel = hasPanel && (
@@ -301,17 +295,22 @@ export function DataGrid<T>({
             onMenuChange={(shown) => {
               if (shown && !pinned) setOpen(false)
             }}
-            quick={({ close }) => (
-              <QuickFilters
-                rows={buildQuickRows(fields, today)}
-                datesLabel={t.dates}
-                valuesLabel={t.values}
-                customLabel={t.custom}
-                hint={t.quickHint}
-                onlyLabel={t.only}
-                onCustom={hasPanel ? (fieldId) => openCustom(fieldId, close) : undefined}
-              />
-            )}
+            // Nothing to pick from (no dates, no small filters): typing is the only way in.
+            quick={
+              quickRows.length === 0
+                ? undefined
+                : ({ close }) => (
+                    <QuickFilters
+                      rows={quickRows}
+                      datesLabel={t.dates}
+                      valuesLabel={t.values}
+                      customLabel={t.custom}
+                      hint={t.quickHint}
+                      onlyLabel={t.only}
+                      onCustom={hasPanel ? (fieldId) => openCustom(fieldId, close) : undefined}
+                    />
+                  )
+            }
           />
 
           {canExport && (

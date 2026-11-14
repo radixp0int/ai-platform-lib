@@ -6,18 +6,34 @@ import { DataGrid } from './data-grid'
 import { AddTenant, TenantsGrid } from './data-grid.example'
 import { ROWS } from './data-grid.fixtures'
 
+const DOCS = `
+A list page in one component: a table with its search, filters, selection,
+export and pagination. Every story is live.
+
+**What it is built from**
+
+| Part | Component | What it does here |
+| --- | --- | --- |
+| Rows | **DataTable** (\`DataTableView\`) | Columns, sorting, selection (\`maxSelections\`), expandable rows, row actions, and the loading, empty and error states at a 22rem floor. Every \`DataTable\` prop works on \`DataGrid\`. |
+| Search box | **Omnibox** + quick picks | Click it while empty for quick picks. Type for values from the data first ("bay" → Bayshore Financial in Name), then matching filters, then search or narrow. Each pick is a chip. |
+| Filters | **FilterPanel** (\`layout="fill"\`) | Draws \`fields\`. Floats under the toolbar, or, pinned, docks as the grid's first column at the table's exact height. |
+| Pages | **Pagination** | The \`pagination\` prop: pages, rows per page, and the range on show. Dims while loading, hidden with no rows. |
+| Selection | **BulkBar** | The count ("2 of 3 selected", "Crestview Bank selected") and the host's \`bulkActions\`. |
+| Export | **Button**, **Popover**, **Menu**, **RadioGroup** | A plain "Export CSV" button for one format; a menu for two, which asks for selected or all rows when some are selected. |
+| No match | **StateMessage**, **FilterChip** | With filters on and nothing left: the filters as chips to remove, and Clear all. |
+
+The grid holds no data. Rows, filters, terms, sort, page and selection are the
+host's. \`findMatches\`, \`termMatches\` and \`downloadRows\` cover the usual
+in-memory host; a paged API does the same with query parameters.
+`
+
 const meta = {
   title: 'Components/DataGrid',
   component: DataGrid,
   tags: ['autodocs'],
   parameters: {
     layout: 'padded',
-    docs: {
-      description: {
-        component:
-          'A table with its search, filters, selection and export, as one component. Click the search box for quick picks; type to see values from the data ("bay" finds Bayshore Financial in Name), the filters that match, and search or narrow. Each pick becomes a chip. The Filters panel docks as the grid\'s first column and is always as tall as the table. `maxSelections` limits how many rows can be picked: `1` is radio buttons, more keeps the latest picks. Export sits right of the search box and becomes a menu when there is a choice. Every story is live: filter, sort, page, select and export.',
-      },
-    },
+    docs: { description: { component: DOCS } },
   },
 } satisfies Meta<typeof DataGrid>
 
@@ -28,9 +44,16 @@ type Story = StoryObj<typeof meta>
 const render = (node: React.ReactNode) => ({ render: () => <>{node}</> }) as unknown as Story
 
 /**
- * Everything on. Click the search box for quick picks, or type "bay" and press
- * Enter for Bayshore Financial. Select rows and open Export for CSV or JSON of
- * just those, or of every match.
+ * The everyday list: search, sorting, pagination and a CSV export. No panel and
+ * no selection. Type a name and press Enter.
+ */
+export const SimpleList: Story = render(
+  <TenantsGrid filters={false} selectable={false} exportFormats={['csv']} />,
+)
+
+/**
+ * Everything on: the docked panel, quick picks and typed matches, selection
+ * with bulk actions, export to CSV or JSON, and pagination.
  */
 export const Everything: Story = render(
   <TenantsGrid
@@ -71,28 +94,11 @@ function PickOneHost() {
 }
 
 /**
- * `maxSelections={1}`: radio buttons. Picking another row, or clicking anywhere
- * on it, replaces the last pick. One export format, so Export is a plain button.
+ * Choosing one record, as a picker does: `maxSelections={1}` draws radio
+ * buttons, and a new pick (or a click on the row) replaces the last. A higher
+ * limit keeps the latest picks instead, for "compare up to three".
  */
 export const PickOne: Story = render(<PickOneHost />)
-
-/**
- * `maxSelections={3}`: a fourth pick drops the oldest, so the three most recent
- * stay picked. Select-all is gone, because a page of eight does not fit under three.
- * The panel floats here; pin it to dock it beside the table.
- */
-export const UpToThree: Story = render(
-  <TenantsGrid
-    maxSelections={3}
-    defaultOpen={false}
-    defaultPinned={false}
-    bulkActions={
-      <Button variant="inverse" size="sm">
-        Compare
-      </Button>
-    }
-  />,
-)
 
 const STATES = [
   { value: 'rows', label: 'Rows' },
@@ -133,9 +139,7 @@ function StatesHost() {
 }
 
 /**
- * The states, side by side in one frame: loading, nothing yet, no match and an
- * error all keep the same height (`minBodyHeight`, 22rem by default), so the page
- * never jumps between them. Nothing yet offers the host's action; no match lists
- * the filters to remove; an error offers Try again and is never shown as empty.
+ * Loading, nothing yet, no match and an error, in one frame at one height
+ * (`minBodyHeight`, 22rem), so the page never jumps between them.
  */
 export const States: Story = render(<StatesHost />)

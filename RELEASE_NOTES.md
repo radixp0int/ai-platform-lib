@@ -45,6 +45,18 @@ entry names the modules it touches so the sidebar entry is easy to find.
   out when left out, the controls dim while `loading`, and the bar hides while
   there are no rows at all. `footer` is still there for anything else.
 - **`Omnibox`** closes its menu when a suggestion is chosen.
+- **Shared pieces.** `StateMessage` (data-table) draws every empty, no-match and
+  error message; `IconTile` gains a `danger` tone for it. The no-match chips are
+  `FilterChip`s, the export menu's row choice is a `RadioGroup`, and `RADIO_CLASS`
+  (radio-group) is the one radio look, used by the table's pick-one column too.
+  `termMatches` and `downloadRows` (data-grid) replace the filtering and export
+  code each host repeated.
+- **Stories, trimmed to everyday references.** Components/DataGrid: Simple list,
+  Everything, Pick one, States, with docs naming the parts it is built from.
+  DataTable keeps Basic, Selection, Expandable rows, Loading, Empty, Paged and
+  Sorting. FilterPanel keeps Pinned, Floating and Several dates. Omnibox keeps
+  Empty, With chips, Many chips (now with a long one) and Quick picks.
+  Pagination keeps Default, Compact and Custom labels.
 - **Stories:** Components/DataGrid: Everything, Pick one, Up to three, States.
   The Tenants page and the Runs list are built on `DataGrid`.
 
