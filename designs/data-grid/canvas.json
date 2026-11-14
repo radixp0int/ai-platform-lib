@@ -5,14 +5,10 @@
   "launch": { "view": "canvas" },
   "pages": [],
   "boards": {
-    "Main.dc.html": { "x": 0, "y": 0, "w": 1280, "h": 900, "title": "DataGrid, all together" },
-    "Height.dc.html": { "x": 1360, "y": 0, "w": 1280, "h": 900, "title": "Filter panel matches the table's height" },
-    "Empty.dc.html": { "x": 0, "y": 1020, "w": 1280, "h": 980, "title": "No data: three different empties" },
-    "Export.dc.html": { "x": 1360, "y": 1020, "w": 1280, "h": 620, "title": "Export button and menu" },
-    "Search.dc.html": { "x": 0, "y": 2120, "w": 1280, "h": 900, "title": "One search box: quick picks + typed matches (try it)", "is_interactive": true },
-    "Selection.dc.html": { "x": 1360, "y": 1760, "w": 1280, "h": 820, "title": "maxSelections: one row like a radio, or a cap (try it)", "is_interactive": true }
+    "Main.dc.html": { "x": 0, "y": 0, "w": 1280, "h": 940, "title": "DataGrid: search, panel, selection, export, pagination (try it)", "is_interactive": true },
+    "States.dc.html": { "x": 1360, "y": 0, "w": 1280, "h": 900, "title": "maxSelections and the states (try it)", "is_interactive": true }
   },
-  "order": ["Main.dc.html", "Height.dc.html", "Empty.dc.html", "Export.dc.html", "Search.dc.html", "Selection.dc.html"],
+  "order": ["Main.dc.html", "States.dc.html"],
   "notes": {
     "t1": { "x": 0, "y": -300, "text": "DataGrid: DataTable + FilterBar + FilterPanel in one", "kind": "title1", "maxW": 2640 }
   },

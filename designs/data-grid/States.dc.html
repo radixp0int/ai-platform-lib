@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Selection and states</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0069aa}a:hover{color:#003f7e}
+.s *{box-sizing:border-box}
+.tag{font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+.seg{display:inline-flex;gap:2px;padding:3px;border-radius:9px;background:#eef1f5;border:1px solid rgba(0,51,101,.08)}
+.seg button{height:32px;padding:0 14px;border:0;border-radius:7px;background:transparent;font:inherit;font-size:13px;font-weight:700;color:#64727e;cursor:pointer}
+.seg button.on{background:#fff;color:#004c97;font-weight:800;box-shadow:0 1px 2px rgba(0,25,50,.12)}
+.ctl{display:flex;flex-direction:column;gap:8px}
+.ctl .t{font-size:12px;font-weight:800;color:#1c2733}
+.ctl code{font-size:12px;color:#004c97;background:rgba(0,76,151,.08);padding:1px 5px;border-radius:4px}
+.cap{margin:0;font-size:13px;line-height:1.5;color:#64727e}
+.cap b{color:#1c2733}
+.btn{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 10px;border-radius:7px;font:inherit;font-size:12.5px;font-weight:800;border:1px solid rgba(0,51,101,.16);background:#fff;color:#1c2733;cursor:pointer;white-space:nowrap}
+.btn.primary{background:#004c97;border-color:#004c97;color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.th{height:44px;padding:0 14px;font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#64727e;text-align:left;white-space:nowrap;background:#f5f7f9;border-bottom:1px solid rgba(0,51,101,.10)}
+.td{height:52px;padding:0 14px;font-size:13.5px;color:#2d3943;border-top:1px solid rgba(0,51,101,.07);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+tr.row{cursor:pointer}
+tr.row:hover{background:rgba(0,76,151,.03)}
+tr.row.sel{background:rgba(0,76,151,.07)}
+.box{display:inline-grid;place-items:center;width:18px;height:18px;padding:0;border-radius:4px;border:1.5px solid rgba(0,51,101,.35);background:#fff;color:#fff;cursor:pointer}
+.box.on{background:#004c97;border-color:#004c97}
+.box svg{opacity:0}
+.box.on svg{opacity:1}
+.rad{display:inline-block;width:18px;height:18px;padding:0;border-radius:99px;border:1.5px solid rgba(0,51,101,.35);background:#fff;cursor:pointer}
+.rad.on{border:5.5px solid #004c97}
+.sk{display:block;height:10px;border-radius:99px;background:#64727e}
+.msg{min-height:352px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center}
+.tile{display:grid;place-items:center;width:44px;height:44px;border-radius:12px}
+.msg h3{margin:0;font-size:16px;font-weight:800;color:#1c2733}
+.msg p{margin:0;max-width:46ch;font-size:13.5px;line-height:1.5;color:#64727e}
+.chip{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 9px;border-radius:6px;background:rgba(0,76,151,.10);color:#003f7e;font-size:12.5px;font-weight:700}
+.chip .pre{font-weight:600;opacity:.65}
+</style>
+</helmet>
+<div class="s" style="width: 1280px; height: 900px; padding: 28px 40px; background: #fbfcfd; font-family: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif; color: #2d3943; display: flex; flex-direction: column; gap: 18px">
+
+  <div style="display: flex; flex-direction: column; gap: 4px">
+    <span class="tag" style="color: #0069aa">Selection limits and states · try it</span>
+    <h1 style="margin: 0; font-size: 22px; font-weight: 800; color: #1c2733">Pick a limit and a state</h1>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px">
+    <div class="ctl">
+      <span class="t"><code>maxSelections</code></span>
+      <div class="seg" role="group" aria-label="maxSelections">
+        <sc-for list="{{ limits }}" as="l" hint-placeholder-count="3">
+          <button class="{{ l.on }}" aria-pressed="{{ l.pressed }}" onClick="{{ l.pick }}">{{ l.label }}</button>
+        </sc-for>
+      </div>
+      <p class="cap">{{ limitNote }}</p>
+    </div>
+    <div class="ctl">
+      <span class="t">State</span>
+      <div class="seg" role="group" aria-label="State">
+        <sc-for list="{{ states }}" as="st" hint-placeholder-count="5">
+          <button class="{{ st.on }}" aria-pressed="{{ st.pressed }}" onClick="{{ st.pick }}">{{ st.label }}</button>
+        </sc-for>
+      </div>
+      <p class="cap">{{ stateNote }}</p>
+    </div>
+  </div>
+
+  <sc-if value="{{ hasSelection }}" hint-placeholder-val="{{ false }}">
+    <div aria-live="polite" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 7px 8px 7px 14px; border-radius: 7px; background: #004c97; color: #fff">
+      <span style="font-size: 13px; font-weight: 800">{{ selectedLabel }}</span>
+      <span aria-hidden="true" style="width: 1px; height: 16px; background: rgba(255,255,255,.28)"></span>
+      <button class="btn" style="background: rgba(255,255,255,.14); border-color: transparent; color: #fff">{{ bulkAction }}</button>
+      <span style="flex: 1"></span>
+      <button class="btn" style="background: #fff; border-color: #fff; color: #004c97" onClick="{{ clear }}">Clear</button>
+    </div>
+  </sc-if>
+  <sc-if value="{{ noSelection }}" hint-placeholder-val="{{ true }}">
+    <div style="display: flex; align-items: center; min-height: 44px; padding: 0 14px; border-radius: 7px; border: 1px dashed rgba(0,51,101,.16); font-size: 13px; color: #64727e">{{ idleLabel }}</div>
+  </sc-if>
+
+  <div style="display: flex; gap: 14px; align-items: stretch">
+    <div style="flex: 1; min-width: 0; border: 1px solid rgba(0,51,101,.12); border-radius: 10px; background: #fff; overflow: hidden; display: flex; flex-direction: column">
+      <table style="width: 100%; border-collapse: collapse; table-layout: fixed">
+        <caption style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Tenants</caption>
+        <thead>
+          <tr>
+            <th class="th" style="width: 48px">
+              <sc-if value="{{ showSelectAll }}" hint-placeholder-val="{{ true }}">
+                <button class="box {{ allOn }}" role="checkbox" aria-checked="{{ allChecked }}" aria-label="Select all rows on this page" onClick="{{ toggleAll }}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></button>
+              </sc-if>
+            </th>
+            <th class="th" style="width: 34%">Name</th>
+            <th class="th" style="width: 16%">Status</th>
+            <th class="th">Primary contact</th>
+            <th class="th" style="width: 18%">Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          <sc-if value="{{ showRows }}" hint-placeholder-val="{{ true }}">
+            <sc-for list="{{ rows }}" as="r" hint-placeholder-count="6">
+              <tr class="row {{ r.cls }}" onClick="{{ r.toggle }}">
+                <td class="td">
+                  <sc-if value="{{ radios }}" hint-placeholder-val="{{ false }}"><span class="rad {{ r.on }}" role="radio" aria-checked="{{ r.checked }}" aria-label="Select {{ r.name }}"></span></sc-if>
+                  <sc-if value="{{ boxes }}" hint-placeholder-val="{{ true }}"><span class="box {{ r.on }}" role="checkbox" aria-checked="{{ r.checked }}" aria-label="Select {{ r.name }}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></span></sc-if>
+                </td>
+                <td class="td"><b style="color: #1c2733">{{ r.name }}</b></td>
+                <td class="td">{{ r.status }}</td>
+                <td class="td">{{ r.contact }}</td>
+                <td class="td" style="color: #64727e">{{ r.created }}</td>
+              </tr>
+            </sc-for>
+          </sc-if>
+          <sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
+            <sc-for list="{{ skeleton }}" as="k" hint-placeholder-count="6">
+              <tr>
+                <td class="td"><span class="sk" style="width: 18px; opacity: {{ k.o }}"></span></td>
+                <td class="td"><span class="sk" style="width: 70%; opacity: {{ k.o }}"></span></td>
+                <td class="td"><span class="sk" style="width: 55%; opacity: {{ k.o }}"></span></td>
+                <td class="td"><span class="sk" style="width: 62%; opacity: {{ k.o }}"></span></td>
+                <td class="td"><span class="sk" style="width: 48%; opacity: {{ k.o }}"></span></td>
+              </tr>
+            </sc-for>
+          </sc-if>
+        </tbody>
+      </table>
+
+      <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+        <div class="msg">
+          <span class="tile" style="background: rgba(0,76,151,.10); color: #004c97"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 13h4l2 3h4l2-3h4"/><path d="M4 13 6.5 5h11L20 13v6H4z"/></svg></span>
+          <h3>No tenants yet</h3>
+          <p>Tenants you add show up here, with their contacts and seats.</p>
+          <button class="btn primary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add tenant</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ isNoMatch }}" hint-placeholder-val="{{ false }}">
+        <div class="msg">
+          <span class="tile" style="background: rgba(0,76,151,.10); color: #004c97"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h18l-7 8.5V19l-4 2v-8.5z"/></svg></span>
+          <h3>No tenants match</h3>
+          <p>Remove a filter below, or clear them all.</p>
+          <div style="display: flex; gap: 6px"><span class="chip"><span class="pre">search:</span>zebra</span><span class="chip"><span class="pre">status:</span>Active</span></div>
+          <button class="btn" onClick="{{ toRows }}">Clear all filters</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ isError }}" hint-placeholder-val="{{ false }}">
+        <div class="msg" role="alert">
+          <span class="tile" style="background: rgba(180,35,42,.09); color: #b4232a"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 2 20h20z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg></span>
+          <h3>Couldn’t load tenants</h3>
+          <p>Something went wrong on the way. Your filters are kept, so trying again picks up where you were.</p>
+          <button class="btn" onClick="{{ retry }}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>Try again</button>
+        </div>
+      </sc-if>
+
+      <div style="flex: 1"></div>
+      <sc-if value="{{ showPager }}" hint-placeholder-val="{{ true }}">
+        <div style="height: 52px; display: flex; align-items: center; gap: 14px; padding: 0 16px; border-top: 1px solid rgba(0,51,101,.10); background: #f5f7f9; font-size: 12.5px; color: #64727e; opacity: {{ pagerOpacity }}">
+          <span>Rows <b style="color: #1c2733">6</b></span>
+          <span>1–6 of 6</span>
+          <span style="flex: 1"></span>
+          <button class="btn" disabled="{{ true }}">‹ Previous</button>
+          <button class="btn primary">1</button>
+          <button class="btn" disabled="{{ true }}">Next ›</button>
+        </div>
+      </sc-if>
+    </div>
+
+    <div aria-hidden="true" style="width: 44px; display: flex; flex-direction: column; align-items: center; padding-top: 44px; padding-bottom: 52px">
+      <span style="width: 10px; height: 1.5px; background: #0069aa"></span>
+      <span style="width: 1.5px; flex: 1; background: #0069aa"></span>
+      <span style="writing-mode: vertical-rl; font-size: 11px; font-weight: 800; color: #0069aa; padding: 6px 0">at least 22rem</span>
+      <span style="width: 1.5px; flex: 1; background: #0069aa"></span>
+      <span style="width: 10px; height: 1.5px; background: #0069aa"></span>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+var ROWS = [
+  ['a', 'Bayshore Financial', 'Active', 'Marcus Webb', 12],
+  ['b', 'Crestview Bank', 'Active', 'Sarah Johnson', 25],
+  ['c', 'Horizon National Bank', 'Active', 'David Rodriguez', 70],
+  ['d', 'Liberty Savings & Loan', 'Pending', 'Emily Brown', 5],
+  ['e', 'Prosperity Bank', 'Active', 'Michael Smith', 40],
+  ['f', 'Summit Community Bank', 'Active', 'Ashley Taylor', 3]
+].map(function (r) {
+  var d = new Date(Date.now() - r[4] * 86400000);
+  return { id: r[0], name: r[1], status: r[2], contact: r[3], created: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) };
+});
+var LIMITS = [
+  { id: 'off', label: 'Off', max: 0, note: 'No limit: pick any rows, and select-all picks the whole page.' },
+  { id: '1', label: '1', max: 1, note: 'Radio buttons. Picking another row, or clicking anywhere on it, replaces the last pick.' },
+  { id: '3', label: '3', max: 3, note: 'Keeps the three latest picks: a fourth drops the oldest. No select-all, since six rows don’t fit under three.' }
+];
+var STATES = [
+  { id: 'rows', label: 'Rows', note: 'A short page still keeps the full height. The extra room belongs to the table, and the pagination stays at the bottom.' },
+  { id: 'loading', label: 'Loading', note: 'Skeleton rows in the same frame. The pagination dims while a page is in flight.' },
+  { id: 'empty', label: 'Nothing yet', note: 'No rows and no filters: says so, and offers the host’s action. Export and pagination are hidden.' },
+  { id: 'nomatch', label: 'No match', note: 'Filters are on: lists them as chips to remove, with Clear all.' },
+  { id: 'error', label: 'Error', note: 'The load failed: Try again, never “nothing to show”.' }
+];
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { limit: '1', view: 'rows', selected: ['b'] };
+  }
+  renderVals() {
+    var self = this;
+    var s = this.state;
+    var limit = LIMITS.filter(function (l) { return l.id === s.limit; })[0];
+    var max = limit.max;
+    var sel = s.selected;
+    var pick = function (id) {
+      if (sel.indexOf(id) !== -1) {
+        if (max === 1) return;
+        self.setState({ selected: sel.filter(function (x) { return x !== id; }) });
+        return;
+      }
+      var next = sel.concat([id]);
+      if (max && next.length > max) next = next.slice(next.length - max);
+      self.setState({ selected: next });
+    };
+    var allOn = sel.length === ROWS.length;
+    var view = STATES.filter(function (x) { return x.id === s.view; })[0];
+    var name = function (id) { return ROWS.filter(function (r) { return r.id === id; })[0].name; };
+    var showRows = s.view === 'rows';
+
+    return {
+      limits: LIMITS.map(function (l) {
+        return { label: l.label, on: l.id === s.limit ? 'on' : '', pressed: l.id === s.limit ? 'true' : 'false',
+          pick: function () { self.setState({ limit: l.id, selected: l.max === 1 ? self.state.selected.slice(-1) : l.max ? self.state.selected.slice(-l.max) : self.state.selected }); } };
+      }),
+      limitNote: limit.note,
+      states: STATES.map(function (x) {
+        return { label: x.label, on: x.id === s.view ? 'on' : '', pressed: x.id === s.view ? 'true' : 'false', pick: function () { self.setState({ view: x.id }); } };
+      }),
+      stateNote: view.note,
+
+      radios: max === 1,
+      boxes: max !== 1,
+      showSelectAll: !max,
+      allOn: allOn ? 'on' : '',
+      allChecked: allOn ? 'true' : 'false',
+      toggleAll: function () { self.setState({ selected: allOn ? [] : ROWS.map(function (r) { return r.id; }) }); },
+
+      hasSelection: showRows && sel.length > 0,
+      noSelection: !(showRows && sel.length > 0),
+      idleLabel: max === 1 ? 'Pick one tenant' : max ? 'Pick up to ' + max + ' tenants' : 'Select tenants to act on them',
+      selectedLabel: max === 1 && sel.length === 1 ? name(sel[0]) + ' selected' : max ? sel.length + ' of ' + max + ' selected' : sel.length + ' selected',
+      bulkAction: max === 1 ? 'Open' : max ? 'Compare' : 'Change status',
+      clear: function () { self.setState({ selected: [] }); },
+
+      showRows: showRows,
+      rows: ROWS.map(function (r) {
+        var on = sel.indexOf(r.id) !== -1;
+        return { name: r.name, status: r.status, contact: r.contact, created: r.created, on: on ? 'on' : '', checked: on ? 'true' : 'false', cls: on ? 'sel' : '',
+          toggle: function () { pick(r.id); } };
+      }),
+      loading: s.view === 'loading',
+      skeleton: [0, 1, 2, 3, 4, 5].map(function (i) { return { o: String(Math.max(0.05, 0.16 - i * 0.02)) }; }),
+      isEmpty: s.view === 'empty',
+      isNoMatch: s.view === 'nomatch',
+      isError: s.view === 'error',
+      toRows: function () { self.setState({ view: 'rows' }); },
+      retry: function () { self.setState({ view: 'loading' }); setTimeout(function () { self.setState({ view: 'rows' }); }, 1200); },
+      showPager: showRows || s.view === 'loading',
+      pagerOpacity: s.view === 'loading' ? '0.5' : '1'
+    };
+  }
+}
+</script>
+</body>
+</html>

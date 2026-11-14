@@ -12,165 +12,537 @@
 <style>
 body{margin:0}
 a{color:#0069aa}a:hover{color:#003f7e}
-.dg *{box-sizing:border-box}
-.btn{display:inline-flex;align-items:center;gap:7px;height:40px;padding:0 14px;border-radius:7px;font:inherit;font-size:13.5px;font-weight:800;border:1px solid rgba(0,51,101,.16);background:#fff;color:#1c2733;cursor:pointer}
+.g *{box-sizing:border-box}
+.tag{font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+.btn{display:inline-flex;align-items:center;gap:7px;height:40px;padding:0 14px;border-radius:7px;font:inherit;font-size:13.5px;font-weight:800;border:1px solid rgba(0,51,101,.16);background:#fff;color:#1c2733;cursor:pointer;white-space:nowrap}
 .btn.primary{background:#004c97;border-color:#004c97;color:#fff}
 .btn.sm{height:30px;padding:0 10px;font-size:12.5px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
 .badge{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:5px;background:rgba(255,255,255,.22);font-size:11px;font-weight:800}
-.chip{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 4px 0 9px;border-radius:6px;background:rgba(0,76,151,.10);color:#003f7e;font-size:12.5px;font-weight:700;white-space:nowrap}
-.chip b{font-weight:600;opacity:.6}
-.chip button{display:grid;place-items:center;width:20px;height:20px;border:0;border-radius:4px;background:transparent;color:inherit;padding:0}
-.th{height:44px;padding:0 16px;font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#64727e;text-align:left;white-space:nowrap}
-.td{height:52px;padding:0 16px;font-size:13.5px;color:#2d3943;border-top:1px solid rgba(0,51,101,.07);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.av{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:999px;background:rgba(0,76,151,.10);color:#003f7e;font-size:11px;font-weight:800;flex:none}
-.pill{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:999px;border:1px solid;font-size:11.5px;font-weight:800}
-.ok{color:#1d6b3a;border-color:rgba(29,107,58,.35)}
-.wait{color:#8a5300;border-color:rgba(138,83,0,.35)}
-.stop{color:#b4232a;border-color:rgba(180,35,42,.35)}
-.cb{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:4px;border:1.5px solid rgba(0,51,101,.32);background:#fff;flex:none}
-.cb.on{background:#004c97;border-color:#004c97;color:#fff}
-.lab{font-size:12.5px;font-weight:800;color:#1c2733}
-.opt{display:flex;align-items:center;gap:9px;font-size:13px;color:#2d3943}
-.opt span:last-child{margin-left:auto;font-size:12px;color:#64727e;font-variant-numeric:tabular-nums}
-.preset{height:30px;border-radius:6px;border:1px solid rgba(0,51,101,.14);background:#fff;font:inherit;font-size:12px;font-weight:700;color:#2d3943}
-.preset.on{background:#004c97;border-color:#004c97;color:#fff}
+.omni{flex:1;min-height:40px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 10px;border:1px solid rgba(0,51,101,.16);border-radius:7px;background:#fff;cursor:text;min-width:0}
+.omni.focus{border-color:#0069aa;box-shadow:0 0 0 3px rgba(0,105,170,.15)}
+.omni input{flex:1;min-width:160px;border:0;outline:0;font:inherit;font-size:13.5px;color:#1c2733;background:transparent;height:26px}
+.chip{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 3px 0 9px;border-radius:6px;background:rgba(0,76,151,.10);color:#003f7e;font-size:12.5px;font-weight:700;white-space:nowrap}
+.chip .pre{font-weight:600;opacity:.65}
+.chip button{display:grid;place-items:center;width:20px;height:20px;border:0;border-radius:4px;background:transparent;color:inherit;padding:0;cursor:pointer}
+.chip button:hover{background:rgba(0,76,151,.14)}
+.menu{position:absolute;z-index:20;padding:6px;border-radius:10px;background:#fff;border:1px solid rgba(0,51,101,.10);box-shadow:0 1px 2px rgba(0,25,50,.06),0 8px 20px -4px rgba(0,25,50,.12),0 24px 48px -12px rgba(0,25,50,.18)}
+.gh{display:block;padding:8px 10px 4px;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#64727e}
+.qrow{display:flex;align-items:center;gap:12px;min-height:36px;padding:3px 10px}
+.qrow .ql{width:72px;flex:none;font-size:13px;font-weight:800;color:#1c2733}
+.qrow .qp{display:flex;flex-wrap:wrap;gap:6px}
+.pick{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:7px;border:1px solid rgba(0,51,101,.14);background:#fff;font:inherit;font-size:12.5px;font-weight:700;color:#2d3943;cursor:pointer}
+.pick:hover{border-color:rgba(0,105,170,.5)}
+.pick span{font-weight:600;color:#64727e;font-variant-numeric:tabular-nums}
+.pick.on{background:rgba(0,76,151,.10);border-color:rgba(0,105,170,.5);color:#003f7e}
+.it{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border:0;border-radius:7px;background:transparent;font:inherit;font-size:13.5px;color:#2d3943;text-align:left;cursor:pointer}
+.it.hot{background:rgba(0,76,151,.07)}
+.it .gl{display:grid;place-items:center;width:24px;height:24px;border-radius:6px;background:#f5f7f9;color:#64727e;font-size:11px;font-weight:800;flex:none}
+.it.hot .gl{background:rgba(0,76,151,.12);color:#004c97}
+.it b{font-weight:800;color:#1c2733}
+.it .h{margin-left:auto;font-size:12px;color:#64727e;white-space:nowrap}
+.foot{display:flex;align-items:center;gap:14px;margin-top:4px;padding:8px 10px 4px;border-top:1px solid rgba(0,51,101,.08);font-size:11.5px;color:#64727e}
+.foot kbd{font-family:inherit;font-weight:800;color:#2d3943}
 .band{background:#f5f7f9}
-.callout{position:absolute;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#0069aa}
-.callout i{display:block;width:10px;height:10px;border-radius:999px;background:#0069aa;box-shadow:0 0 0 4px rgba(0,105,170,.18)}
+.th{height:44px;padding:0 14px;font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#64727e;text-align:left;white-space:nowrap;background:#f5f7f9;border-bottom:1px solid rgba(0,51,101,.10)}
+.td{height:52px;padding:0 14px;font-size:13.5px;color:#2d3943;border-top:1px solid rgba(0,51,101,.07);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+tr.sel{background:rgba(0,76,151,.06)}
+.av{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:999px;background:rgba(0,76,151,.10);color:#003f7e;font-size:11px;font-weight:800;flex:none}
+.pill{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;border:1px solid rgba(0,51,101,.22);font-size:11.5px;font-weight:800}
+.cb{display:inline-grid;place-items:center;width:18px;height:18px;padding:0;border-radius:4px;border:1.5px solid rgba(0,51,101,.35);background:#fff;color:#fff;cursor:pointer}
+.cb.on{background:#004c97;border-color:#004c97}
+.cb svg{opacity:0}
+.cb.on svg{opacity:1}
+.lab{font-size:12.5px;font-weight:800;color:#1c2733}
+.opt{display:flex;align-items:center;gap:9px;width:100%;padding:0;border:0;background:transparent;font:inherit;font-size:13px;color:#2d3943;text-align:left;cursor:pointer}
+.opt .n{margin-left:auto;font-size:12px;color:#64727e;font-variant-numeric:tabular-nums}
+.preset{height:30px;border-radius:6px;border:1px solid rgba(0,51,101,.14);background:#fff;font:inherit;font-size:12px;font-weight:700;color:#2d3943;cursor:pointer}
+.preset.on{background:#004c97;border-color:#004c97;color:#fff}
+.pg{display:inline-grid;place-items:center;min-width:30px;height:30px;padding:0 8px;border-radius:7px;border:0;background:transparent;font:inherit;font-size:12.5px;font-weight:800;color:#2d3943;cursor:pointer}
+.pg.on{background:#004c97;color:#fff}
+.mi{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border:0;border-radius:7px;background:transparent;font:inherit;text-align:left;cursor:pointer}
+.mi:hover{background:rgba(0,76,151,.06)}
+.mi .ic{display:grid;place-items:center;width:28px;height:28px;border-radius:7px;background:rgba(0,76,151,.10);color:#004c97;font-size:10px;font-weight:800;flex:none}
+.mi b{display:block;font-size:13px;font-weight:800;color:#1c2733}
+.mi small{display:block;font-size:11.5px;color:#64727e}
+.radio{display:flex;align-items:center;gap:9px;width:100%;padding:6px 10px;border:0;border-radius:7px;background:transparent;font:inherit;font-size:13px;color:#2d3943;cursor:pointer;text-align:left}
+.radio i{width:15px;height:15px;border-radius:99px;border:1.5px solid rgba(0,51,101,.32);flex:none}
+.radio i.on{border:5px solid #004c97}
+.radio span{margin-left:auto;font-size:12px;color:#64727e;font-variant-numeric:tabular-nums}
+.note{display:flex;gap:8px;align-items:baseline;font-size:12.5px;color:#64727e}
+.note i{font-style:normal;display:inline-grid;place-items:center;width:18px;height:18px;border-radius:99px;background:#004c97;color:#fff;font-size:10.5px;font-weight:800;flex:none}
+.note b{color:#1c2733}
 </style>
 </helmet>
-<div class="dg" style="width: 1280px; height: 900px; padding: 32px 40px; background: #fbfcfd; font-family: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif; color: #2d3943; display: flex; flex-direction: column; gap: 14px; position: relative">
+<div class="g" style="width: 1280px; height: 940px; padding: 28px 40px; background: #fbfcfd; font-family: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif; color: #2d3943; display: flex; flex-direction: column; gap: 14px; position: relative">
 
-  <div style="display: flex; align-items: baseline; gap: 10px">
-    <h1 style="margin: 0; font-size: 22px; font-weight: 800; color: #1c2733; letter-spacing: -0.01em">Tenants</h1>
-    <span style="font-size: 13px; color: #64727e">1,284 tenants · 9 match</span>
+  <sc-if value="{{ anyMenu }}" hint-placeholder-val="{{ false }}">
+    <div aria-hidden="true" onClick="{{ closeMenus }}" style="position: absolute; inset: 0; z-index: 5"></div>
+  </sc-if>
+
+  <div style="display: flex; align-items: flex-end; gap: 24px">
+    <div style="display: flex; flex-direction: column; gap: 4px; flex: 1">
+      <span class="tag" style="color: #0069aa">DataGrid · try it</span>
+      <h1 style="margin: 0; font-size: 22px; font-weight: 800; color: #1c2733">Tenants <span style="font-size: 13px; font-weight: 600; color: #64727e">{{ countLine }}</span></h1>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <span class="note"><i>1</i><span><b>Click</b> search for quick picks, or <b>type “bay”</b> and press Enter</span></span>
+      <span class="note"><i>2</i><span><b>Check rows</b>, then open <b>Export</b> for CSV or JSON</span></span>
+      <span class="note"><i>3</i><span><b>Page</b> through, or change <b>rows per page</b></span></span>
+    </div>
   </div>
 
-  <!-- Toolbar: Filters, omnibox, Export -->
-  <div style="display: flex; align-items: flex-start; gap: 10px">
-    <button class="btn primary" aria-expanded="true">
+  <!-- Toolbar -->
+  <div style="display: flex; align-items: flex-start; gap: 10px; position: relative; z-index: 10">
+    <button class="btn {{ filtersCls }}" aria-expanded="{{ panelOpen }}" onClick="{{ togglePanel }}">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h18l-7 8.5V19l-4 2v-8.5z"/></svg>
-      Filters <span class="badge">2</span>
+      Filters
+      <sc-if value="{{ hasPanelFilters }}" hint-placeholder-val="{{ false }}"><span class="badge" style="{{ badgeStyle }}">{{ panelFilterCount }}</span></sc-if>
     </button>
-    <div style="flex: 1; min-height: 40px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 6px 10px; border: 1px solid rgba(0,51,101,.16); border-radius: 7px; background: #fff">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <span class="chip"><b>Status</b> Active <button aria-label="Remove Status: Active"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></span>
-      <span class="chip"><b>Created</b> Last 90 days <button aria-label="Remove Created: Last 90 days"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></span>
-      <label style="flex: 1; min-width: 160px; font-size: 13.5px; color: #64727e">
-        <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search and filter tenants</span>
-        <input placeholder="Search, or pick a date or filter…" style="width: 100%; border: 0; outline: 0; font: inherit; color: #2d3943; background: transparent">
-      </label>
-      <kbd style="border: 1px solid rgba(0,51,101,.10); background: #f5f7f9; border-radius: 4px; padding: 1px 6px; font-size: 11px; font-weight: 700; color: #64727e; font-family: inherit">⌘K</kbd>
+
+    <div style="flex: 1; position: relative; min-width: 0">
+      <div class="omni {{ focusCls }}" onClick="{{ openSearch }}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64727e" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <sc-for list="{{ chips }}" as="c" hint-placeholder-count="0">
+          <span class="chip" title="{{ c.title }}"><span class="pre">{{ c.prefix }}</span>{{ c.text }}<button aria-label="Remove {{ c.title }}" onClick="{{ c.remove }}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></span>
+        </sc-for>
+        <input aria-label="Search and filter tenants" role="combobox" aria-expanded="{{ searchOpen }}" placeholder="{{ placeholder }}" value="{{ query }}" onChange="{{ onInput }}" onKeyDown="{{ onKey }}" onFocus="{{ openSearch }}">
+        <kbd style="border: 1px solid rgba(0,51,101,.10); background: #f5f7f9; border-radius: 4px; padding: 1px 6px; font-size: 11px; font-weight: 700; color: #64727e; font-family: inherit">⌘K</kbd>
+      </div>
+
+      <sc-if value="{{ showQuick }}" hint-placeholder-val="{{ false }}">
+        <div class="menu" role="group" aria-label="Quick filters" style="left: 0; top: calc(100% + 6px); width: 560px">
+          <sc-for list="{{ quickRows }}" as="r" hint-placeholder-count="3">
+            <div class="qrow" role="group" aria-label="{{ r.label }}">
+              <span class="ql">{{ r.label }}</span>
+              <div class="qp">
+                <sc-for list="{{ r.picks }}" as="p" hint-placeholder-count="3">
+                  <button class="pick {{ p.on }}" aria-pressed="{{ p.pressed }}" onClick="{{ p.toggle }}">{{ p.label }}<span>{{ p.count }}</span></button>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+          <div class="foot"><span>Type to find a value, or search</span><span><kbd>⌫</kbd> removes the last chip</span></div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showSuggest }}" hint-placeholder-val="{{ false }}">
+        <div class="menu" role="listbox" aria-label="Suggestions" style="left: 0; top: calc(100% + 6px); width: 540px">
+          <sc-for list="{{ groups }}" as="gr" hint-placeholder-count="2">
+            <div>
+              <span class="gh">{{ gr.label }}</span>
+              <sc-for list="{{ gr.items }}" as="it" hint-placeholder-count="2">
+                <button class="it {{ it.hot }}" role="option" aria-selected="{{ it.selected }}" onClick="{{ it.run }}" onMouseEnter="{{ it.hover }}">
+                  <span class="gl">{{ it.glyph }}</span>
+                  <span>{{ it.a }}<b>{{ it.b }}</b>{{ it.c }}</span>
+                  <span class="h">{{ it.hint }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </sc-for>
+          <div class="foot"><span><kbd>↑</kbd> <kbd>↓</kbd> move</span><span><kbd>Enter</kbd> pick</span><span><kbd>Esc</kbd> close</span></div>
+        </div>
+      </sc-if>
     </div>
-    <button class="btn" aria-haspopup="menu">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>
-      Export
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-    </button>
+
+    <div style="position: relative">
+      <button class="btn" aria-haspopup="menu" aria-expanded="{{ exportOpen }}" disabled="{{ exportDisabled }}" onClick="{{ toggleExport }}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>
+        Export
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <sc-if value="{{ exportOpen }}" hint-placeholder-val="{{ false }}">
+        <div class="menu" role="dialog" aria-label="Export" style="right: 0; top: calc(100% + 6px); width: 264px">
+          <sc-if value="{{ hasSelection }}" hint-placeholder-val="{{ false }}">
+            <div style="border-bottom: 1px solid rgba(0,51,101,.08); padding-bottom: 6px; margin-bottom: 4px">
+              <span class="gh">Rows</span>
+              <button class="radio" role="radio" aria-checked="{{ scopeSelected }}" onClick="{{ pickSelected }}"><i class="{{ scopeSelectedCls }}"></i>Selected<span>{{ selectedCount }}</span></button>
+              <button class="radio" role="radio" aria-checked="{{ scopeAll }}" onClick="{{ pickAll }}"><i class="{{ scopeAllCls }}"></i>All matching<span>{{ matchCount }}</span></button>
+            </div>
+          </sc-if>
+          <button class="mi" role="menuitem" onClick="{{ exportCsv }}"><span class="ic">CSV</span><span><b>CSV</b><small>Opens in Excel or Sheets</small></span></button>
+          <button class="mi" role="menuitem" onClick="{{ exportJson }}"><span class="ic">{ }</span><span><b>JSON</b><small>For scripts and APIs</small></span></button>
+        </div>
+      </sc-if>
+    </div>
   </div>
 
   <!-- Bulk bar -->
-  <div style="display: flex; align-items: center; gap: 10px; padding: 7px 8px 7px 14px; border-radius: 7px; background: #004c97; color: #fff">
-    <span style="font-size: 13px; font-weight: 800">2 selected</span>
-    <span aria-hidden="true" style="width: 1px; height: 16px; background: rgba(255,255,255,.28)"></span>
-    <button class="btn sm" style="background: rgba(255,255,255,.14); border-color: transparent; color: #fff">Change status</button>
-    <button class="btn sm" style="background: rgba(255,255,255,.14); border-color: transparent; color: #fff">Assign owner</button>
-    <button class="btn sm" style="background: rgba(255,255,255,.14); border-color: transparent; color: #fff">Export 2 rows</button>
-    <span style="flex: 1"></span>
-    <button class="btn sm" style="background: #fff; border-color: #fff; color: #004c97">Clear</button>
-  </div>
+  <sc-if value="{{ hasSelection }}" hint-placeholder-val="{{ false }}">
+    <div aria-live="polite" style="display: flex; align-items: center; gap: 10px; padding: 7px 8px 7px 14px; border-radius: 7px; background: #004c97; color: #fff">
+      <span style="font-size: 13px; font-weight: 800">{{ selectedLabel }}</span>
+      <span aria-hidden="true" style="width: 1px; height: 16px; background: rgba(255,255,255,.28)"></span>
+      <button class="btn sm" style="background: rgba(255,255,255,.14); border-color: transparent; color: #fff">Change status</button>
+      <button class="btn sm" style="background: rgba(255,255,255,.14); border-color: transparent; color: #fff">Assign owner</button>
+      <span style="flex: 1"></span>
+      <button class="btn sm" style="background: #fff; border-color: #fff; color: #004c97" onClick="{{ clearSelection }}">Clear</button>
+    </div>
+  </sc-if>
 
-  <!-- The grid: panel and table share one frame and one height -->
-  <div style="display: grid; grid-template-columns: 272px minmax(0, 1fr); border: 1px solid rgba(0,51,101,.12); border-radius: 10px; background: #fff; overflow: hidden">
+  <!-- One frame: the panel is the first column, as tall as the table -->
+  <div style="display: grid; grid-template-columns: {{ gridCols }}; border: 1px solid rgba(0,51,101,.12); border-radius: 10px; background: #fff; overflow: hidden">
 
-    <!-- Panel column -->
-    <aside aria-label="Filters" style="display: flex; flex-direction: column; border-right: 1px solid rgba(0,51,101,.10); min-height: 0">
-      <div class="band" style="height: 44px; flex: none; display: flex; align-items: center; gap: 6px; padding: 0 8px 0 16px; border-bottom: 1px solid rgba(0,51,101,.10)">
-        <span style="flex: 1; font-size: 10.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: #64727e">Filters <span style="color: #0069aa">2</span></span>
-        <button style="border: 0; background: none; font: inherit; font-size: 12px; font-weight: 800; color: #0069aa; padding: 0 4px">Reset</button>
-        <button aria-label="Unpin filters" aria-pressed="true" style="display: grid; place-items: center; width: 28px; height: 28px; border-radius: 6px; border: 0; background: rgba(0,76,151,.10); color: #004c97">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6l-1 7 3 3H7l3-3z"/><path d="M12 13v8"/></svg>
-        </button>
-      </div>
-      <div style="position: relative; flex: 1; min-height: 0">
-        <div style="position: absolute; inset: 0; overflow: hidden; padding: 16px; display: flex; flex-direction: column; gap: 18px">
-          <div style="display: flex; flex-direction: column; gap: 9px">
-            <span class="lab">Status</span>
-            <div class="opt"><span class="cb on"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></span><span>Active</span><span>9</span></div>
-            <div class="opt"><span class="cb"></span><span>Pending</span><span>3</span></div>
-            <div class="opt"><span class="cb"></span><span>Suspended</span><span>1</span></div>
+    <sc-if value="{{ panelOpen }}" hint-placeholder-val="{{ true }}">
+      <aside aria-label="Filters" style="position: relative; border-right: 1px solid rgba(0,51,101,.10)">
+        <div style="position: absolute; inset: 0; display: flex; flex-direction: column">
+          <div class="band" style="height: 44px; flex: none; display: flex; align-items: center; gap: 6px; padding: 0 8px 0 16px; border-bottom: 1px solid rgba(0,51,101,.10)">
+            <span style="flex: 1; font-size: 10.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: #64727e">Filters <span style="color: #0069aa">{{ panelFilterLabel }}</span></span>
+            <button onClick="{{ resetPanel }}" style="border: 0; background: none; font: inherit; font-size: 12px; font-weight: 800; color: #0069aa; padding: 0 4px; cursor: pointer">Reset</button>
           </div>
-          <div style="display: flex; flex-direction: column; gap: 9px">
-            <span class="lab">Tier</span>
-            <div class="opt"><span class="cb"></span><span>Enterprise</span><span>4</span></div>
-            <div class="opt"><span class="cb"></span><span>Growth</span><span>5</span></div>
-            <div class="opt"><span class="cb"></span><span>Starter</span><span>4</span></div>
-          </div>
-          <div style="display: flex; flex-direction: column; gap: 9px">
-            <span class="lab">Created</span>
-            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px">
-              <button class="preset">Last 7 days</button>
-              <button class="preset">Last 30 days</button>
-              <button class="preset on">Last 90 days</button>
-              <button class="preset">This year</button>
+          <div style="position: relative; flex: 1; min-height: 0">
+            <div style="position: absolute; inset: 0; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 18px">
+              <sc-for list="{{ panelGroups }}" as="pgp" hint-placeholder-count="2">
+                <div role="group" aria-label="{{ pgp.label }}" style="display: flex; flex-direction: column; gap: 10px">
+                  <span class="lab">{{ pgp.label }}</span>
+                  <sc-for list="{{ pgp.options }}" as="o" hint-placeholder-count="3">
+                    <button class="opt" role="checkbox" aria-checked="{{ o.pressed }}" onClick="{{ o.toggle }}"><span class="cb {{ o.on }}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></span><span>{{ o.label }}</span><span class="n">{{ o.count }}</span></button>
+                  </sc-for>
+                </div>
+              </sc-for>
+              <div role="group" aria-label="Created" style="display: flex; flex-direction: column; gap: 10px">
+                <span class="lab">Created</span>
+                <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px">
+                  <sc-for list="{{ presetButtons }}" as="pb" hint-placeholder-count="4">
+                    <button class="preset {{ pb.on }}" aria-pressed="{{ pb.pressed }}" onClick="{{ pb.toggle }}">{{ pb.label }}</button>
+                  </sc-for>
+                </div>
+              </div>
+              <div aria-hidden="true" style="position: sticky; bottom: -16px; margin: -40px -16px -16px; height: 40px; flex: none; background: linear-gradient(rgba(255,255,255,0), #fff); pointer-events: none"></div>
             </div>
           </div>
-          <div style="display: flex; flex-direction: column; gap: 9px">
-            <span class="lab">Renewal</span>
-            <div class="opt"><span>Any time</span></div>
-          </div>
         </div>
-        <div aria-hidden="true" style="position: absolute; left: 0; right: 0; bottom: 0; height: 40px; background: linear-gradient(rgba(255,255,255,0), #fff); pointer-events: none"></div>
-      </div>
-      <div class="band" style="height: 52px; flex: none; display: flex; align-items: center; padding: 0 12px; border-top: 1px solid rgba(0,51,101,.10)">
-        <button class="btn sm" style="border-color: transparent; background: transparent; color: #0069aa">Switch to advanced</button>
-      </div>
-    </aside>
+      </aside>
+    </sc-if>
 
-    <!-- Table column -->
     <div style="display: flex; flex-direction: column; min-width: 0">
-      <table style="width: 100%; border-collapse: collapse; table-layout: fixed">
-        <caption style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Tenants</caption>
-        <thead class="band">
-          <tr style="border-bottom: 1px solid rgba(0,51,101,.10)">
-            <th class="th" style="width: 48px"><span class="cb" style="background: #004c97; border-color: #004c97; color: #fff"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12"/></svg></span></th>
-            <th class="th" style="width: 34%; color: #1c2733">Name ↑</th>
-            <th class="th" style="width: 16%">Status</th>
-            <th class="th" style="width: 26%">Primary contact</th>
-            <th class="th">Created</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style="background: rgba(0,76,151,.05)"><td class="td"><span class="cb on"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></span></td><td class="td"><span style="display: flex; align-items: center; gap: 10px"><span class="av">BF</span><b style="color: #1c2733">Bayshore Financial</b></span></td><td class="td"><span class="pill ok">Active</span></td><td class="td">Marcus Webb</td><td class="td" style="color: #64727e">Jan 11, 2026</td></tr>
-          <tr style="background: rgba(0,76,151,.05)"><td class="td"><span class="cb on"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></span></td><td class="td"><span style="display: flex; align-items: center; gap: 10px"><span class="av">CB</span><b style="color: #1c2733">Crestview Bank</b></span></td><td class="td"><span class="pill ok">Active</span></td><td class="td">Sarah Johnson</td><td class="td" style="color: #64727e">Mar 14, 2026</td></tr>
-          <tr><td class="td"><span class="cb"></span></td><td class="td"><span style="display: flex; align-items: center; gap: 10px"><span class="av">GS</span><b style="color: #1c2733">Granite State Savings</b></span></td><td class="td"><span class="pill ok">Active</span></td><td class="td">Priya Raman</td><td class="td" style="color: #64727e">Jan 19, 2026</td></tr>
-          <tr><td class="td"><span class="cb"></span></td><td class="td"><span style="display: flex; align-items: center; gap: 10px"><span class="av">HN</span><b style="color: #1c2733">Horizon National Bank</b></span></td><td class="td"><span class="pill ok">Active</span></td><td class="td">David Rodriguez</td><td class="td" style="color: #64727e">Feb 28, 2026</td></tr>
-          <tr><td class="td"><span class="cb"></span></td><td class="td"><span style="display: flex; align-items: center; gap: 10px"><span class="av">IF</span><b style="color: #1c2733">Integrity Financial Corp.</b></span></td><td class="td"><span class="pill ok">Active</span></td><td class="td">Christopher Lee</td><td class="td" style="color: #64727e">Feb 14, 2026</td></tr>
-          <tr><td class="td"><span class="cb"></span></td><td class="td"><span style="display: flex; align-items: center; gap: 10px"><span class="av">PB</span><b style="color: #1c2733">Prosperity Bank</b></span></td><td class="td"><span class="pill ok">Active</span></td><td class="td">Michael Smith</td><td class="td" style="color: #64727e">Mar 12, 2026</td></tr>
-          <tr><td class="td"><span class="cb"></span></td><td class="td"><span style="display: flex; align-items: center; gap: 10px"><span class="av">SC</span><b style="color: #1c2733">Summit Community Bank</b></span></td><td class="td"><span class="pill ok">Active</span></td><td class="td">Ashley Taylor</td><td class="td" style="color: #64727e">Feb 2, 2026</td></tr>
-          <tr><td class="td"><span class="cb"></span></td><td class="td"><span style="display: flex; align-items: center; gap: 10px"><span class="av">WR</span><b style="color: #1c2733">Westbrook Reserve</b></span></td><td class="td"><span class="pill ok">Active</span></td><td class="td">Hannah Cole</td><td class="td" style="color: #64727e">Dec 30, 2025</td></tr>
-        </tbody>
-      </table>
-      <div style="flex: 1"></div>
-      <div class="band" style="height: 52px; display: flex; align-items: center; gap: 10px; padding: 0 16px; border-top: 1px solid rgba(0,51,101,.10); font-size: 12.5px; color: #64727e">
-        <span style="flex: 1">1–8 of 9</span>
-        <button class="btn sm">Previous</button>
-        <button class="btn sm">Next</button>
+      <div style="min-height: 396px; flex: 1">
+        <table style="width: 100%; border-collapse: collapse; table-layout: fixed">
+          <caption style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Tenants</caption>
+          <thead>
+            <tr>
+              <th class="th" style="width: 48px"><button class="cb {{ allCls }}" role="checkbox" aria-checked="{{ allChecked }}" aria-label="Select all rows on this page" onClick="{{ toggleAll }}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></button></th>
+              <th class="th" style="width: 30%; color: #1c2733">Name ↑</th>
+              <th class="th" style="width: 14%">Status</th>
+              <th class="th" style="width: 13%">Tier</th>
+              <th class="th">Primary contact</th>
+              <th class="th" style="width: 16%">Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            <sc-for list="{{ pageRows }}" as="row" hint-placeholder-count="5">
+              <tr class="{{ row.cls }}">
+                <td class="td"><button class="cb {{ row.on }}" role="checkbox" aria-checked="{{ row.pressed }}" aria-label="Select {{ row.name }}" onClick="{{ row.toggle }}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></button></td>
+                <td class="td"><span style="display: flex; align-items: center; gap: 10px"><span class="av">{{ row.initials }}</span><b style="color: #1c2733; overflow: hidden; text-overflow: ellipsis">{{ row.name }}</b></span></td>
+                <td class="td"><span class="pill" style="{{ row.pillStyle }}">{{ row.status }}</span></td>
+                <td class="td">{{ row.tier }}</td>
+                <td class="td">{{ row.contact }}</td>
+                <td class="td" style="color: #64727e">{{ row.created }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+
+        <sc-if value="{{ noMatch }}" hint-placeholder-val="{{ false }}">
+          <div style="min-height: 352px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px; text-align: center">
+            <span style="display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: rgba(0,76,151,.10); color: #004c97">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h18l-7 8.5V19l-4 2v-8.5z"/></svg>
+            </span>
+            <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #1c2733">No tenants match</h3>
+            <p style="margin: 0; font-size: 13.5px; color: #64727e">Remove a filter below, or clear them all.</p>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; max-width: 520px">
+              <sc-for list="{{ chips }}" as="c" hint-placeholder-count="0">
+                <span class="chip" title="{{ c.title }}"><span class="pre">{{ c.prefix }}</span>{{ c.text }}<button aria-label="Remove {{ c.title }}" onClick="{{ c.remove }}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></span>
+              </sc-for>
+            </div>
+            <button class="btn sm" onClick="{{ clearAll }}">Clear all filters</button>
+          </div>
+        </sc-if>
       </div>
+
+      <!-- Pagination, built in -->
+      <sc-if value="{{ hasRows }}" hint-placeholder-val="{{ true }}">
+        <div class="band" style="height: 52px; flex: none; display: flex; align-items: center; gap: 14px; padding: 0 16px; border-top: 1px solid rgba(0,51,101,.10); font-size: 12.5px; color: #64727e">
+          <label style="display: flex; align-items: center; gap: 8px">Rows
+            <select value="{{ sizeValue }}" onChange="{{ onSize }}" style="height: 30px; border-radius: 7px; border: 1px solid rgba(0,51,101,.16); background: #fff; font: inherit; font-weight: 700; color: #1c2733; padding: 0 6px">
+              <option value="5">5</option>
+              <option value="8">8</option>
+              <option value="10">10</option>
+            </select>
+          </label>
+          <span style="font-variant-numeric: tabular-nums">{{ rangeLine }}</span>
+          <span style="flex: 1"></span>
+          <button class="btn sm" disabled="{{ atFirst }}" onClick="{{ prevPage }}">‹ Previous</button>
+          <sc-for list="{{ pageButtons }}" as="pbn" hint-placeholder-count="2">
+            <button class="pg {{ pbn.on }}" aria-current="{{ pbn.current }}" onClick="{{ pbn.go }}">{{ pbn.n }}</button>
+          </sc-for>
+          <button class="btn sm" disabled="{{ atLast }}" onClick="{{ nextPage }}">Next ›</button>
+        </div>
+      </sc-if>
     </div>
   </div>
 
-  <div style="display: flex; gap: 28px; font-size: 12.5px; color: #64727e; padding-top: 4px">
-    <span><b style="color: #1c2733">One frame.</b> The panel is the grid's first column, not a card beside it.</span>
-    <span><b style="color: #1c2733">One height.</b> Header bands and footer bands line up; the panel scrolls inside.</span>
-    <span><b style="color: #1c2733">Export</b> sits right of search; the bulk bar exports just the selection.</span>
-  </div>
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+    <div role="status" style="position: absolute; right: 40px; bottom: 24px; z-index: 30; display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 9px; background: #1c2733; color: #fff; font-size: 13px; font-weight: 700; box-shadow: 0 8px 24px rgba(0,25,50,.25)">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>
+      {{ toast }}
+    </div>
+  </sc-if>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":940}}'>
+var ROWS = [
+  ['Bayshore Financial', 'BF', 'Active', 'Growth', 'Marcus Webb', 12],
+  ['Bay Ridge Credit Union', 'BR', 'Active', 'Starter', 'Baylee Ortiz', 55],
+  ['Capital Trust Bank', 'CT', 'Suspended', 'Growth', 'Jessica Nguyen', 120],
+  ['Crestview Bank', 'CB', 'Active', 'Enterprise', 'Sarah Johnson', 25],
+  ['Fairfield Savings', 'FS', 'Pending', 'Growth', 'Nia Coleman', 75],
+  ['Granite State Savings', 'GS', 'Active', 'Enterprise', 'Priya Raman', 62],
+  ['Horizon National Bank', 'HN', 'Active', 'Enterprise', 'David Rodriguez', 70],
+  ['Integrity Financial Corp.', 'IF', 'Active', 'Enterprise', 'Christopher Lee', 200],
+  ['Ironwood Mutual', 'IM', 'Suspended', 'Starter', 'Helen Park', 95],
+  ['Liberty Savings & Loan', 'LS', 'Pending', 'Starter', 'Emily Brown', 5],
+  ['Northgate Trust', 'NT', 'Active', 'Enterprise', 'Tomas Alvarez', 140],
+  ['Pinnacle Credit Union', 'PC', 'Pending', 'Growth', 'Daniel Okafor', 18],
+  ['Prosperity Bank', 'PB', 'Active', 'Growth', 'Michael Smith', 40],
+  ['Summit Community Bank', 'SC', 'Active', 'Starter', 'Ashley Taylor', 3]
+].map(function (r, i) {
+  var d = new Date(Date.now() - r[5] * 86400000);
+  return { id: 't' + i, name: r[0], initials: r[1], status: r[2], tier: r[3], contact: r[4], age: r[5],
+    created: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) };
+});
+var PRESETS = [
+  { label: 'Last 7 days', short: '7D', days: 7 },
+  { label: 'Last 30 days', short: '30D', days: 30 },
+  { label: 'Last 90 days', short: '90D', days: 90 },
+  { label: 'This year', short: 'YTD', days: 320 }
+];
+var STATUSES = ['Active', 'Pending', 'Suspended'];
+var TIERS = ['Enterprise', 'Growth', 'Starter'];
+var TEXT_FIELDS = [{ key: 'name', label: 'Name' }, { key: 'contact', label: 'Primary contact' }];
+var PILL = {
+  Active: 'color: #004c97; border-color: rgba(0,76,151,.35)',
+  Pending: 'color: #8a5300; border-color: rgba(138,83,0,.35)',
+  Suspended: 'color: #b4232a; border-color: rgba(180,35,42,.35)'
+};
+function lc(s) { return String(s).toLowerCase(); }
+function matches(row, c) {
+  if (c.kind === 'is') return row[c.key] === c.value;
+  if (c.kind === 'contains') return lc(row[c.key]).indexOf(lc(c.value)) !== -1;
+  if (c.kind === 'search') return ['name', 'contact', 'status', 'tier'].some(function (k) { return lc(row[k]).indexOf(lc(c.value)) !== -1; });
+  if (c.kind === 'status') return row.status === c.value;
+  if (c.kind === 'tier') return row.tier === c.value;
+  if (c.kind === 'created') return row.age <= c.days;
+  return true;
+}
+function passes(row, chips, skip) {
+  var groups = {};
+  chips.forEach(function (c) { if (c.group !== skip) (groups[c.group] = groups[c.group] || []).push(c); });
+  return Object.keys(groups).every(function (g) { return groups[g].some(function (c) { return matches(row, c); }); });
+}
+function statusChip(v) { return { kind: 'status', value: v, group: 'status', panel: true, prefix: 'status:', text: v, title: 'status: ' + v }; }
+function tierChip(v) { return { kind: 'tier', value: v, group: 'tier', panel: true, prefix: 'tier:', text: v, title: 'tier: ' + v }; }
+function createdChip(p) { return { kind: 'created', days: p.days, group: 'created', single: true, panel: true, prefix: 'created:', text: p.label, title: 'created: ' + p.label }; }
+
 class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { query: '', searchOpen: false, hi: 0, chips: [], seq: 0, panelOpen: true, selected: [],
+      exportOpen: false, scope: 'selected', page: 1, size: 5, toast: '' };
+  }
+  addChip(chip, keepOpen) {
+    var seq = this.state.seq + 1;
+    var chips = this.state.chips.filter(function (c) { return !(chip.single && c.group === chip.group); });
+    chip.id = 'c' + seq;
+    this.setState({ chips: chips.concat([chip]), seq: seq, query: '', hi: 0, searchOpen: !!keepOpen, page: 1 });
+  }
+  removeChip(id) { this.setState({ chips: this.state.chips.filter(function (c) { return c.id !== id; }), page: 1 }); }
+  toggleChip(test, chip, keepOpen) {
+    var found = this.state.chips.filter(test)[0];
+    if (found) this.removeChip(found.id); else this.addChip(chip, keepOpen);
+  }
+  showToast(text) {
+    var self = this;
+    this.setState({ toast: text, exportOpen: false });
+    clearTimeout(this.timer);
+    this.timer = setTimeout(function () { self.setState({ toast: '' }); }, 2600);
+  }
+  componentWillUnmount() { clearTimeout(this.timer); }
+
+  suggestions(q) {
+    var self = this;
+    var query = lc(q.trim());
+    if (!query) return [];
+    var groups = [];
+    var picked = this.state.chips;
+    var found = [];
+    TEXT_FIELDS.forEach(function (f) {
+      var seen = {};
+      ROWS.forEach(function (r) {
+        var v = r[f.key];
+        var at = lc(v).indexOf(query);
+        if (at === -1 || seen[v] || Object.keys(seen).length >= 3) return;
+        if (picked.some(function (c) { return c.kind === 'is' && c.key === f.key && c.value === v; })) return;
+        seen[v] = true;
+        found.push({ starts: at === 0, item: { glyph: '=', a: v.slice(0, at), b: v.slice(at, at + query.length), c: v.slice(at + query.length), hint: 'in ' + f.label,
+          run: function () { self.addChip({ kind: 'is', key: f.key, value: v, group: f.key, prefix: lc(f.label) + ' is', text: v, title: lc(f.label) + ' is ' + v }); } } });
+      });
+    });
+    found.sort(function (x, y) { return Number(y.starts) - Number(x.starts); });
+    if (found.length) groups.push({ label: 'Matches', items: found.slice(0, 5).map(function (f) { return f.item; }) });
+
+    var filters = [];
+    STATUSES.forEach(function (s) { if (lc(s).indexOf(query) !== -1) filters.push({ glyph: '⏷', a: 'Status · ', b: s, c: '', hint: 'status=' + lc(s), run: function () { self.addChip(statusChip(s)); } }); });
+    TIERS.forEach(function (t) { if (lc(t).indexOf(query) !== -1) filters.push({ glyph: '⏷', a: 'Tier · ', b: t, c: '', hint: 'tier=' + lc(t), run: function () { self.addChip(tierChip(t)); } }); });
+    PRESETS.forEach(function (p) { if (lc('created ' + p.label).indexOf(query) !== -1) filters.push({ glyph: '◷', a: 'Created · ', b: p.label, c: '', hint: 'created=' + p.short, run: function () { self.addChip(createdChip(p)); } }); });
+    if (filters.length) groups.push({ label: 'Filters', items: filters.slice(0, 4) });
+
+    var raw = q.trim();
+    groups.push({ label: 'Search every field', items: [{ glyph: '⌕', a: 'Search for ', b: '“' + raw + '”', c: '', hint: '?search=' + raw,
+      run: function () { self.addChip({ kind: 'search', value: raw, group: 'search:' + raw, prefix: 'search:', text: raw, title: 'search: ' + raw }); } }] });
+    groups.push({ label: 'Narrow to a field', items: TEXT_FIELDS.map(function (f) {
+      return { glyph: 'Aa', a: f.label + ' contains ', b: raw, c: '', hint: f.key + '__icontains',
+        run: function () { self.addChip({ kind: 'contains', key: f.key, value: raw, group: f.key, prefix: lc(f.label) + ':', text: raw, title: lc(f.label) + ': ' + raw }); } };
+    }) });
+    return groups;
+  }
+
   renderVals() {
-    return {};
+    var self = this;
+    var s = this.state;
+    var chips = s.chips;
+    var has = function (test) { return chips.some(test); };
+    var countFor = function (group, test) { return ROWS.filter(function (r) { return passes(r, chips, group) && test(r); }).length; };
+
+    var rows = ROWS.filter(function (r) { return passes(r, chips); });
+    var pages = Math.max(1, Math.ceil(rows.length / s.size));
+    var page = Math.min(s.page, pages);
+    var start = (page - 1) * s.size;
+    var pageRows = rows.slice(start, start + s.size);
+    var pageIds = pageRows.map(function (r) { return r.id; });
+    var allOn = pageIds.length > 0 && pageIds.every(function (id) { return s.selected.indexOf(id) !== -1; });
+
+    // Quick picks and the panel read the same chips.
+    var statusTest = function (v) { return function (c) { return c.group === 'status' && c.value === v; }; };
+    var tierTest = function (v) { return function (c) { return c.group === 'tier' && c.value === v; }; };
+    var presetTest = function (p) { return function (c) { return c.group === 'created' && c.days === p.days; }; };
+    var opt = function (test, chip, count, label, keepOpen) {
+      var on = has(test);
+      return { label: label, count: count, on: on ? 'on' : '', pressed: on ? 'true' : 'false', toggle: function () { self.toggleChip(test, chip, keepOpen); } };
+    };
+    var quickRows = [
+      { label: 'Created', picks: PRESETS.map(function (p) { var o = opt(presetTest(p), createdChip(p), '', p.short, true); return o; }) },
+      { label: 'Status', picks: STATUSES.map(function (v) { return opt(statusTest(v), statusChip(v), countFor('status', function (r) { return r.status === v; }), v, true); }) },
+      { label: 'Tier', picks: TIERS.map(function (v) { return opt(tierTest(v), tierChip(v), countFor('tier', function (r) { return r.tier === v; }), v, true); }) }
+    ];
+    var panelGroups = [
+      { label: 'Status', options: STATUSES.map(function (v) { return opt(statusTest(v), statusChip(v), countFor('status', function (r) { return r.status === v; }), v, false); }) },
+      { label: 'Tier', options: TIERS.map(function (v) { return opt(tierTest(v), tierChip(v), countFor('tier', function (r) { return r.tier === v; }), v, false); }) }
+    ];
+    var presetButtons = PRESETS.map(function (p) { return opt(presetTest(p), createdChip(p), '', p.label, false); });
+
+    var groups = this.suggestions(s.query);
+    var flat = [];
+    groups.forEach(function (g) { g.items.forEach(function (it) { flat.push(it); }); });
+    var hi = Math.min(s.hi, Math.max(0, flat.length - 1));
+    flat.forEach(function (it, i) {
+      it.hot = i === hi ? 'hot' : '';
+      it.selected = i === hi ? 'true' : 'false';
+      it.hover = function () { if (self.state.hi !== i) self.setState({ hi: i }); };
+    });
+
+    var typing = s.query.trim().length > 0;
+    var panelCount = chips.filter(function (c) { return c.panel; }).length;
+    var selCount = s.selected.length;
+    var exportRows = function () { return selCount && s.scope === 'selected' ? selCount : rows.length; };
+
+    var buttons = [];
+    for (var n = 1; n <= pages; n++) (function (n) {
+      buttons.push({ n: n, on: n === page ? 'on' : '', current: n === page ? 'page' : 'false', go: function () { self.setState({ page: n }); } });
+    })(n);
+
+    return {
+      countLine: rows.length === ROWS.length ? ROWS.length + ' tenants' : rows.length + ' of ' + ROWS.length + ' match',
+      anyMenu: s.searchOpen || s.exportOpen,
+      closeMenus: function () { self.setState({ searchOpen: false, exportOpen: false }); },
+      panelOpen: s.panelOpen,
+      filtersCls: s.panelOpen ? 'primary' : '',
+      badgeStyle: s.panelOpen ? '' : 'background: rgba(0,76,151,.12); color: #004c97',
+      togglePanel: function () { self.setState({ panelOpen: !self.state.panelOpen }); },
+      hasPanelFilters: panelCount > 0,
+      panelFilterCount: panelCount,
+      panelFilterLabel: panelCount ? String(panelCount) : '',
+      gridCols: s.panelOpen ? '248px minmax(0, 1fr)' : 'minmax(0, 1fr)',
+
+      query: s.query,
+      searchOpen: s.searchOpen,
+      focusCls: s.searchOpen ? 'focus' : '',
+      placeholder: chips.length ? 'Add another filter…' : 'Search, or pick a filter…',
+      showQuick: s.searchOpen && !typing,
+      showSuggest: s.searchOpen && typing,
+      quickRows: quickRows,
+      groups: groups,
+      chips: chips.map(function (c) { return { prefix: c.prefix, text: c.text, title: c.title, remove: function (e) { e.stopPropagation(); self.removeChip(c.id); } }; }),
+      openSearch: function () { if (!self.state.searchOpen) self.setState({ searchOpen: true, exportOpen: false, hi: 0 }); },
+      onInput: function (e) { self.setState({ query: e.target.value, hi: 0, searchOpen: true }); },
+      onKey: function (e) {
+        if (e.key === 'ArrowDown') { e.preventDefault(); self.setState({ hi: Math.min(hi + 1, flat.length - 1), searchOpen: true }); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); self.setState({ hi: Math.max(hi - 1, 0) }); }
+        else if (e.key === 'Enter') { e.preventDefault(); if (typing && flat[hi]) flat[hi].run(); }
+        else if (e.key === 'Escape') { self.setState({ searchOpen: false }); }
+        else if (e.key === 'Backspace' && !self.state.query && chips.length) { self.removeChip(chips[chips.length - 1].id); }
+      },
+
+      panelGroups: panelGroups,
+      presetButtons: presetButtons,
+      resetPanel: function () { self.setState({ chips: self.state.chips.filter(function (c) { return !c.panel; }), page: 1 }); },
+      clearAll: function () { self.setState({ chips: [], query: '', page: 1 }); },
+
+      pageRows: pageRows.map(function (r) {
+        var on = s.selected.indexOf(r.id) !== -1;
+        return Object.assign({}, r, { pillStyle: PILL[r.status], on: on ? 'on' : '', pressed: on ? 'true' : 'false', cls: on ? 'sel' : '',
+          toggle: function () {
+            var cur = self.state.selected;
+            self.setState({ selected: on ? cur.filter(function (x) { return x !== r.id; }) : cur.concat([r.id]) });
+          } });
+      }),
+      allCls: allOn ? 'on' : '',
+      allChecked: allOn ? 'true' : 'false',
+      toggleAll: function () {
+        var cur = self.state.selected;
+        self.setState({ selected: allOn ? cur.filter(function (x) { return pageIds.indexOf(x) === -1; }) : cur.concat(pageIds.filter(function (x) { return cur.indexOf(x) === -1; })) });
+      },
+      noMatch: rows.length === 0,
+      hasRows: rows.length > 0,
+
+      hasSelection: selCount > 0,
+      selectedCount: selCount,
+      selectedLabel: selCount + ' selected',
+      clearSelection: function () { self.setState({ selected: [] }); },
+
+      exportOpen: s.exportOpen,
+      exportDisabled: rows.length === 0 && selCount === 0,
+      toggleExport: function () { self.setState({ exportOpen: !self.state.exportOpen, searchOpen: false, scope: 'selected' }); },
+      matchCount: rows.length,
+      scopeSelected: s.scope === 'selected' ? 'true' : 'false',
+      scopeAll: s.scope === 'all' ? 'true' : 'false',
+      scopeSelectedCls: s.scope === 'selected' ? 'on' : '',
+      scopeAllCls: s.scope === 'all' ? 'on' : '',
+      pickSelected: function () { self.setState({ scope: 'selected' }); },
+      pickAll: function () { self.setState({ scope: 'all' }); },
+      exportCsv: function () { var n = exportRows(); self.showToast('Downloaded tenants.csv · ' + n + ' row' + (n === 1 ? '' : 's')); },
+      exportJson: function () { var n = exportRows(); self.showToast('Downloaded tenants.json · ' + n + ' row' + (n === 1 ? '' : 's')); },
+      hasToast: !!s.toast,
+      toast: s.toast,
+
+      sizeValue: String(s.size),
+      onSize: function (e) { self.setState({ size: Number(e.target.value), page: 1 }); },
+      rangeLine: (rows.length ? start + 1 : 0) + '–' + Math.min(start + s.size, rows.length) + ' of ' + rows.length,
+      atFirst: page <= 1,
+      atLast: page >= pages,
+      prevPage: function () { self.setState({ page: Math.max(1, page - 1) }); },
+      nextPage: function () { self.setState({ page: Math.min(pages, page + 1) }); },
+      pageButtons: buttons
+    };
   }
 }
 </script>
