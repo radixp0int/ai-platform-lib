@@ -7,7 +7,6 @@ import { Button } from '../../primitives/button'
 import { IconButton } from '../../primitives/icon-button'
 import { DotsIcon, PencilIcon, TrashIcon } from '../../primitives/icons'
 import { Pill } from '../../primitives/pill'
-import { Pagination } from '../pagination'
 import type { Sort } from '../paging'
 import { DataTable } from './data-table'
 import { sortRows as sortByType, toSortParam } from './sorting'
@@ -245,30 +244,26 @@ export const NarrowContainer: Story = {
   decorators: [(Story) => <div className="max-w-md">{Story()}</div>],
 }
 
-/** Paged client-side; the footer is just a `Pagination`. */
+/** Paged client-side with `pagination`: pages, rows per page, and the range it shows. */
 export const WithPagination: Story = {
   render: function PagedStory(args) {
     const [page, setPage] = useState(1)
     const [size, setSize] = useState(5)
-    const totalPages = Math.ceil(TENANTS.length / size)
     return (
       <DataTable
         {...args}
         rows={TENANTS.slice((page - 1) * size, page * size)}
-        footer={
-          <Pagination
-            page={page}
-            size={size}
-            totalElements={TENANTS.length}
-            totalPages={totalPages}
-            onPageChange={setPage}
-            onSizeChange={(n) => {
-              setSize(n)
-              setPage(1)
-            }}
-            sizeOptions={[5, 10, 25]}
-          />
-        }
+        pagination={{
+          page,
+          size,
+          totalElements: TENANTS.length,
+          onPageChange: setPage,
+          onSizeChange: (n) => {
+            setSize(n)
+            setPage(1)
+          },
+          sizeOptions: [5, 10, 25],
+        }}
       />
     )
   },

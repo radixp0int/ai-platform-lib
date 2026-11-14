@@ -39,6 +39,11 @@ entry names the modules it touches so the sidebar entry is easy to find.
   Try again state, never "nothing to show". In a `DataGrid` with filters on, no
   rows shows "Nothing matches" with the filters as removable chips and Clear all.
   The default empty title is now "Nothing here yet".
+- **Pagination is built in.** `DataTable` and `DataGrid` take `pagination`: the
+  same props as `Pagination` (page, size, `totalElements`, `onPageChange`, and
+  `onSizeChange` with `sizeOptions` for rows per page). `totalPages` is worked
+  out when left out, the controls dim while `loading`, and the bar hides while
+  there are no rows at all. `footer` is still there for anything else.
 - **`Omnibox`** closes its menu when a suggestion is chosen.
 - **Stories:** Components/DataGrid: Everything, Pick one, Up to three, States.
   The Tenants page and the Runs list are built on `DataGrid`.

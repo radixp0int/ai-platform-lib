@@ -19,7 +19,6 @@ import {
 } from '../../../components/data-grid'
 import type { FilterField } from '../../../components/filter-panel'
 import { PageHeader, pageColumn } from '../../../components/page-header'
-import { Pagination } from '../../../components/pagination'
 import type { Sort } from '../../../components/paging'
 import { Avatar } from '../../../primitives/avatar'
 import { Button, ButtonLink } from '../../../primitives/button'
@@ -299,20 +298,17 @@ export function RunsListPage({
             </div>
           </div>
         )}
-        footer={
-          <Pagination
-            page={safePage}
-            size={size}
-            totalElements={sorted.length}
-            totalPages={totalPages}
-            onPageChange={setPage}
-            onSizeChange={(n) => {
-              setSize(n)
-              setPage(1)
-            }}
-            sizeOptions={[10, 25, 50]}
-          />
-        }
+        pagination={{
+          page: safePage,
+          size,
+          totalElements: sorted.length,
+          onPageChange: setPage,
+          onSizeChange: (n) => {
+            setSize(n)
+            setPage(1)
+          },
+          sizeOptions: [10, 25, 50],
+        }}
       />
     </div>
   )

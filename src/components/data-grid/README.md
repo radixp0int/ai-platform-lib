@@ -23,7 +23,7 @@ takes every `DataTable` prop, plus these.
   maxSelections={3}
   exportFormats={['csv', 'json']}
   onExport={(format, scope) => …}
-  footer={<Pagination … />}
+  pagination={{ page, size, totalElements, onPageChange: setPage, onSizeChange: setSize, sizeOptions: [10, 25, 50] }}
 />
 ```
 
@@ -60,6 +60,13 @@ One format and no selection: a plain "Export CSV" button. Two formats, or rows
 selected: a menu, which with a selection asks for selected or all matching rows.
 The grid builds no file. `toCsv`, `toJson` and `downloadFile` do it for rows in
 hand.
+
+## Pagination
+
+`pagination` draws pages and rows per page under the rows, with the same props
+as `Pagination`. `totalPages` is worked out from `totalElements` and `size` when
+left out; leave out `onSizeChange` to hide rows per page. It dims while
+`loading` and hides while there are no rows at all.
 
 ## States
 

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import type { PaginationProps } from '../pagination'
 import type { Sort } from '../paging'
 
 export type ColumnAlign = 'start' | 'end'
@@ -174,9 +175,21 @@ export type DataTableProps<T> = {
   minBodyHeight?: string
   /** Above the header — an omnibox, a filter bar. */
   toolbar?: ReactNode
-  /** Below the rows — `Pagination`, typically. */
+  /**
+   * Pages and rows per page, under the rows. The same props `Pagination` takes,
+   * except `totalPages` (worked out from `totalElements` and `size` when left
+   * out) and `busy` (follows `loading`). Leave out `onSizeChange` to hide the
+   * rows-per-page control. Hidden while there are no rows at all.
+   */
+  pagination?: DataTablePagination
+  /** Anything else below the rows, after the pagination. */
   footer?: ReactNode
 
   labels?: Partial<DataTableLabels>
   className?: string
+}
+
+/** `Pagination`'s props, as `DataTable` takes them. */
+export type DataTablePagination = Omit<PaginationProps, 'totalPages' | 'busy'> & {
+  totalPages?: number
 }

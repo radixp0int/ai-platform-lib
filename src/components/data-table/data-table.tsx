@@ -1,6 +1,7 @@
 import { withDefaults } from '../../lib/withDefaults'
 import { Fragment, useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { Checkbox } from '../../primitives/checkbox'
+import { Pagination } from '../pagination'
 import { Button } from '../../primitives/button'
 import {
   ArrowDownIcon,
@@ -153,6 +154,7 @@ export function DataTableView<T>({
   error,
   onRetry,
   minBodyHeight = MIN_BODY_HEIGHT,
+  pagination,
   footer,
   labels: t,
 }: ViewProps<T>) {
@@ -493,6 +495,16 @@ export function DataTableView<T>({
         </table>
       </div>
 
+      {pagination && pagination.totalElements > 0 && (
+        <Pagination
+          {...pagination}
+          totalPages={
+            pagination.totalPages ??
+            Math.max(1, Math.ceil(pagination.totalElements / Math.max(1, pagination.size)))
+          }
+          busy={loading}
+        />
+      )}
       {footer}
     </div>
   )

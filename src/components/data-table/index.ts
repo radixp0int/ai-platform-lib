@@ -4,4 +4,11 @@ export { DEFAULT_TABLE_LABELS, MIN_BODY_HEIGHT, selectionLabel } from './labels'
 export { canSelectAll, clampSelection, toggleAll, toggleSelection } from './selection'
 export { directionFor, isColumnSortable, sortRows, toggleSort, toSortParam } from './sorting'
 export { EmptyRow, SkeletonRows, StateRow } from './states'
-export type { Column, ColumnAlign, DataTableLabels, DataTableProps, SortType } from './types'
+export type {
+  Column,
+  ColumnAlign,
+  DataTableLabels,
+  DataTablePagination,
+  DataTableProps,
+  SortType,
+} from './types'

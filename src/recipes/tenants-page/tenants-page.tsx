@@ -22,7 +22,6 @@ import {
 } from '../../components/data-grid'
 import { sortRows, type Column } from '../../components/data-table'
 import type { FilterField } from '../../components/filter-panel'
-import { Pagination } from '../../components/pagination'
 import { formatSort, type Sort } from '../../components/paging'
 import { Avatar } from '../../primitives/avatar'
 import { Button } from '../../primitives/button'
@@ -626,21 +625,17 @@ export function DataTablePage() {
             emptyTitle: 'No tenants yet',
             emptyBody: 'Tenants you add show up here, with their contacts and seats.',
           }}
-          footer={
-            <Pagination
-              page={safePage}
-              size={size}
-              totalElements={sorted.length}
-              totalPages={totalPages}
-              busy={loading}
-              onPageChange={setPage}
-              onSizeChange={(n) => {
-                setSize(n)
-                setPage(1)
-              }}
-              sizeOptions={[5, 10, 25]}
-            />
-          }
+          pagination={{
+            page: safePage,
+            size,
+            totalElements: sorted.length,
+            onPageChange: setPage,
+            onSizeChange: (n) => {
+              setSize(n)
+              setPage(1)
+            },
+            sizeOptions: [5, 10, 25],
+          }}
         />
       </div>
     </div>

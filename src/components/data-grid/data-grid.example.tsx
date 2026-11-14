@@ -8,7 +8,6 @@ import type { DateRange } from '../../primitives/date-field'
 import { PlusIcon } from '../../primitives/icons'
 import { sortRows } from '../data-table'
 import type { FilterField } from '../filter-panel'
-import { Pagination } from '../pagination'
 import type { Sort } from '../paging'
 import { DataGrid } from './data-grid'
 import { COLUMNS, EXPORT_COLUMNS, ROWS, TERM_FIELDS } from './data-grid.fixtures'
@@ -192,23 +191,17 @@ export function TenantsGrid({
         const body = format === 'json' ? toJson(rows, EXPORT_COLUMNS) : toCsv(rows, EXPORT_COLUMNS)
         downloadFile(`tenants.${format}`, body, EXPORT_MIME[format])
       }}
-      footer={
-        source.length > 0 && (
-          <Pagination
-            page={safePage}
-            size={size}
-            totalElements={sorted.length}
-            totalPages={totalPages}
-            busy={loading}
-            onPageChange={setPage}
-            onSizeChange={(n) => {
-              setSize(n)
-              setPage(1)
-            }}
-            sizeOptions={[5, 8, 15]}
-          />
-        )
-      }
+      pagination={{
+        page: safePage,
+        size,
+        totalElements: sorted.length,
+        onPageChange: setPage,
+        onSizeChange: (n) => {
+          setSize(n)
+          setPage(1)
+        },
+        sizeOptions: [5, 8, 15],
+      }}
     />
   )
 }

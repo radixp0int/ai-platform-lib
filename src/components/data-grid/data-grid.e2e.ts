@@ -124,6 +124,39 @@ test.describe('DataGrid, selection limits', () => {
   })
 })
 
+test.describe('DataGrid, pagination', () => {
+  test('pages through the rows, and rows per page changes the page size', async ({
+    story,
+    page,
+  }) => {
+    await story.open(id('everything'))
+    await expect(page.getByText('1–8 of 14')).toBeVisible()
+    await expect(bodyRows(page)).toHaveCount(8)
+    await page.getByRole('button', { name: /^Next/ }).click()
+    await expect(page.getByText('9–14 of 14')).toBeVisible()
+    await expect(bodyRows(page)).toHaveCount(6)
+    await page.getByRole('combobox', { name: 'Rows' }).click()
+    await page.getByRole('option', { name: '15', exact: true }).click()
+    await expect(page.getByText('1–14 of 14')).toBeVisible()
+    await expect(bodyRows(page)).toHaveCount(14)
+  })
+
+  test('a filter goes back to page 1 and the range follows it', async ({ story, page }) => {
+    await story.open(id('everything'))
+    await page.getByRole('button', { name: /^Next/ }).click()
+    await search(page).click()
+    await quick(page)
+      .getByRole('button', { name: /^Pending/ })
+      .click()
+    await expect(page.getByText('1–3 of 3')).toBeVisible()
+  })
+
+  test('is hidden while there are no rows at all', async ({ story, page }) => {
+    await story.open(id('states'))
+    await expect(page.getByRole('combobox', { name: 'Rows' })).toHaveCount(0)
+  })
+})
+
 test.describe('DataGrid, export', () => {
   test('two formats make a menu that downloads the chosen one', async ({ story, page }) => {
     await story.open(id('everything'))
