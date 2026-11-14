@@ -377,6 +377,13 @@ export const ArrowToTopIcon = (p: IconProps) => (
   </svg>
 )
 
+/** A file coming down: export, download. */
+export const DownloadIcon = (p: IconProps) => (
+  <svg {...base(p)}>
+    <path d="M12 4v11M7 10l5 5 5-5M5 20h14" />
+  </svg>
+)
+
 export const ArrowUpIcon = (p: IconProps) => (
   <svg {...base(p)}>
     <path d="M12 19V7M7.5 11.5 12 7l4.5 4.5" />

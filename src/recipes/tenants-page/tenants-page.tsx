@@ -1,21 +1,26 @@
 import { DescriptionList } from '../../primitives/description-list'
-// Unlisted: reachable only by typing /data-table. The H/I shell from the
-// design canvas assembled around <DataTable/>: omnibox on top, collapsible
-// facet rail beside it, pagination in the card's footer.
+// Unlisted: reachable only by typing /data-table. The tenants list built on
+// <DataGrid/>: the search box on top, the filter panel docked as the grid's
+// first column, export beside the search, pagination in the footer.
 //
 // Everything stateful lives HERE, in the host — the query, the facets, the
 // sort, the page, the selection, the expansion. That is the point of the
-// exercise: DataTable fetches nothing and remembers nothing, so this page does
+// exercise: DataGrid fetches nothing and remembers nothing, so this page does
 // client-side what a real one would hand to the API, and neither the component
 // nor its props change when it does.
 import { useMemo, useState } from 'react'
-import { DataTable, sortRows, type Column } from '../../components/data-table'
 import {
-  FilterBar,
-  type FilterStyle,
+  DataGrid,
+  downloadFile,
+  findMatches,
+  EXPORT_MIME,
+  toCsv,
+  toJson,
+  type ExportColumn,
   type FilterTerm,
   type FilterTermField,
-} from '../../components/filter-bar'
+} from '../../components/data-grid'
+import { sortRows, type Column } from '../../components/data-table'
 import type { FilterField } from '../../components/filter-panel'
 import { Pagination } from '../../components/pagination'
 import { formatSort, type Sort } from '../../components/paging'
@@ -319,6 +324,21 @@ const COLUMNS: Column<Tenant>[] = [
   },
 ]
 
+/** What an export writes: plain values, not the cells' drawing. */
+const EXPORT_COLUMNS: ExportColumn<Tenant>[] = [
+  { key: 'id', header: 'ID' },
+  { key: 'name', header: 'Name' },
+  { key: 'status', header: 'Status', value: (t) => STATUS_LABEL[t.status] },
+  { key: 'tier', header: 'Plan tier' },
+  { key: 'contact', header: 'Primary contact' },
+  { key: 'email', header: 'Email' },
+  { key: 'seatsUsed', header: 'Seats in use', value: (t) => t.seats[0] },
+  { key: 'seatsTotal', header: 'Seats', value: (t) => t.seats[1] },
+  { key: 'region', header: 'Region' },
+  { key: 'created', header: 'Created' },
+  { key: 'renewal', header: 'Renewal' },
+]
+
 /** One labelled value in the expanded panel. */
 function Detail({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -342,8 +362,6 @@ export function DataTablePage() {
   const [seatedOnly, setSeatedOnly] = useState(false)
   const [createdRange, setCreatedRange] = useState<DateRange>({ from: null, to: null })
   const [renewalRange, setRenewalRange] = useState<DateRange>({ from: null, to: null })
-  // One person's preference, held here so every table can follow it.
-  const [filterStyle, setFilterStyle] = useState<FilterStyle>('simple')
 
   const [sort, setSort] = useState<Sort[]>([{ field: 'name', direction: 'asc' }])
   const [page, setPage] = useState(1)
@@ -368,10 +386,11 @@ export function DataTablePage() {
       if (renewalRange.to && t.renewal > renewalRange.to) return false
       return terms.every((term) => {
         const needle = term.value.trim().toLowerCase()
-        if (term.field)
-          return String(t[term.field as FieldKey])
-            .toLowerCase()
-            .includes(needle)
+        if (term.field) {
+          const value = String(t[term.field as FieldKey]).toLowerCase()
+          // A value picked from the data is an exact match; a typed one only has to appear.
+          return term.exact ? value === needle : value.includes(needle)
+        }
         return [t.name, t.contact, t.email, t.region].some((v) => v.toLowerCase().includes(needle))
       })
     })
@@ -393,15 +412,6 @@ export function DataTablePage() {
       suspended: base.filter((t) => t.status === 'suspended').length,
     }
   }, [tiers])
-
-  const activeFilters =
-    statuses.length +
-    tiers.length +
-    terms.length +
-    (region ? 1 : 0) +
-    (seatedOnly ? 1 : 0) +
-    (createdRange.from || createdRange.to ? 1 : 0) +
-    (renewalRange.from || renewalRange.to ? 1 : 0)
 
   const resetRail = () => {
     setStatuses([])
@@ -511,8 +521,8 @@ export function DataTablePage() {
           </div>
         </header>
 
-        <FilterBar
-          label="Search and filter tenants"
+        <DataGrid
+          searchLabel="Search and filter tenants"
           fields={filterFields}
           terms={terms}
           onTermsChange={(next) => {
@@ -520,136 +530,118 @@ export function DataTablePage() {
             setPage(1)
           }}
           termFields={FIELDS}
-          filterStyle={filterStyle}
-          onFilterStyleChange={setFilterStyle}
+          // Every tenant is in hand here, so values from the data come from all of them,
+          // not just the page on screen.
+          findMatches={(q) => findMatches(q, TENANTS, FIELDS)}
           onReset={resetRail}
           defaultOpen
           defaultPinned
-        >
-          <DataTable
-            className="w-full min-w-0"
-            caption="Tenants, with filters, sorting and pagination"
-            columns={COLUMNS}
-            // Sized so every header and date fits beside a docked panel; a narrower
-            // card scrolls sideways rather than clipping them.
-            minWidth="800px"
-            rows={pageRows}
-            rowId={(t) => t.id}
-            loading={loading}
-            skeletonRows={size}
-            sort={sort}
-            onSortChange={(s) => {
-              setSort(s)
-              setPage(1)
-            }}
-            selectedIds={selected}
-            onSelectionChange={setSelected}
-            bulkActions={
-              <>
-                <Button variant="inverse" size="sm">
-                  Change status
-                </Button>
-                <Button variant="inverse" size="sm">
-                  Assign owner
-                </Button>
-              </>
-            }
-            expandedIds={expanded}
-            onExpandedChange={setExpanded}
-            renderExpanded={(t) => (
-              <div className="grid grid-cols-4 gap-x-6 gap-y-4 max-md:grid-cols-2">
-                <Detail label="Tenant ID">
-                  <span className="font-bold tabular-nums">{t.id}</span>
-                </Detail>
-                <Detail label="Plan tier">
-                  <span className="font-bold">{t.tier}</span>
-                </Detail>
-                <Detail label="Seats in use">
-                  <span className="font-bold tabular-nums">
-                    {t.seats[0]} of {t.seats[1]}
-                  </span>
-                </Detail>
-                <Detail label="Renewal">
-                  <span className="font-bold">{fmtDate(t.renewal)}</span>
-                </Detail>
-                <Detail label="Email">{t.email}</Detail>
-                <Detail label="Phone">
-                  <span className="tabular-nums">{t.phone}</span>
-                </Detail>
-                <Detail label="Region">{t.region}</Detail>
-                <div className="flex items-end">
-                  <a href={`#${t.id}`} className="text-[13px] font-bold text-brand-fg">
-                    Open full record →
-                  </a>
-                </div>
+          exportFormats={['csv', 'json']}
+          totalCount={sorted.length}
+          onExport={(format, scope) => {
+            const rows =
+              scope === 'selected' ? sorted.filter((t) => selected.includes(t.id)) : sorted
+            const body =
+              format === 'csv' ? toCsv(rows, EXPORT_COLUMNS) : toJson(rows, EXPORT_COLUMNS)
+            downloadFile(`tenants.${format}`, body, EXPORT_MIME[format])
+          }}
+          className="w-full min-w-0"
+          caption="Tenants, with filters, sorting and pagination"
+          columns={COLUMNS}
+          // Sized so every header and date fits beside a docked panel; a narrower
+          // card scrolls sideways rather than clipping them.
+          minWidth="800px"
+          rows={pageRows}
+          rowId={(t) => t.id}
+          loading={loading}
+          skeletonRows={size}
+          sort={sort}
+          onSortChange={(s) => {
+            setSort(s)
+            setPage(1)
+          }}
+          selectedIds={selected}
+          onSelectionChange={setSelected}
+          bulkActions={
+            <>
+              <Button variant="inverse" size="sm">
+                Change status
+              </Button>
+              <Button variant="inverse" size="sm">
+                Assign owner
+              </Button>
+            </>
+          }
+          expandedIds={expanded}
+          onExpandedChange={setExpanded}
+          renderExpanded={(t) => (
+            <div className="grid grid-cols-4 gap-x-6 gap-y-4 max-md:grid-cols-2">
+              <Detail label="Tenant ID">
+                <span className="font-bold tabular-nums">{t.id}</span>
+              </Detail>
+              <Detail label="Plan tier">
+                <span className="font-bold">{t.tier}</span>
+              </Detail>
+              <Detail label="Seats in use">
+                <span className="font-bold tabular-nums">
+                  {t.seats[0]} of {t.seats[1]}
+                </span>
+              </Detail>
+              <Detail label="Renewal">
+                <span className="font-bold">{fmtDate(t.renewal)}</span>
+              </Detail>
+              <Detail label="Email">{t.email}</Detail>
+              <Detail label="Phone">
+                <span className="tabular-nums">{t.phone}</span>
+              </Detail>
+              <Detail label="Region">{t.region}</Detail>
+              <div className="flex items-end">
+                <a href={`#${t.id}`} className="text-[13px] font-bold text-brand-fg">
+                  Open full record →
+                </a>
               </div>
-            )}
-            rowActions={(t) => (
-              <>
-                <IconButton size="sm" shape="rounded" aria-label={`Edit ${t.name}`} title="Edit">
-                  <PencilIcon width={14} height={14} />
-                </IconButton>
-                <IconButton
-                  size="sm"
-                  shape="rounded"
-                  aria-label={`Delete ${t.name}`}
-                  title="Delete"
-                >
-                  <TrashIcon width={14} height={14} />
-                </IconButton>
-                <IconButton
-                  size="sm"
-                  shape="rounded"
-                  aria-label={`More actions for ${t.name}`}
-                  title="More"
-                >
-                  <DotsIcon width={14} height={14} />
-                </IconButton>
-              </>
-            )}
-            labels={{
-              emptyTitle: 'No tenants match',
-              emptyBody: (
-                <>
-                  <span className="text-[13px] text-ink-soft">
-                    {activeFilters > 0 &&
-                      `${activeFilters} filter${activeFilters === 1 ? '' : 's'}`}
-                  </span>
-                  <div className="mt-1 flex items-center gap-2">
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      onClick={() => {
-                        setTerms([])
-                        resetRail()
-                      }}
-                    >
-                      Clear all filters
-                    </Button>
-                    <Button size="sm" onClick={resetRail}>
-                      Keep what you typed, drop the rest
-                    </Button>
-                  </div>
-                </>
-              ),
-            }}
-            footer={
-              <Pagination
-                page={safePage}
-                size={size}
-                totalElements={sorted.length}
-                totalPages={totalPages}
-                busy={loading}
-                onPageChange={setPage}
-                onSizeChange={(n) => {
-                  setSize(n)
-                  setPage(1)
-                }}
-                sizeOptions={[5, 10, 25]}
-              />
-            }
-          />
-        </FilterBar>
+            </div>
+          )}
+          rowActions={(t) => (
+            <>
+              <IconButton size="sm" shape="rounded" aria-label={`Edit ${t.name}`} title="Edit">
+                <PencilIcon width={14} height={14} />
+              </IconButton>
+              <IconButton size="sm" shape="rounded" aria-label={`Delete ${t.name}`} title="Delete">
+                <TrashIcon width={14} height={14} />
+              </IconButton>
+              <IconButton
+                size="sm"
+                shape="rounded"
+                aria-label={`More actions for ${t.name}`}
+                title="More"
+              >
+                <DotsIcon width={14} height={14} />
+              </IconButton>
+            </>
+          )}
+          rowLabel={(t) => t.name}
+          labels={{
+            noMatchTitle: 'No tenants match',
+            emptyTitle: 'No tenants yet',
+            emptyBody: 'Tenants you add show up here, with their contacts and seats.',
+          }}
+          footer={
+            <Pagination
+              page={safePage}
+              size={size}
+              totalElements={sorted.length}
+              totalPages={totalPages}
+              busy={loading}
+              onPageChange={setPage}
+              onSizeChange={(n) => {
+                setSize(n)
+                setPage(1)
+              }}
+              sizeOptions={[5, 10, 25]}
+            />
+          }
+        />
       </div>
     </div>
   )

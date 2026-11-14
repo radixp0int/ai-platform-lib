@@ -65,9 +65,16 @@ export type DataTableLabels = {
   expandRow: (row: string) => string
   sortBy: (column: string) => string
   selected: (n: number) => string
+  /** The bulk bar's count when there is a limit: "2 of 3 selected". */
+  selectedOf: (n: number, max: number) => string
+  /** The bulk bar when one row may be picked: "Crestview Bank selected". */
+  selectedOne: (row: string) => string
   clearSelection: string
   emptyTitle: string
   emptyBody?: ReactNode
+  errorTitle: string
+  errorBody?: ReactNode
+  retry: string
 }
 
 export type DataTableProps<T> = {
@@ -114,6 +121,20 @@ export type DataTableProps<T> = {
 
   selectedIds?: string[]
   onSelectionChange?: (ids: string[]) => void
+  /**
+   * How many rows can be picked at once. Omit for no limit.
+   *
+   * `1` draws radio buttons: picking another row replaces the one before, and
+   * clicking anywhere on the row picks it (unless rows expand). Above 1, a pick
+   * past the limit drops the oldest one, so the latest `max` picks are kept.
+   * Select-all is only offered when the whole page fits under the limit.
+   */
+  maxSelections?: number
+  /**
+   * A row's name for people: used in the checkbox's accessible name and in the
+   * bulk bar when one row is picked. Defaults to the row's id.
+   */
+  rowLabel?: (row: T) => string
   /** Rendered in the bulk bar once something is selected. */
   bulkActions?: ReactNode
 
@@ -133,6 +154,24 @@ export type DataTableProps<T> = {
 
   /** Replaces the whole empty state. */
   empty?: ReactNode
+  /**
+   * What to do when there is nothing yet: an "Add tenant" button, say. Shown
+   * under the empty state's title and body.
+   */
+  emptyAction?: ReactNode
+  /**
+   * The rows failed to load. `true` shows the default message; a node replaces
+   * its body. An error is never drawn as "nothing to show".
+   */
+  error?: boolean | ReactNode
+  /** Given, the error state offers Try again. */
+  onRetry?: () => void
+  /**
+   * The least height of the rows area, so empty, error, loading and a short page
+   * all keep the same frame. Defaults to `22rem`, about seven rows. `none` turns
+   * it off.
+   */
+  minBodyHeight?: string
   /** Above the header — an omnibox, a filter bar. */
   toolbar?: ReactNode
   /** Below the rows — `Pagination`, typically. */

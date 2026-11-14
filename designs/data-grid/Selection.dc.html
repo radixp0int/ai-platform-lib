@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Row selection limits</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0069aa}a:hover{color:#003f7e}
+.sl *{box-sizing:border-box}
+.tag{font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+.cap{font-size:13px;line-height:1.5;color:#64727e;margin:0}
+.cap b{color:#1c2733}
+.frame{border:1px solid rgba(0,51,101,.12);border-radius:10px;background:#fff;overflow:hidden}
+.th{height:44px;padding:0 14px;font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#64727e;text-align:left;background:#f5f7f9;border-bottom:1px solid rgba(0,51,101,.10)}
+.td{height:48px;padding:0 14px;font-size:13.5px;color:#2d3943;border-top:1px solid rgba(0,51,101,.07);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+tr.row{cursor:pointer}
+tr.row:hover{background:rgba(0,76,151,.03)}
+tr.row.sel{background:rgba(0,76,151,.07)}
+tr.row.off{cursor:default}
+tr.row.off:hover{background:transparent}
+tr.row.off .td{color:#8a96a1}
+.ctl{display:grid;place-items:center;width:18px;height:18px;padding:0;border:1.5px solid rgba(0,51,101,.32);background:#fff;color:#fff;cursor:pointer}
+.ctl.radio{border-radius:99px}
+.ctl.box{border-radius:4px}
+.ctl.on.radio{border:5.5px solid #004c97}
+.ctl.on.box{background:#004c97;border-color:#004c97}
+.ctl:disabled{opacity:.4;cursor:not-allowed}
+.bar{display:flex;align-items:center;gap:10px;min-height:44px;padding:6px 8px 6px 14px;border-radius:7px;font-size:13px}
+.bar.on{background:#004c97;color:#fff}
+.bar.idle{background:#f5f7f9;color:#64727e;border:1px dashed rgba(0,51,101,.16)}
+.bbtn{display:inline-flex;align-items:center;height:30px;padding:0 10px;border-radius:7px;font:inherit;font-size:12.5px;font-weight:800;border:0;cursor:pointer}
+code.k{font-size:12.5px;background:rgba(0,76,151,.08);padding:10px 12px;border-radius:7px;color:#003f7e;display:block;white-space:pre;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;line-height:1.55}
+</style>
+</helmet>
+<div class="sl" style="width: 1280px; height: 820px; padding: 32px 40px; background: #fbfcfd; font-family: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif; color: #2d3943; display: flex; flex-direction: column; gap: 22px">
+
+  <div style="display: flex; flex-direction: column; gap: 6px; max-width: 86ch">
+    <span class="tag" style="color: #0069aa">Selection · try it</span>
+    <h2 style="margin: 0; font-size: 22px; font-weight: 800; color: #1c2733">One prop, <code style="font-size: 19px">maxSelections</code>, sets how many rows can be picked</h2>
+    <p class="cap">Leave it off for today's behavior (any number, with select all). Set it and the grid enforces the limit itself, so the host never has to undo a pick.</p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px">
+
+    <!-- Single -->
+    <div style="display: flex; flex-direction: column; gap: 12px">
+      <span class="tag" style="color: #1c2733">maxSelections = 1 · acts like radio buttons</span>
+      <sc-if value="{{ single.has }}" hint-placeholder-val="{{ false }}">
+        <div class="bar on" aria-live="polite">
+          <b>{{ single.label }}</b><span style="opacity: .75">selected</span>
+          <span style="flex: 1"></span>
+          <button class="bbtn" style="background: rgba(255,255,255,.14); color: #fff">Open</button>
+          <button class="bbtn" style="background: #fff; color: #004c97" onClick="{{ single.clear }}">Clear</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ single.none }}" hint-placeholder-val="{{ true }}">
+        <div class="bar idle">Pick one tenant</div>
+      </sc-if>
+      <div class="frame">
+        <table style="width: 100%; border-collapse: collapse; table-layout: fixed">
+          <caption style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Pick one tenant</caption>
+          <thead><tr><th class="th" style="width: 48px"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Select</span></th><th class="th">Name</th><th class="th" style="width: 32%">Primary contact</th></tr></thead>
+          <tbody>
+            <sc-for list="{{ single.rows }}" as="r" hint-placeholder-count="6">
+              <tr class="row {{ r.cls }}" onClick="{{ r.toggle }}">
+                <td class="td"><button class="ctl radio {{ r.on }}" role="radio" aria-checked="{{ r.checked }}" aria-label="Select {{ r.name }}"></button></td>
+                <td class="td"><b style="color: #1c2733">{{ r.name }}</b></td>
+                <td class="td">{{ r.contact }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+      <p class="cap"><b>Picking another row replaces the last one.</b> Circles, not boxes, so it reads as “one of”. No select-all in the header. Clicking anywhere on the row picks it.</p>
+      <code class="k">&lt;DataGrid maxSelections={1} selectedIds={ids} onSelectionChange={setIds} … /&gt;</code>
+    </div>
+
+    <!-- Up to 3 -->
+    <div style="display: flex; flex-direction: column; gap: 12px">
+      <span class="tag" style="color: #1c2733">maxSelections = 3 · keeps the latest three</span>
+      <sc-if value="{{ multi.has }}" hint-placeholder-val="{{ false }}">
+        <div class="bar on" aria-live="polite">
+          <b>{{ multi.label }}</b>
+          <sc-if value="{{ multi.full }}" hint-placeholder-val="{{ false }}"><span style="opacity: .8">· a new pick replaces the oldest</span></sc-if>
+          <span style="flex: 1"></span>
+          <button class="bbtn" style="background: rgba(255,255,255,.14); color: #fff">Compare</button>
+          <button class="bbtn" style="background: #fff; color: #004c97" onClick="{{ multi.clear }}">Clear</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ multi.none }}" hint-placeholder-val="{{ true }}">
+        <div class="bar idle">Pick up to 3 tenants to compare</div>
+      </sc-if>
+      <div class="frame">
+        <table style="width: 100%; border-collapse: collapse; table-layout: fixed">
+          <caption style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Pick up to 3 tenants</caption>
+          <thead><tr><th class="th" style="width: 48px"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Select</span></th><th class="th">Name</th><th class="th" style="width: 32%">Primary contact</th></tr></thead>
+          <tbody>
+            <sc-for list="{{ multi.rows }}" as="r" hint-placeholder-count="6">
+              <tr class="row {{ r.cls }}" onClick="{{ r.toggle }}">
+                <td class="td"><button class="ctl box {{ r.on }}" role="checkbox" aria-checked="{{ r.checked }}" aria-label="Select {{ r.name }}" disabled="{{ r.disabled }}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></button></td>
+                <td class="td"><b style="color: inherit">{{ r.name }}</b></td>
+                <td class="td">{{ r.contact }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+      <p class="cap"><b>Past the limit, the oldest pick drops out</b>, the same way one row replaces another at 1. Select-all only shows when the whole page fits under the limit.</p>
+      <code class="k">&lt;DataGrid maxSelections={3} selectedIds={ids} onSelectionChange={setIds} … /&gt;</code>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":820}}'>
+var ROWS = [
+  { id: 'a', name: 'Bayshore Financial', contact: 'Marcus Webb' },
+  { id: 'b', name: 'Crestview Bank', contact: 'Sarah Johnson' },
+  { id: 'c', name: 'Horizon National Bank', contact: 'David Rodriguez' },
+  { id: 'd', name: 'Liberty Savings & Loan', contact: 'Emily Brown' },
+  { id: 'e', name: 'Prosperity Bank', contact: 'Michael Smith' },
+  { id: 'f', name: 'Summit Community Bank', contact: 'Ashley Taylor' }
+];
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { one: ['b'], many: [] };
+  }
+
+  renderVals() {
+    var self = this;
+    var one = this.state.one;
+    var many = this.state.many;
+    var MAX = 3;
+    var full = many.length >= MAX;
+
+    // maxSelections = 1: a new pick replaces the old one.
+    var single = {
+      has: one.length > 0,
+      none: one.length === 0,
+      label: one.length ? ROWS.filter(function (r) { return r.id === one[0]; })[0].name : '',
+      clear: function () { self.setState({ one: [] }); },
+      rows: ROWS.map(function (r) {
+        var on = one[0] === r.id;
+        return { name: r.name, contact: r.contact, on: on ? 'on' : '', checked: on ? 'true' : 'false', cls: on ? 'sel' : '',
+          toggle: function () { self.setState({ one: [r.id] }); } };
+      })
+    };
+
+    // maxSelections = 3: a cap; the rest are disabled once it is reached.
+    var multi = {
+      has: many.length > 0,
+      none: many.length === 0,
+      full: full,
+      label: many.length + ' of ' + MAX + ' selected',
+      clear: function () { self.setState({ many: [] }); },
+      rows: ROWS.map(function (r) {
+        var on = many.indexOf(r.id) !== -1;
+        var off = false;
+        return { name: r.name, contact: r.contact, on: on ? 'on' : '', checked: on ? 'true' : 'false', disabled: off,
+          cls: on ? 'sel' : off ? 'off' : '',
+          toggle: function () {
+            if (on) self.setState({ many: many.filter(function (x) { return x !== r.id; }) });
+            else self.setState({ many: many.concat([r.id]).slice(-MAX) });
+          } };
+      })
+    };
+
+    return { single: single, multi: multi };
+  }
+}
+</script>
+</body>
+</html>

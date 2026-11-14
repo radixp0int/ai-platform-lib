@@ -12,6 +12,7 @@ plain HTML that opens in a browser, sharing `avatars.js`.
 | `agentic-flows/`     | The workflow run canvas: horizontal lanes, the flow console, the node kit        | `src/workflows`                                        |
 | `responsive-review/` | The tablet and phone review: supported widths, what gives way, evidence          | Rules every component and recipe follows               |
 | `assistant-greeting/` | The Ghost prompt greeting and its compact and error states; the Aristotle avatar options | **Chat / Components / Conversation** (empty state), `Greeting`, `AssistantAvatar` |
+| `data-grid/` | DataGrid: one frame for the panel and table, the empty states, export, the combined search box and `maxSelections` (the last two are live) | **Components / DataGrid** |
 
 The same table, with the decisions that came out of each review, is in
 Storybook under **Docs / Designs**.

@@ -131,9 +131,11 @@ export function FilterPanel({
   expandedDate,
   onExpandedDateChange,
   footer,
+  layout = 'card',
   className = '',
   labels: overrides,
 }: FilterPanelProps) {
+  const fill = layout === 'fill'
   const labels: FilterPanelLabels = withDefaults<FilterPanelLabels>(
     {
       reset: 'Reset',
@@ -163,13 +165,21 @@ export function FilterPanel({
   return (
     <div
       className={[
-        'flex flex-col gap-4 rounded-surface border border-line bg-panel-solid p-4',
+        fill
+          ? 'flex h-full min-h-0 flex-col bg-panel-solid'
+          : 'flex flex-col gap-4 rounded-surface border border-line bg-panel-solid p-4',
         className,
       ]
         .filter(Boolean)
         .join(' ')}
     >
-      <div className="flex items-center gap-1.5">
+      <div
+        className={
+          fill
+            ? 'flex h-11 shrink-0 items-center gap-1.5 border-b border-line bg-canvas pr-2 pl-4'
+            : 'flex items-center gap-1.5'
+        }
+      >
         <span className="grow text-[11px] font-extrabold tracking-[0.07em] text-ink-soft uppercase">
           {title}
           {activeCount != null && activeCount > 0 && (
@@ -214,7 +224,11 @@ export function FilterPanel({
         )}
       </div>
 
-      <div className="flex flex-col gap-4">
+      <div
+        className={
+          fill ? 'flex min-h-0 grow flex-col gap-4 overflow-y-auto p-4' : 'flex flex-col gap-4'
+        }
+      >
         {fields.map((field) => {
           if (field.type === 'dateRange') {
             if (field !== dateFields[0]) return null
@@ -262,10 +276,24 @@ export function FilterPanel({
             </div>
           )
         })}
+        {fill && (
+          // Says there is more below while the fields scroll. Sticky, so it rides the bottom
+          // edge and lands on the empty padding once the list is scrolled to its end.
+          <div
+            aria-hidden="true"
+            className="pointer-events-none sticky -bottom-4 -mx-4 -mt-10 h-10 shrink-0 bg-linear-to-t from-panel-solid to-transparent"
+          />
+        )}
       </div>
 
       {footer && (
-        <div className="-mx-4 -mb-4 flex items-center gap-2 rounded-b-surface border-t border-line bg-canvas px-4 py-3">
+        <div
+          className={
+            fill
+              ? 'flex shrink-0 items-center gap-2 border-t border-line bg-canvas px-4 py-3'
+              : '-mx-4 -mb-4 flex items-center gap-2 rounded-b-surface border-t border-line bg-canvas px-4 py-3'
+          }
+        >
           {footer}
         </div>
       )}

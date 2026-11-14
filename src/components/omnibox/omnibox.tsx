@@ -100,9 +100,11 @@ export function Omnibox({
     return () => document.removeEventListener('keydown', onKey)
   }, [shortcut])
 
+  // A choice is done: the menu closes, and a click on the field opens it again.
   const choose = (s: OmniboxSuggestion) => {
     s.onSelect()
     setActive(0)
+    setOpen(false)
   }
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

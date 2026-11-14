@@ -42,30 +42,78 @@ export function SkeletonRows({
 }
 
 /**
- * Empty says what was searched and offers the way back out.
+ * A message in place of the rows: empty, no matches, or an error.
  *
- * "No results" on its own is a dead end — the reader has to reconstruct which
- * of their filters did it. Naming the query and the filter count is what turns
- * it into something actionable, and the two buttons are the two things anyone
- * actually wants next.
+ * It keeps the header and the frame, and it is never shorter than `minHeight`
+ * (a little over seven rows by default). A table that collapses to a thin strip
+ * when nothing comes back makes the page jump, and looks broken next to the
+ * same table loading, which draws its rows at full height.
+ *
+ * Says why it is empty and offers the way forward. "No results" on its own is a
+ * dead end: the reader has to work out which of their filters did it.
  */
-export function EmptyRow({
+export function StateRow({
   colSpan,
+  icon,
+  tone = 'brand',
   title,
   body,
+  actions,
+  minHeight,
 }: {
   colSpan: number
-  title: string
+  icon?: ReactNode
+  /** `danger` for a load that failed. */
+  tone?: 'brand' | 'danger'
+  title: ReactNode
   body?: ReactNode
+  actions?: ReactNode
+  /** A CSS length, or `none`. */
+  minHeight?: string
 }) {
   return (
     <tr>
-      <td colSpan={colSpan} className="px-6 py-14">
-        <div className="flex flex-col items-center gap-3 text-center">
+      <td colSpan={colSpan} className="p-0">
+        <div
+          role={tone === 'danger' ? 'alert' : undefined}
+          className="flex flex-col items-center justify-center gap-3 px-6 py-12 text-center"
+          style={minHeight && minHeight !== 'none' ? { minHeight } : undefined}
+        >
+          {icon && (
+            <span
+              aria-hidden="true"
+              className={[
+                'grid size-11 place-items-center rounded-[12px]',
+                tone === 'danger' ? 'bg-danger/10 text-danger-fg' : 'bg-chip text-chip-fg',
+              ].join(' ')}
+            >
+              {icon}
+            </span>
+          )}
           <span className="text-[15.5px] font-extrabold text-ink-strong">{title}</span>
-          {body}
+          {body && (
+            <div className="max-w-[46ch] text-[13.5px] leading-relaxed text-ink-soft">{body}</div>
+          )}
+          {actions && (
+            <div className="mt-1 flex flex-wrap items-center justify-center gap-2">{actions}</div>
+          )}
         </div>
       </td>
     </tr>
   )
+}
+
+/** The plain empty state: a title, and optionally a line under it. */
+export function EmptyRow({
+  colSpan,
+  title,
+  body,
+  minHeight,
+}: {
+  colSpan: number
+  title: string
+  body?: ReactNode
+  minHeight?: string
+}) {
+  return <StateRow colSpan={colSpan} title={title} body={body} minHeight={minHeight} />
 }

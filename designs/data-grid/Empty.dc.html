@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>No data states</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#0069aa}a:hover{color:#003f7e}
+.eb *{box-sizing:border-box}
+.tag{font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+.frame{border:1px solid rgba(0,51,101,.12);border-radius:10px;background:#fff;overflow:hidden}
+.band{background:#f5f7f9;display:flex;align-items:center;gap:0;padding:0 16px;font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#64727e}
+.band span{flex:1}
+.cap{font-size:13px;line-height:1.5;color:#64727e}
+.cap b{color:#1c2733}
+.btn{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 14px;border-radius:7px;font:inherit;font-size:13px;font-weight:800;border:1px solid rgba(0,51,101,.16);background:#fff;color:#1c2733}
+.btn.primary{background:#004c97;border-color:#004c97;color:#fff}
+.btn.link{border-color:transparent;background:transparent;color:#0069aa;padding:0 6px}
+.chip{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 4px 0 9px;border-radius:6px;background:rgba(0,76,151,.10);color:#003f7e;font-size:12.5px;font-weight:700;white-space:nowrap}
+.chip b{font-weight:600;opacity:.6}
+.chip button{display:grid;place-items:center;width:20px;height:20px;border:0;border-radius:4px;background:transparent;color:inherit;padding:0}
+.tile{display:grid;place-items:center;width:44px;height:44px;border-radius:12px}
+.ttl{margin:0;font-size:16px;font-weight:800;color:#1c2733}
+.body{margin:0;font-size:13.5px;line-height:1.5;color:#64727e;max-width:46ch;text-align:center}
+.ghost{display:flex;align-items:center;gap:16px;height:52px;padding:0 16px;border-top:1px solid rgba(0,51,101,.05)}
+.ghost i{display:block;height:9px;border-radius:99px;background:rgba(100,114,126,.10)}
+.f{display:flex;flex-direction:column;gap:8px}
+.f .l{font-size:12px;font-weight:800;color:#1c2733}
+.opt{display:flex;align-items:center;gap:8px;font-size:12.5px;color:#2d3943}
+.cb{width:14px;height:14px;border-radius:4px;border:1.5px solid rgba(0,51,101,.32);flex:none}
+.cb.on{background:#004c97;border-color:#004c97}
+</style>
+</helmet>
+<div class="eb" style="width: 1280px; height: 980px; padding: 36px 40px; background: #fbfcfd; font-family: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif; color: #2d3943; display: flex; flex-direction: column; gap: 22px">
+
+  <div style="display: flex; gap: 40px; align-items: flex-end">
+    <div style="display: flex; flex-direction: column; gap: 6px; max-width: 70ch; flex: 1">
+      <span class="tag" style="color: #0069aa">No data</span>
+      <h2 style="margin: 0; font-size: 22px; font-weight: 800; color: #1c2733">Three kinds of empty, each with a way forward</h2>
+      <p class="cap" style="margin: 0">Today every case says “Nothing to show” in a blank box. The grid knows which case it is in (filters on? first load? an error?), so it can say why and offer the next step. The header row and the frame always stay, at full height.</p>
+    </div>
+    <div class="frame" style="width: 300px; flex: none">
+      <div class="band" style="height: 32px"><span>Name</span><span>Status</span></div>
+      <div style="height: 76px; display: grid; place-items: center; font-size: 13px; font-weight: 800; color: #1c2733">Nothing to show</div>
+      <div style="padding: 6px 12px; font-size: 11px; font-weight: 800; color: #b4232a; border-top: 1px solid rgba(0,51,101,.07)">TODAY: no reason, no next step</div>
+    </div>
+  </div>
+
+  <!-- A. No matches -->
+  <div style="display: flex; flex-direction: column; gap: 10px">
+    <span class="tag" style="color: #1c2733">1 · No matches <span style="color: #64727e; font-weight: 700; letter-spacing: 0; text-transform: none">— filters or search are on. The most common empty.</span></span>
+    <div class="frame" style="display: grid; grid-template-columns: 240px minmax(0, 1fr); height: 380px">
+      <div style="display: flex; flex-direction: column; border-right: 1px solid rgba(0,51,101,.10)">
+        <div class="band" style="height: 44px; border-bottom: 1px solid rgba(0,51,101,.10)"><span>Filters <b style="color: #0069aa">2</b></span><span style="flex: none; text-transform: none; letter-spacing: 0; font-size: 12px; color: #0069aa">Reset</span></div>
+        <div style="padding: 16px; display: flex; flex-direction: column; gap: 16px">
+          <div class="f"><span class="l">Status</span><span class="opt"><i class="cb on"></i>Active</span><span class="opt"><i class="cb"></i>Pending</span><span class="opt"><i class="cb"></i>Suspended</span></div>
+          <div class="f"><span class="l">Created</span><span class="opt" style="font-weight: 800; color: #004c97">Last 90 days</span></div>
+        </div>
+      </div>
+      <div style="position: relative; display: flex; flex-direction: column; min-width: 0">
+        <div class="band" style="height: 44px; border-bottom: 1px solid rgba(0,51,101,.10)"><span>Name</span><span>Status</span><span>Primary contact</span><span>Created</span></div>
+        <div aria-hidden="true">
+          <div class="ghost" style="border-top: 0"><i style="width: 22%"></i><i style="width: 9%; margin-left: 4%"></i><i style="width: 16%; margin-left: 12%"></i><i style="width: 10%; margin-left: 9%"></i></div>
+          <div class="ghost" style="opacity: .7"><i style="width: 18%"></i><i style="width: 9%; margin-left: 8%"></i><i style="width: 14%; margin-left: 12%"></i><i style="width: 10%; margin-left: 11%"></i></div>
+          <div class="ghost" style="opacity: .45"><i style="width: 24%"></i><i style="width: 9%; margin-left: 2%"></i><i style="width: 17%; margin-left: 12%"></i><i style="width: 10%; margin-left: 8%"></i></div>
+          <div class="ghost" style="opacity: .25"><i style="width: 20%"></i><i style="width: 9%; margin-left: 6%"></i><i style="width: 13%; margin-left: 12%"></i><i style="width: 10%; margin-left: 12%"></i></div>
+        </div>
+        <div style="position: absolute; inset: 44px 0 0 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px; background: radial-gradient(closest-side, rgba(255,255,255,.96), rgba(255,255,255,.75) 70%, rgba(255,255,255,0))">
+          <span class="tile" style="background: rgba(0,76,151,.10); color: #004c97">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h18l-7 8.5V19l-4 2v-8.5z"/><path d="m3 3 18 18"/></svg>
+          </span>
+          <h3 class="ttl">No tenants match</h3>
+          <p class="body">Nothing matches <b style="color: #1c2733">“alder”</b> with these filters. Remove one, or clear them all.</p>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap; justify-content: center">
+            <span class="chip"><b>Search</b> alder <button aria-label="Remove search alder"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></span>
+            <span class="chip"><b>Status</b> Active <button aria-label="Remove Status: Active"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></span>
+            <span class="chip"><b>Created</b> Last 90 days <button aria-label="Remove Created: Last 90 days"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></span>
+          </div>
+          <button class="btn" style="margin-top: 2px">Clear all filters</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px">
+    <!-- B. Nothing yet -->
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <span class="tag" style="color: #1c2733">2 · Nothing yet <span style="color: #64727e; font-weight: 700; letter-spacing: 0; text-transform: none">— no filters, no rows.</span></span>
+      <div class="frame" style="height: 300px; display: flex; flex-direction: column">
+        <div class="band" style="height: 44px; border-bottom: 1px solid rgba(0,51,101,.10)"><span>Name</span><span>Status</span><span>Created</span></div>
+        <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px">
+          <span class="tile" style="background: rgba(0,76,151,.10); color: #004c97">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 13h4l2 3h4l2-3h4"/><path d="M4 13 6.5 5h11L20 13v6H4z"/></svg>
+          </span>
+          <h3 class="ttl">No tenants yet</h3>
+          <p class="body">Tenants you add show up here with their contacts and seats.</p>
+          <button class="btn primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            Add tenant
+          </button>
+        </div>
+      </div>
+      <p class="cap" style="margin: 0">The action is the host's (<code style="font-size: 12px; color: #004c97">emptyAction</code>). Export is disabled: there is nothing to export.</p>
+    </div>
+
+    <!-- C. Error -->
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <span class="tag" style="color: #1c2733">3 · Couldn't load <span style="color: #64727e; font-weight: 700; letter-spacing: 0; text-transform: none">— the request failed. Not the same as empty.</span></span>
+      <div class="frame" style="height: 300px; display: flex; flex-direction: column">
+        <div class="band" style="height: 44px; border-bottom: 1px solid rgba(0,51,101,.10)"><span>Name</span><span>Status</span><span>Created</span></div>
+        <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px">
+          <span class="tile" style="background: rgba(180,35,42,.09); color: #b4232a">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 2 20h20z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg>
+          </span>
+          <h3 class="ttl">Couldn't load tenants</h3>
+          <p class="body">The server didn't answer. Your filters are kept, so trying again picks up where you were.</p>
+          <div style="display: flex; gap: 6px; align-items: center">
+            <button class="btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>
+              Try again
+            </button>
+            <span style="font-size: 11.5px; color: #64727e">Error 503</span>
+          </div>
+        </div>
+      </div>
+      <p class="cap" style="margin: 0">Shown when the host passes <code style="font-size: 12px; color: #004c97">error</code>. Rows can't silently look like “none”.</p>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":980}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

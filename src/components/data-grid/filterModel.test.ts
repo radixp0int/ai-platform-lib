@@ -4,6 +4,7 @@ import {
   buildChips,
   buildQuickRows,
   buildSuggestionGroups,
+  findMatches,
   countActive,
   describeDates,
   QUICK_OPTIONS_MAX,
@@ -205,10 +206,10 @@ describe('buildSuggestionGroups', () => {
     expect(build('   ', fields)).toEqual([])
   })
 
-  it('always starts with search every field, then narrowing to one field', () => {
+  it('with nothing in the data or filters to match, starts with search, then narrowing', () => {
     const { fields } = fixture()
     const groups = build('crest', fields)
-    expect(groups.map((g) => g.id).slice(0, 2)).toEqual(['search', 'terms'])
+    expect(groups.map((g) => g.id)).toEqual(['search', 'terms'])
     expect(groups[0].items[0]).toMatchObject({ strong: '“crest”', hint: '?search=crest' })
     expect(groups[1].items.map((i) => i.hint)).toEqual(['name__icontains', 'email__icontains'])
   })
@@ -266,10 +267,10 @@ describe('buildSuggestionGroups', () => {
   it('puts values before dates when a value starts with what was typed', () => {
     const { fields } = fixture()
     // "act" starts "Active", and only appears inside "Last active".
-    expect(build('act', fields).map((g) => g.id)).toEqual(['search', 'terms', 'values', 'dates'])
+    expect(build('act', fields).map((g) => g.id)).toEqual(['values', 'dates', 'search', 'terms'])
     // "renew" is a date field and no value starts with it.
     expect(build('renew', fields).map((g) => g.id)).toEqual(['search', 'terms'])
-    expect(build('over', fields).map((g) => g.id)).toEqual(['search', 'terms', 'dates'])
+    expect(build('over', fields).map((g) => g.id)).toEqual(['dates', 'search', 'terms'])
   })
 
   it('caps the dates and the values listed, never search', () => {
@@ -294,6 +295,71 @@ describe('buildSuggestionGroups', () => {
       labels,
     })
     expect(groups.map((g) => g.id)).toEqual(['search'])
+  })
+})
+
+describe('matches from the data', () => {
+  const rows = [
+    { name: 'Bayshore Financial', email: 'marcus@bayshore.example' },
+    { name: 'Bay Ridge Credit Union', email: 'baylee@bayridge.example' },
+    { name: 'Crestview Bank', email: 'sarah@crestview.example' },
+    { name: 'Bayshore Financial', email: 'dup@bayshore.example' },
+  ]
+
+  it('finds each value once, values that start with the query first', () => {
+    expect(findMatches('bay', rows, termFields)).toEqual([
+      { field: 'name', value: 'Bayshore Financial' },
+      { field: 'name', value: 'Bay Ridge Credit Union' },
+      { field: 'email', value: 'baylee@bayridge.example' },
+      { field: 'email', value: 'marcus@bayshore.example' },
+      { field: 'email', value: 'dup@bayshore.example' },
+    ])
+    expect(findMatches('  ', rows, termFields)).toEqual([])
+  })
+
+  it('lists them first, and picking one adds an exact term', () => {
+    const { fields } = fixture()
+    const onTermsChange = vi.fn()
+    const groups = buildSuggestionGroups({
+      query: 'bay',
+      fields,
+      terms: noTerms,
+      termFields,
+      onTermsChange,
+      today,
+      matches: findMatches('bay', rows, termFields),
+      newId: () => 'new',
+      labels,
+    })
+    expect(groups[0].id).toBe('matches')
+    expect(groups.at(-2)!.id).toBe('search')
+    const first = groups[0].items[0]
+    expect(`${first.lead}[${first.strong}]${first.tail}`).toBe('[Bay]shore Financial')
+    expect(first.hint).toBe('in Name')
+    first.run()
+    expect(onTermsChange).toHaveBeenLastCalledWith([
+      { id: 'new', field: 'name', value: 'Bayshore Financial', exact: true },
+    ])
+  })
+
+  it('leaves out a value already picked, and names it "is" in its chip', () => {
+    const { fields } = fixture()
+    const picked: FilterTerm[] = [
+      { id: 'a', field: 'name', value: 'Bayshore Financial', exact: true },
+    ]
+    const groups = buildSuggestionGroups({
+      query: 'bay',
+      fields,
+      terms: picked,
+      termFields,
+      onTermsChange: vi.fn(),
+      today,
+      matches: [{ field: 'name', value: 'Bayshore Financial' }],
+      labels,
+    })
+    expect(groups.map((g) => g.id)).not.toContain('matches')
+    const chips = buildChips({ fields, terms: picked, termFields, onTermsChange: vi.fn(), today })
+    expect(chips[0]).toMatchObject({ prefix: 'name is', text: 'Bayshore Financial' })
   })
 })
 
