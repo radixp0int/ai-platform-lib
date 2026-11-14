@@ -135,5 +135,12 @@ export type FilterPanelProps = {
    * filtering, a count of what matches. Left to the host.
    */
   footer?: ReactNode
+  /**
+   * `card` (the default) is a bordered box that sizes to its fields. `fill`
+   * has no frame of its own and fills its parent's height: a header band, a
+   * field list that scrolls, and the footer band pinned to the bottom. It is
+   * how `DataGrid` docks the panel as its first column, as tall as the table.
+   */
+  layout?: 'card' | 'fill'
   className?: string
 }

@@ -10,7 +10,6 @@ import { Avatar } from '../../../primitives/avatar'
 import { useEffect, useMemo, useState } from 'react'
 import { DataTable, type Column } from '../../../components/data-table'
 import { Omnibox } from '../../../components/omnibox'
-import { Pagination } from '../../../components/pagination'
 import { type Sort } from '../../../components/paging'
 import {
   SPACE_LABEL,
@@ -231,20 +230,17 @@ export function TenantsPage({
           </IconButton>
         )}
         labels={{ emptyTitle: 'No tenants match', expandRow: (row) => `Edit ${row}` }}
-        footer={
-          <Pagination
-            page={safePage}
-            size={size}
-            totalElements={sorted.length}
-            totalPages={totalPages}
-            onPageChange={setPage}
-            onSizeChange={(next) => {
-              setSize(next)
-              setPage(1)
-            }}
-            sizeOptions={[5, 10, 25]}
-          />
-        }
+        pagination={{
+          page: safePage,
+          size,
+          totalElements: sorted.length,
+          onPageChange: setPage,
+          onSizeChange: (next) => {
+            setSize(next)
+            setPage(1)
+          },
+          sizeOptions: [5, 10, 25],
+        }}
       />
     </div>
   )

@@ -52,7 +52,7 @@ test.describe('Omnibox', () => {
     story,
     page,
   }) => {
-    await story.open('components-omnibox--long-chip')
+    await story.open('components-omnibox--many-chips')
     const field = (await page
       .getByRole('combobox', { name: 'Search and filter tenants' })
       .locator('xpath=ancestor::div[1]')
@@ -60,7 +60,7 @@ test.describe('Omnibox', () => {
     const chip = page.getByTitle(/^search: a search term that goes on far longer/)
     const chipBox = (await chip.boundingBox())!
     expect(chipBox.width).toBeLessThanOrEqual(field.width)
-    const remove = (await page.getByRole('button', { name: /^Remove / }).boundingBox())!
+    const remove = (await chip.getByRole('button', { name: /^Remove / }).boundingBox())!
     expect(remove.x + remove.width).toBeLessThanOrEqual(field.x + field.width + 1)
   })
 

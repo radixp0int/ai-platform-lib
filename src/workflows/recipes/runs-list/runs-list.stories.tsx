@@ -15,7 +15,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Every workflow in a tenant and where its live run stands. `DataTable` inside a `FilterBar` for search and the status filter, with `Pagination` underneath; each row carries a `StageProgress`, and opening one shows the run as a `FlowBlueprint`. "Open live view" goes to the live page through `hrefFor`, and a workflow with a page of its own offers "Workflow details" through `detailHrefFor`. Nothing here loads React Flow.',
+          'Every workflow in a tenant and where its live run stands. A `DataGrid` for search and the status filter, with `Pagination` underneath; each row carries a `StageProgress`, and opening one shows the run as a `FlowBlueprint`. "Open live view" goes to the live page through `hrefFor`, and a workflow with a page of its own offers "Workflow details" through `detailHrefFor`. Nothing here loads React Flow.',
       },
     },
   },

@@ -1,7 +1,7 @@
 // Every workflow in a tenant, and where each one's live run has got to.
 //
 // The page is the library's own table furniture and two workflow components:
-// `DataTable` inside a `FilterBar` (the omnibox, its chips and the filters
+// `DataGrid` (the search box, its chips and the filters
 // panel) with `Pagination` below, a `StageProgress` in each row, and a
 // `FlowBlueprint` under the row that is open.
 // It deliberately imports nothing from React Flow — twenty runs on a page are
@@ -10,16 +10,16 @@
 // Like `DataTablePage` it owns its own query state and filters in memory, so a
 // real one swaps the two `useMemo`s for a request and changes nothing else.
 import { useMemo, useState } from 'react'
-import { DataTable, sortRows, type Column } from '../../../components/data-table'
+import { sortRows, type Column } from '../../../components/data-table'
 import {
-  FilterBar,
-  type FilterStyle,
+  DataGrid,
+  findMatches,
+  termMatches,
   type FilterTerm,
   type FilterTermField,
-} from '../../../components/filter-bar'
+} from '../../../components/data-grid'
 import type { FilterField } from '../../../components/filter-panel'
 import { PageHeader, pageColumn } from '../../../components/page-header'
-import { Pagination } from '../../../components/pagination'
 import type { Sort } from '../../../components/paging'
 import { Avatar } from '../../../primitives/avatar'
 import { Button, ButtonLink } from '../../../primitives/button'
@@ -139,12 +139,9 @@ export function RunsListPage({
   onStart,
 }: RunsListPageProps) {
   // Typed conditions (searches and narrowings) and the one filter the panel
-  // holds. `FilterBar` draws both as chips, so neither needs a second home.
+  // holds. `DataGrid` draws both as chips, so neither needs a second home.
   const [terms, setTerms] = useState<FilterTerm[]>([])
   const [states, setStates] = useState<WorkflowState[]>([])
-  // Three statuses is few enough to offer as quick picks the moment the field
-  // is focused, which is what the default `simple` style does.
-  const [filterStyle, setFilterStyle] = useState<FilterStyle>('simple')
   const [sort, setSort] = useState<Sort[]>([])
   const [page, setPage] = useState(1)
   const [size, setSize] = useState(10)
@@ -155,12 +152,9 @@ export function RunsListPage({
       workflows.filter((w) => {
         if (states.length > 0 && !states.includes(w.state)) return false
         return terms.every((term) => {
-          const needle = term.value.trim().toLowerCase()
           const field = FIELDS.find((f) => f.key === term.field)
-          if (field) return w[field.key].toLowerCase().includes(needle)
-          return [w.name, w.run, w.startedBy, w.now.title].some((v) =>
-            v.toLowerCase().includes(needle),
-          )
+          if (field) return termMatches(term, w[field.key])
+          return [w.name, w.run, w.startedBy, w.now.title].some((v) => termMatches(term, v))
         })
       }),
     [workflows, terms, states],
@@ -217,8 +211,8 @@ export function RunsListPage({
         </Button>
       </div>
 
-      <FilterBar
-        label="Search and filter workflows"
+      <DataGrid
+        searchLabel="Search and filter workflows"
         fields={filterFields}
         terms={terms}
         onTermsChange={(next) => {
@@ -226,97 +220,91 @@ export function RunsListPage({
           setPage(1)
         }}
         termFields={FIELDS}
-        filterStyle={filterStyle}
-        onFilterStyleChange={setFilterStyle}
+        findMatches={(q) => findMatches(q, workflows, FIELDS)}
         onReset={() => {
           setStates([])
           setPage(1)
         }}
-      >
-        <DataTable
-          caption="Workflows, with search, status filters, sorting and pagination"
-          minWidth="56rem"
-          columns={COLUMNS}
-          rows={pageRows}
-          rowId={(w) => w.id}
-          sort={sort}
-          onSortChange={(next) => {
-            setSort(next)
-            setPage(1)
-          }}
-          expandedIds={expanded}
-          onExpandedChange={setExpanded}
-          labels={{
-            emptyTitle: 'No workflows match',
-            emptyBody: 'Remove a filter, or search for something else.',
-          }}
-          renderExpanded={(w) => (
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-                {w.needs.length > 0 ? (
-                  w.needs.map((need) => (
-                    <span key={need.title} className="flex min-w-0 items-center gap-2.5">
-                      <Avatar
-                        variant="text"
-                        text={need.initials}
-                        size={32}
-                        tone="brand"
-                        aria-hidden
-                      />
-                      <span className="flex min-w-0 flex-col">
-                        <span className="truncate text-[13.5px] font-bold text-ink-strong">
-                          {need.title}
-                        </span>
-                        <span className="truncate text-xs text-ink-soft">
-                          {need.who} · due {need.due}
-                        </span>
+        caption="Workflows, with search, status filters, sorting and pagination"
+        minWidth="56rem"
+        columns={COLUMNS}
+        rows={pageRows}
+        rowId={(w) => w.id}
+        sort={sort}
+        onSortChange={(next) => {
+          setSort(next)
+          setPage(1)
+        }}
+        expandedIds={expanded}
+        onExpandedChange={setExpanded}
+        labels={{
+          noMatchTitle: 'No workflows match',
+          emptyTitle: 'No workflows yet',
+          emptyBody: 'Workflows you build show up here, with where each run is.',
+        }}
+        renderExpanded={(w) => (
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+              {w.needs.length > 0 ? (
+                w.needs.map((need) => (
+                  <span key={need.title} className="flex min-w-0 items-center gap-2.5">
+                    <Avatar
+                      variant="text"
+                      text={need.initials}
+                      size={32}
+                      tone="brand"
+                      aria-hidden
+                    />
+                    <span className="flex min-w-0 flex-col">
+                      <span className="truncate text-[13.5px] font-bold text-ink-strong">
+                        {need.title}
+                      </span>
+                      <span className="truncate text-xs text-ink-soft">
+                        {need.who} · due {need.due}
                       </span>
                     </span>
-                  ))
-                ) : (
-                  <span className="text-[13.5px] text-ink">
-                    {w.state === 'idle'
-                      ? 'No live run. This is the shape its next run will take.'
-                      : 'Running without a person.'}
                   </span>
-                )}
-                <span className="ml-auto flex flex-wrap items-center gap-2">
-                  {detailHrefFor?.(w) && (
-                    <ButtonLink href={detailHrefFor(w)!} variant="ghost" size="lg">
-                      Workflow details
-                    </ButtonLink>
-                  )}
-                  <ButtonLink href={hrefFor(w)} variant="secondary" size="lg">
-                    Open live view
-                  </ButtonLink>
+                ))
+              ) : (
+                <span className="text-[13.5px] text-ink">
+                  {w.state === 'idle'
+                    ? 'No live run. This is the shape its next run will take.'
+                    : 'Running without a person.'}
                 </span>
-              </div>
-              <div className="overflow-x-auto rounded-surface border border-line bg-canvas">
-                <FlowBlueprint
-                  stages={w.stages}
-                  label={`${w.name}: ${stageLine(w)}`}
-                  // Below this a ten-stage run's lanes are too narrow to name.
-                  className="min-w-[46rem]"
-                />
-              </div>
+              )}
+              <span className="ml-auto flex flex-wrap items-center gap-2">
+                {detailHrefFor?.(w) && (
+                  <ButtonLink href={detailHrefFor(w)!} variant="ghost" size="lg">
+                    Workflow details
+                  </ButtonLink>
+                )}
+                <ButtonLink href={hrefFor(w)} variant="secondary" size="lg">
+                  Open live view
+                </ButtonLink>
+              </span>
             </div>
-          )}
-          footer={
-            <Pagination
-              page={safePage}
-              size={size}
-              totalElements={sorted.length}
-              totalPages={totalPages}
-              onPageChange={setPage}
-              onSizeChange={(n) => {
-                setSize(n)
-                setPage(1)
-              }}
-              sizeOptions={[10, 25, 50]}
-            />
-          }
-        />
-      </FilterBar>
+            <div className="overflow-x-auto rounded-surface border border-line bg-canvas">
+              <FlowBlueprint
+                stages={w.stages}
+                label={`${w.name}: ${stageLine(w)}`}
+                // Below this a ten-stage run's lanes are too narrow to name.
+                className="min-w-[46rem]"
+              />
+            </div>
+          </div>
+        )}
+        pagination={{
+          page: safePage,
+          size,
+          totalElements: sorted.length,
+          onPageChange: setPage,
+          onSizeChange: (n) => {
+            setSize(n)
+            setPage(1)
+          },
+          sizeOptions: [10, 25, 50],
+        }}
+      />
     </div>
   )
 }

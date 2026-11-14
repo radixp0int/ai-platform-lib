@@ -8,9 +8,9 @@ import {
   type FilterField,
   type OptionsFilterField,
 } from '../filter-panel'
-import type { FilterTerm, FilterTermField } from './types'
+import type { FilterMatch, FilterTerm, FilterTermField } from './types'
 
-// Everything here is the logic of the filter bar with no drawing in it: what
+// Everything here is the logic of the grid's filters with no drawing in it: what
 // the chips are, what typing suggests, what the quick picks hold. A field list
 // goes in, plain data comes out, and `run` / `remove` / `pick` are the host's
 // own `onChange`s in a closure. That is why it can be tested without a browser.
@@ -20,6 +20,9 @@ const NONE: DateRange = { from: null, to: null }
 /** How many dates and values typing lists. Search and narrowing are never cut. */
 const MAX_DATES = 4
 const MAX_VALUES = 3
+/** How many values from the data typing lists, in all and from any one field. */
+const MAX_MATCHES = 5
+const MAX_MATCHES_PER_FIELD = 3
 
 /** Past this many options a filter is a list, not a row of picks, and stays in the panel. */
 export const QUICK_OPTIONS_MAX = 6
@@ -78,7 +81,8 @@ export function buildChips({
 
   for (const term of terms) {
     const label = term.field ? termFields.find((f) => f.key === term.field)?.label : 'search'
-    const prefix = `${lower(label ?? term.field ?? 'search')}:`
+    // A value picked from the data is the field being exactly that; a typed one only contains it.
+    const prefix = `${lower(label ?? term.field ?? 'search')}${term.exact ? ' is' : ':'}`
     chips.push({
       id: `term:${term.id}`,
       prefix,
@@ -182,6 +186,8 @@ type SuggestionSpec = {
   /** Text before the emphasised part. */
   lead: string
   strong: string
+  /** Text after it. */
+  tail?: string
   glyph?: string
   /** The parameter the choice produces, shown quietly at the right. */
   hint: string
@@ -189,14 +195,21 @@ type SuggestionSpec = {
 }
 
 export type SuggestionGroupSpec = {
-  id: 'search' | 'terms' | 'dates' | 'values'
+  id: 'matches' | 'search' | 'terms' | 'dates' | 'values'
   items: SuggestionSpec[]
 }
 
 type SuggestionArgs = ChipArgs & {
   query: string
+  /** Values from the data that contain the query: "Bayshore Financial" in Name. */
+  matches?: FilterMatch[]
   newId?: () => string
-  labels: { searchFor: string; contains: (field: string) => string }
+  labels: {
+    searchFor: string
+    contains: (field: string) => string
+    /** The hint beside a value from the data: "in Name". */
+    inField?: (field: string) => string
+  }
 }
 
 let counter = 0
@@ -208,12 +221,15 @@ const slug = (s: string) =>
     .replace(/^-|-$/g, '')
 
 /**
- * What typing offers, in this order: search every field, narrow to one field,
- * then the dates and values that match what was typed.
+ * What typing offers, in this order: values from the data that contain what was
+ * typed ("Bayshore Financial" in Name), the filter values and dates that match,
+ * then search every field, then narrow to one field.
  *
- * Search comes first, always, so Enter does what it always did. The two that
- * follow swap places when a value starts with what was typed — "act" is Active
- * before it is "Last active" — because that is the stronger match.
+ * The most specific comes first, so Enter on "bay" picks Bayshore Financial,
+ * and Enter on "pend" picks Status · Pending. When nothing in the data or the
+ * filters matches, search is first and Enter searches. The filter values and
+ * dates swap places when a value starts with what was typed: "act" is Active
+ * before it is "Last active", because that is the stronger match.
  */
 export function buildSuggestionGroups({
   query,
@@ -222,6 +238,7 @@ export function buildSuggestionGroups({
   termFields,
   onTermsChange,
   today,
+  matches: dataMatches = [],
   newId = defaultId,
   labels,
 }: SuggestionArgs): SuggestionGroupSpec[] {
@@ -231,7 +248,25 @@ export function buildSuggestionGroups({
   const add = (field: string | null) => () =>
     onTermsChange([...terms, { id: newId(), field, value: q }])
 
-  const groups: SuggestionGroupSpec[] = [
+  const matchItems: SuggestionSpec[] = dataMatches
+    .filter((m) => !terms.some((t) => t.exact && t.field === m.field && t.value === m.value))
+    .slice(0, MAX_MATCHES)
+    .map((m) => {
+      const label = termFields.find((f) => f.key === m.field)?.label ?? m.field
+      const at = lower(m.value).indexOf(lower(q))
+      return {
+        id: `match:${m.field}:${m.value}`,
+        glyph: '=',
+        lead: at > 0 ? m.value.slice(0, at) : '',
+        strong: at >= 0 ? m.value.slice(at, at + q.length) : m.value,
+        tail: at >= 0 ? m.value.slice(at + q.length) : '',
+        hint: labels.inField ? labels.inField(label) : `in ${label}`,
+        run: () =>
+          onTermsChange([...terms, { id: newId(), field: m.field, value: m.value, exact: true }]),
+      }
+    })
+
+  const typed: SuggestionGroupSpec[] = [
     {
       id: 'search',
       items: [
@@ -247,7 +282,7 @@ export function buildSuggestionGroups({
     },
   ]
   if (termFields.length > 0) {
-    groups.push({
+    typed.push({
       id: 'terms',
       items: termFields.map((f) => ({
         id: `term:${f.key}`,
@@ -321,8 +356,63 @@ export function buildSuggestionGroups({
     ? { id: 'values', items: valueItems }
     : null
   const valueFirst = values.some((entry) => entry.starts)
-  const rest = valueFirst ? [valueGroup, dateGroup] : [dateGroup, valueGroup]
-  return groups.concat(rest.filter((g): g is SuggestionGroupSpec => g !== null))
+  const filters = (valueFirst ? [valueGroup, dateGroup] : [dateGroup, valueGroup]).filter(
+    (g): g is SuggestionGroupSpec => g !== null,
+  )
+  const matchGroup: SuggestionGroupSpec[] = matchItems.length
+    ? [{ id: 'matches', items: matchItems }]
+    : []
+  return [...matchGroup, ...filters, ...typed]
+}
+
+/**
+ * Whether one value passes one typed term: equal to it when the term was picked
+ * from the data (`exact`), containing it otherwise. Case-blind either way. A
+ * host filtering in memory calls it per field; a server does the same with
+ * `name=` and `name__icontains`.
+ */
+export function termMatches(term: FilterTerm, value: unknown): boolean {
+  const needle = lower(term.value.trim())
+  const text = lower(String(value ?? ''))
+  return term.exact ? text === needle : text.includes(needle)
+}
+
+/**
+ * Values from loaded rows that contain the query, for the Matches group: up to
+ * three per field and five in all, each value once. It reads the fields that
+ * typing can narrow to, so it only offers what a term can filter on.
+ *
+ * This is the default for a grid that has its rows in hand. A grid that pages
+ * from a server should ask the server instead (`DataGrid`'s `findMatches`).
+ */
+export function findMatches<T>(
+  query: string,
+  rows: T[],
+  termFields: FilterTermField[],
+  read: (row: T, field: string) => unknown = (row, field) =>
+    (row as Record<string, unknown>)[field],
+): FilterMatch[] {
+  const q = lower(query.trim())
+  if (!q) return []
+  const out: FilterMatch[] = []
+  for (const field of termFields) {
+    const seen = new Set<string>()
+    for (const row of rows) {
+      const value = read(row, field.key)
+      if (typeof value !== 'string' && typeof value !== 'number') continue
+      const text = String(value)
+      if (seen.has(text) || !lower(text).includes(q)) continue
+      seen.add(text)
+      out.push({ field: field.key, value: text })
+      if (seen.size >= MAX_MATCHES_PER_FIELD) break
+    }
+  }
+  // Values that start with the query first, then the rest; field order breaks ties.
+  return out
+    .map((m, i) => ({ m, i, starts: lower(m.value).startsWith(q) }))
+    .sort((a, b) => Number(b.starts) - Number(a.starts) || a.i - b.i)
+    .slice(0, MAX_MATCHES)
+    .map((e) => e.m)
 }
 
 // ---------------------------------------------------------------------------

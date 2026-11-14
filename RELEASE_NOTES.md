@@ -3,6 +3,63 @@
 Changes to the component library as seen from Storybook. Newest first. Each
 entry names the modules it touches so the sidebar entry is easy to find.
 
+## 2026-11-14 — DataGrid: the table, its filters and export in one
+
+- **New `DataGrid`** (Components/DataGrid). It takes everything `DataTable` takes,
+  plus the search box, the filter panel and export, so a list page is one
+  component. It replaces `FilterBar`, which is gone along with `FilterStyle`,
+  `filterStyle` and the Components/FilterBar stories: put the `FilterBar` props on
+  `DataGrid` (`label` becomes `searchLabel`, `showHeader` becomes `showSearch`,
+  `title` becomes `panelTitle`), drop `filterStyle`, and move the `DataTable` props
+  onto it. `FilterTerm` and `FilterTermField` now come from `components/data-grid`.
+- **One search box, no styles.** Click it while empty for the quick picks. Type
+  for values from the data first ("bay" offers Bayshore Financial in Name), then
+  the filters and dates that match, then search every field or narrow to one.
+  Enter picks the top one and the menu closes; click again for the quick picks.
+  A value picked from the data is an exact term (`exact: true`, chip "name is");
+  hosts should match it exactly. `findMatches` sets where the values come from
+  (the rows in hand by default).
+- **The docked panel is the grid's first column**, in the table's frame and
+  always as tall as the table. Its fields scroll inside, with a fade, instead of
+  stretching the page. Below `lg` it sits above the table. `FilterPanel` gains
+  `layout="fill"` for this.
+- **Export** sits right of the search box: `exportFormats` (`'csv'`, `'json'` or
+  your own) and `onExport(format, scope)`. One format is a plain "Export CSV"
+  button; two, or any selection, open a menu that also asks for selected or all
+  matching rows. `toCsv`, `toJson` and `downloadFile` build the file for rows in
+  hand; `toCsv` keeps text that looks like a formula from running in a spreadsheet.
+- **`DataTable` gains `maxSelections`.** `1` draws radio buttons, and a new pick
+  (or a click on the row) replaces the old one. Above 1, a pick past the limit
+  drops the oldest. Select-all only shows when the page fits under the limit.
+  `rowLabel` names rows for the checkboxes and the bulk bar ("Crestview Bank
+  selected").
+- **Empty, error and loading keep one height.** The rows area is never shorter
+  than `minBodyHeight` (`22rem`, about seven rows; `none` turns it off). The
+  empty state has an icon and an `emptyAction`; `error` with `onRetry` draws a
+  Try again state, never "nothing to show". In a `DataGrid` with filters on, no
+  rows shows "Nothing matches" with the filters as removable chips and Clear all.
+  The default empty title is now "Nothing here yet".
+- **Pagination is built in.** `DataTable` and `DataGrid` take `pagination`: the
+  same props as `Pagination` (page, size, `totalElements`, `onPageChange`, and
+  `onSizeChange` with `sizeOptions` for rows per page). `totalPages` is worked
+  out when left out, the controls dim while `loading`, and the bar hides while
+  there are no rows at all. `footer` is still there for anything else.
+- **`Omnibox`** closes its menu when a suggestion is chosen.
+- **Shared pieces.** `StateMessage` (data-table) draws every empty, no-match and
+  error message; `IconTile` gains a `danger` tone for it. The no-match chips are
+  `FilterChip`s, the export menu's row choice is a `RadioGroup`, and `RADIO_CLASS`
+  (radio-group) is the one radio look, used by the table's pick-one column too.
+  `termMatches` and `downloadRows` (data-grid) replace the filtering and export
+  code each host repeated.
+- **Stories, trimmed to everyday references.** Components/DataGrid: Simple list,
+  Everything, Pick one, States, with docs naming the parts it is built from.
+  DataTable keeps Basic, Selection, Expandable rows, Loading, Empty, Paged and
+  Sorting. FilterPanel keeps Pinned, Floating and Several dates. Omnibox keeps
+  Empty, With chips, Many chips (now with a long one) and Quick picks.
+  Pagination keeps Default, Compact and Custom labels.
+- **Stories:** Components/DataGrid: Everything, Pick one, Up to three, States.
+  The Tenants page and the Runs list are built on `DataGrid`.
+
 ## 2026-10-27 — Breadcrumbs: one component for every trail
 
 - **`Breadcrumb trail` is part of `Breadcrumbs`.** Pass `items` (`BreadcrumbEntry`:

@@ -1,0 +1,16 @@
+{
+  "v": 3,
+  "createdOnFiles": { "v": 1, "at": "2026-11-14T18:00:00Z" },
+  "title": "DataGrid",
+  "launch": { "view": "canvas" },
+  "pages": [],
+  "boards": {
+    "Main.dc.html": { "x": 0, "y": 0, "w": 1280, "h": 940, "title": "DataGrid: search, panel, selection, export, pagination (try it)", "is_interactive": true },
+    "States.dc.html": { "x": 1360, "y": 0, "w": 1280, "h": 900, "title": "maxSelections and the states (try it)", "is_interactive": true }
+  },
+  "order": ["Main.dc.html", "States.dc.html"],
+  "notes": {
+    "t1": { "x": 0, "y": -300, "text": "DataGrid: DataTable + FilterBar + FilterPanel in one", "kind": "title1", "maxW": 2640 }
+  },
+  "designSystems": []
+}

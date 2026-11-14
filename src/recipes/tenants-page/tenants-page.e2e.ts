@@ -55,23 +55,23 @@ test.describe('Tenants page', () => {
     await expect(page.getByRole('button', { name: 'Close filters' })).toBeVisible()
   })
 
-  test('simple offers quick dates in the omnibox, and the switch to advanced keeps every filter', async ({
+  test('typing finds a tenant by name, and clicking again offers the quick picks', async ({
     story,
     page,
   }) => {
     await story.open(ID)
-    await omnibox(page).fill('bank')
+    await omnibox(page).fill('crest')
+    await expect(page.getByRole('option').first()).toContainText('Crestview Bank')
     await omnibox(page).press('Enter')
+    await expect(page.getByTitle('name is Crestview Bank')).toBeVisible()
     await omnibox(page).click()
     const picks = page.getByRole('group', { name: 'Search and filter tenants' })
     await picks.getByRole('group', { name: 'Created' }).getByRole('button', { name: '90D' }).click()
-    await expect(page.getByTitle('created: Last 90 days')).toBeVisible()
-    await omnibox(page).click()
-    await picks.getByRole('button', { name: 'Switch to advanced' }).click()
-    await expect(page.getByTitle('search: bank')).toBeVisible()
-    await expect(page.getByTitle('created: Last 90 days')).toBeVisible()
-    await omnibox(page).click()
-    await expect(picks).toHaveCount(0)
+    // Crestview Bank is older than 90 days, so nothing matches, and the empty state lists
+    // both filters to remove, beside the chips in the search box.
+    await expect(page.getByText('No tenants match')).toBeVisible()
+    await expect(page.getByRole('listitem', { name: 'created: Last 90 days' })).toBeVisible()
+    await expect(page.getByRole('listitem', { name: 'name is Crestview Bank' })).toBeVisible()
   })
 
   test('a search with nothing behind it says so and offers to clear', async ({ story, page }) => {

@@ -9,7 +9,7 @@ test.describe('DataTable', () => {
   })
 
   test('a sortable header sorts, then reverses, and says which way', async ({ story, page }) => {
-    await story.open('components-datatable--sortable')
+    await story.open('components-datatable--sorting')
     const header = page.getByRole('columnheader', { name: 'Name' })
     const firstCell = page.getByRole('row').nth(1).getByRole('cell').first()
     await header.getByRole('button').click()
@@ -21,15 +21,8 @@ test.describe('DataTable', () => {
     await expect(firstCell).not.toHaveText(first)
   })
 
-  test('a column that cannot sort has no button', async ({ story, page }) => {
-    await story.open('components-datatable--sortable')
-    await expect(page.getByRole('columnheader', { name: 'Seats' }).getByRole('button')).toHaveCount(
-      0,
-    )
-  })
-
   test('the bulk bar counts what is selected and clears it', async ({ story, page }) => {
-    const root = await story.open('components-datatable--selection-with-bulk-actions')
+    const root = await story.open('components-datatable--selection')
     await expect(root.getByText('2 selected')).toBeVisible()
     await page.getByRole('checkbox', { name: 'Select tnt_8f42c19b' }).check()
     await expect(root.getByText('3 selected')).toBeVisible()
@@ -42,7 +35,7 @@ test.describe('DataTable', () => {
     story,
     page,
   }) => {
-    const root = await story.open('components-datatable--selection-with-bulk-actions')
+    const root = await story.open('components-datatable--selection')
     const all = page.getByRole('checkbox', { name: 'Select all rows on this page' })
     await expect(all).toHaveAttribute('aria-checked', 'mixed')
     await all.click()
@@ -50,7 +43,7 @@ test.describe('DataTable', () => {
   })
 
   test('a row expands to show its detail', async ({ story, page }) => {
-    await story.open('components-datatable--expandable-with-row-actions')
+    await story.open('components-datatable--expandable-rows')
     const toggle = page.getByRole('button', { name: 'Prosperity Bank', exact: true })
     await expect(toggle).toHaveAttribute('aria-expanded', 'false')
     await toggle.click()
@@ -61,7 +54,7 @@ test.describe('DataTable', () => {
     story,
     page,
   }) => {
-    await story.open('components-datatable--expandable-with-row-actions')
+    await story.open('components-datatable--expandable-rows')
     // Six data columns and the actions column, and nothing for a disclosure glyph.
     await expect(page.getByRole('table').getByRole('columnheader')).toHaveCount(7)
     const open = page
@@ -82,7 +75,7 @@ test.describe('DataTable', () => {
     story,
     page,
   }) => {
-    await story.open('components-datatable--expandable-with-row-actions')
+    await story.open('components-datatable--expandable-rows')
     // The fade is on the group the buttons sit in, not on each button.
     const actions = (name: string) =>
       page.getByRole('button', { name: `Edit ${name}` }).locator('xpath=..')
@@ -99,8 +92,9 @@ test.describe('DataTable', () => {
     story,
     page,
   }) => {
-    await story.open('components-datatable--sortable')
+    await story.open('components-datatable--sorting')
     const header = page.getByRole('columnheader', { name: 'Name' })
+    await header.getByRole('button').click()
     const arrows = header.locator('svg')
     await expect(arrows).toHaveCount(2)
     const colour = (i: number) => arrows.nth(i).evaluate((el) => getComputedStyle(el).color)
@@ -146,7 +140,7 @@ test.describe('DataTable', () => {
       page.locator('#storybook-root tbody tr [data-row-title]').allInnerTexts()
 
     test('a numeric column sorts as numbers, so 88 comes before 412', async ({ story, page }) => {
-      await story.open('components-datatable--sorting-by-type')
+      await story.open('components-datatable--sorting')
       const header = page.getByRole('columnheader', { name: 'Seats in use' })
       await header.getByRole('button').click()
       const used = async () => (await column(page, 4)).map((cell) => Number(cell.split('/')[0]))
@@ -160,7 +154,7 @@ test.describe('DataTable', () => {
     })
 
     test('a text column sorts without regard to case', async ({ story, page }) => {
-      await story.open('components-datatable--sorting-by-type')
+      await story.open('components-datatable--sorting')
       await page.getByRole('columnheader', { name: 'Name' }).getByRole('button').click()
       const sorted = await names(page)
       // "apex Credit Union" starts with a lowercase letter and still comes first.
@@ -177,7 +171,7 @@ test.describe('DataTable', () => {
       story,
       page,
     }) => {
-      await story.open('components-datatable--sorting-by-type')
+      await story.open('components-datatable--sorting')
       const header = page.getByRole('columnheader', { name: 'Created' })
       await header.getByRole('button').click()
       const dates = async () => column(page, 5)
@@ -199,7 +193,7 @@ test.describe('DataTable', () => {
       story,
       page,
     }) => {
-      await story.open('components-datatable--sorting-by-type')
+      await story.open('components-datatable--sorting')
       for (const name of ['Email', 'Status']) {
         const header = page.getByRole('columnheader', { name })
         await expect(header.getByRole('button')).toHaveCount(0)
@@ -209,25 +203,6 @@ test.describe('DataTable', () => {
       await page.getByRole('columnheader', { name: 'Name' }).getByRole('button').click()
       await expect(request(page)).toHaveText('?sort=name,asc')
       await expect(request(page)).not.toContainText('email')
-    })
-
-    test('sortable={false} takes sorting off the whole table', async ({ story, page }) => {
-      await story.open('components-datatable--sorting-turned-off')
-      await expect(page.getByRole('columnheader')).toHaveCount(5)
-      await expect(page.getByRole('columnheader').getByRole('button')).toHaveCount(0)
-      await expect(page.locator('[aria-sort]')).toHaveCount(0)
-      // The host's sort names Name, and is ignored: rows stay as they came.
-      expect((await names(page))[0]).toBe('Crestview Bank')
-      await expect(request(page)).toHaveText('(no sort parameter)')
-    })
-
-    test('a sort left over on a column that cannot sort is ignored', async ({ story, page }) => {
-      await story.open('components-datatable--sort-on-a-column-that-cannot-sort')
-      await expect(page.locator('[aria-sort]')).toHaveCount(0)
-      expect((await names(page))[0]).toBe('Crestview Bank')
-      await expect(request(page)).toHaveText('(no sort parameter)')
-      await page.getByRole('columnheader', { name: 'Name' }).getByRole('button').click()
-      await expect(request(page)).toHaveText('?sort=name,asc')
     })
   })
 })

@@ -21,10 +21,12 @@ test.describe('Pagination', () => {
   })
 
   test('Previous is disabled on the first page and Next on the last', async ({ story, page }) => {
-    await story.open('components-pagination--first-page')
-    await expect(page.getByRole('button', { name: 'Previous' })).toBeDisabled()
-    await story.open('components-pagination--last-page')
-    await expect(page.getByRole('button', { name: 'Next' })).toBeDisabled()
+    await story.open('components-pagination--default')
+    const nav = page.getByRole('navigation', { name: 'Pagination' })
+    await nav.getByRole('button', { name: 'Page 1', exact: true }).click()
+    await expect(nav.getByRole('button', { name: 'Previous' })).toBeDisabled()
+    await nav.getByRole('button', { name: 'Page 129', exact: true }).click()
+    await expect(nav.getByRole('button', { name: 'Next' })).toBeDisabled()
   })
 
   test('changing rows per page changes the range', async ({ story, page }) => {
