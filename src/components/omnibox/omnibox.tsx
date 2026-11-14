@@ -61,7 +61,7 @@ export function Omnibox({
   // opens its menu on focus, so that one focus must not open it again.
   const skipOpen = useRef(false)
   const [open, setOpen] = useState(false)
-  const [active, setActive] = useState(0)
+  const [highlight, setActive] = useState(0)
 
   const flat: OmniboxSuggestion[] = groups.flatMap((g) => g.items)
   const showQuick = open && quick != null && value === '' && flat.length === 0
@@ -69,9 +69,9 @@ export function Omnibox({
 
   // Clamp rather than reset: the list reflows on every keystroke, and snapping
   // the highlight back to the top each time makes arrowing down impossible.
-  useEffect(() => {
-    setActive((i) => Math.min(i, Math.max(0, flat.length - 1)))
-  }, [flat.length])
+  const active = Math.min(highlight, Math.max(0, flat.length - 1))
+  // Where each group's first item sits in `flat`, for the ids and the highlight.
+  const starts = groups.map((_, gi) => groups.slice(0, gi).reduce((n, g) => n + g.items.length, 0))
 
   // Pointer-down, not click: a click on a suggestion would otherwise blur the
   // input and close the menu before the selection landed.
@@ -116,8 +116,10 @@ export function Omnibox({
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
       if (!showMenu) return setOpen(true)
       e.preventDefault()
-      setActive((i) =>
-        e.key === 'ArrowDown' ? (i + 1) % flat.length : (i - 1 + flat.length) % flat.length,
+      setActive(
+        e.key === 'ArrowDown'
+          ? (active + 1) % flat.length
+          : (active - 1 + flat.length) % flat.length,
       )
       return
     }
@@ -158,8 +160,6 @@ export function Omnibox({
     }
     buttons[forward ? Math.min(buttons.length - 1, at + 1) : at - 1]?.focus()
   }
-
-  let index = -1
 
   return (
     <div ref={wrapRef} className={['relative min-w-0', className].filter(Boolean).join(' ')}>
@@ -251,14 +251,13 @@ export function Omnibox({
           aria-label={label}
           className="absolute top-[calc(100%+6px)] left-0 z-30 w-full max-w-[34rem] overflow-hidden rounded-surface border border-line bg-panel-solid p-2 shadow-[0_12px_32px_var(--shadow-raised)]"
         >
-          {groups.map((g) => (
+          {groups.map((g, gi) => (
             <div key={g.id} className="flex flex-col">
               <span className="px-2.5 pt-2 pb-1.5 text-[10.5px] font-extrabold tracking-[0.08em] text-ink-soft uppercase">
                 {g.label}
               </span>
-              {g.items.map((item) => {
-                index += 1
-                const i = index
+              {g.items.map((item, ii) => {
+                const i = starts[gi] + ii
                 return (
                   <button
                     key={item.id}

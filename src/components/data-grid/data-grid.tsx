@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { withDefaults } from '../../lib/withDefaults'
 import { Button } from '../../primitives/button'
 import { FilterChip } from '../../primitives/filter-chip'
@@ -107,7 +107,8 @@ export function DataGrid<T>({
   }, [floating])
 
   const setTerms = onTermsChange ?? (() => {})
-  const today = useMemo(() => new Date(), [])
+  // Read once: "Last 30 days" means the same days for as long as the grid is open.
+  const [today] = useState(() => new Date())
   const active = countActive(fields)
   const chipSpecs = buildChips({ fields, terms, termFields, onTermsChange: setTerms, today })
   const chips: OmniboxChip[] = chipSpecs.map((chip) => ({
