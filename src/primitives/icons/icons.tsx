@@ -509,6 +509,14 @@ export const AppsIcon = (p: IconProps) => (
   </svg>
 )
 
+/** A speech bubble with "!": feedback about something that went wrong. */
+export const FeedbackIcon = (p: IconProps) => (
+  <svg {...base(p)}>
+    <path d="M20 15.5a2 2 0 0 1-2 2H8l-4 3.5V5.5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2Z" />
+    <path d="M12 7.5v3.5M12 14.2v.1" />
+  </svg>
+)
+
 export const HelpIcon = (p: IconProps) => (
   <svg {...base(p)}>
     <circle cx="12" cy="12" r="8.5" />

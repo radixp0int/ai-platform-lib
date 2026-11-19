@@ -60,6 +60,8 @@
   --color-on-notify: var(--on-notify);
   --color-marker: var(--marker);
   --color-on-marker: var(--on-marker);
+  --color-feedback: var(--feedback);
+  --color-on-feedback: var(--on-feedback);
   --color-caution: var(--caution);
   --color-caution-surface: var(--caution-surface);
   --color-caution-line: var(--caution-line);

@@ -3,6 +3,19 @@
 Changes to the component library as seen from Storybook. Newest first. Each
 entry names the modules it touches so the sidebar entry is easy to find.
 
+## 2026-11-19 — FeedbackTab: report a bug from any page
+
+- **New `FeedbackTab`** (Components/FeedbackTab). A 30px orange tab on the
+  right edge that reads "Feedback". Hover or focus slides it out to "Report a
+  bug / Tell us what went wrong". Pass `onClick` to open your own dialog, or
+  `href` (with `newTab` for a form elsewhere). The copy, the anchor and a held
+  open state are props.
+- **New `--feedback` / `--on-feedback` tokens** (Brand/Colour, Meaning). The
+  tab's own orange, so it never borrows `--notify`, which means "a person is
+  waiting". Contrast-checked like `--marker`: white on the 600 in light, a
+  deep label on the 500 in dark.
+- **New `FeedbackIcon`**: a speech bubble with "!".
+
 ## 2026-11-14 — DataGrid: the table, its filters and export in one
 
 - **New `DataGrid`** (Components/DataGrid). It takes everything `DataTable` takes,

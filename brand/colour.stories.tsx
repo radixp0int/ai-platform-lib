@@ -126,6 +126,7 @@ export const Meaning: Story = {
           <Swatch token="chip" on="chip-fg" note="Soft fills: chips, icon tiles" />
           <Swatch token="bubble" on="on-bubble" note="The viewer's own message" />
           <Swatch token="notify" on="on-notify" note="A person is being waited on" />
+          <Swatch token="feedback" on="on-feedback" note="The feedback tab only" />
           <Swatch token="danger-solid" on="on-danger-solid" note="Destructive actions" />
         </div>
       </Section>

@@ -162,6 +162,16 @@
   --marker: var(--ember-600, var(--accent-600));
   --on-marker: #ffffff;
 
+  /* The feedback tab on the page edge (components/feedback-tab): the third
+     place the warm hue carries meaning, and like --notify and --marker it is
+     contrast-checked. Its own token rather than a reuse of --notify, because
+     orange on --notify means "a person is waiting" and a report-a-bug tab is
+     not that. Same values as --marker, for the same reason: the 600 clears
+     4.5:1 behind a white label (5.2:1) and 3:1 against the canvas as a
+     control. Dark inverts — see §2. */
+  --feedback: var(--ember-600, var(--accent-600));
+  --on-feedback: #ffffff;
+
   /* Warning is gold rather than ember-orange so its tint remains visibly
      separate from the red error family when an Alert omits its accent rail.
      The ink/rail clears 4.92:1 on white and 4.64:1 on the tinted surface below
@@ -223,7 +233,7 @@
      the accent ramp: the mark is aria-hidden decoration, so it can carry a hue
      that would never clear 4.5:1 as text. Keep it that way — a warm value
      wanted for UI state gets its own contrast-checked token instead (see
-     --notify and --marker above, which are the only such cases). Themes that declare no
+     --notify, --marker and --feedback above, which are the only such cases). Themes that declare no
      ember fall back to their accent. */
   --orb-sheen: #ffffff;
   --orb-1: var(--ember-300, var(--accent-300));
@@ -332,6 +342,12 @@
      white on the 500 is 3.5:1 and fails the text bar. */
   --marker: var(--ember-500, var(--accent-500));
   --on-marker: #2b1000;
+
+  /* The feedback tab, inverted the way --marker is and checked the same way:
+     the 600 nearly vanishes on a navy panel, white on the 500 fails, so it is
+     a bright fill with a deep label (5.1:1 fill on canvas, 4.9:1 label). */
+  --feedback: var(--ember-500, var(--accent-500));
+  --on-feedback: #2b1000;
 
   /* Yellow-gold stays unmistakable on both navy and graphite. It clears at
      least 11.82:1 on an untinted panel and 8.90:1 on the 15% wash across all
