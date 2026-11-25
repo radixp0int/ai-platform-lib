@@ -13,6 +13,30 @@ import { isClosedFence, mapProse } from './fences'
 import type { MarkdownProps } from './types'
 
 /**
+ * The blockquote's classes. With every option at its default this is the
+ * library quote as it always was (`turn-rail my-3 pl-4 text-ink-soft italic`).
+ * The options are independent so each part of the alternative look — the
+ * accent rail, upright full-ink text, the extra room, the wash — can be taken
+ * on its own.
+ */
+function quoteClass({
+  quoteRail = 'subtle',
+  quoteFont = 'italic',
+  quoteSpacing = 'snug',
+  quoteTint = false,
+}: Pick<MarkdownProps, 'quoteRail' | 'quoteFont' | 'quoteSpacing' | 'quoteTint'>): string {
+  return [
+    'turn-rail my-3',
+    quoteRail === 'accent' && 'turn-rail-accent',
+    quoteSpacing === 'roomy' ? 'px-3.5 py-3' : 'pl-4',
+    quoteTint && 'bg-quote-tint',
+    quoteFont === 'regular' ? 'text-ink' : 'text-ink-soft italic',
+  ]
+    .filter(Boolean)
+    .join(' ')
+}
+
+/**
  * Rewrites [n] markers into markdown links ([n](#cite-n)) that the `a`
  * component below turns into CitationChips. Only numbers matching a real
  * source id are rewritten, so bracketed prose like [sic] passes through.
@@ -89,6 +113,10 @@ export function Markdown({
   onCite,
   highlights,
   activeRef = null,
+  quoteRail,
+  quoteFont,
+  quoteSpacing,
+  quoteTint,
 }: MarkdownProps) {
   const compact = useUiSize() === 'compact'
 
@@ -179,7 +207,9 @@ export function Markdown({
     ),
     tr: ({ children }) => <tr className="last:[&>td]:border-b-0">{children}</tr>,
     blockquote: ({ children }) => (
-      <blockquote className="turn-rail my-3 pl-4 text-ink-soft italic">{children}</blockquote>
+      <blockquote className={quoteClass({ quoteRail, quoteFont, quoteSpacing, quoteTint })}>
+        {children}
+      </blockquote>
     ),
     hr: () => <hr className="my-4 border-line" />,
   }

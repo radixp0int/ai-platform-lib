@@ -32,4 +32,40 @@ test.describe('Markdown', () => {
     const root = await story.open('chat-components-markdown--streaming-partial-marker')
     await expect(root).not.toContainText('[')
   })
+
+  test('a quote with no options is the library quote', async ({ story, page }) => {
+    await story.open('chat-components-markdown--gfm')
+    const quote = page.getByRole('blockquote')
+    await expect(quote).toHaveCSS('border-left-width', '2px')
+    await expect(quote).toHaveCSS('font-style', 'italic')
+    await expect(quote).toHaveCSS('padding', '0px 0px 0px 16px')
+    await expect(quote).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
+  })
+
+  for (const mode of ['light', 'dark'] as const) {
+    test(`the draft quote has its own rail, font and room (${mode})`, async ({ story, page }) => {
+      const id = `chat-components-markdown--quote-looks${mode === 'dark' ? '-dark' : ''}`
+      await story.open(id, { mode })
+      const quote = (look: string) =>
+        page.getByRole('region', { name: look, exact: true }).getByRole('blockquote')
+
+      await expect(quote('Library')).toHaveCSS('border-left-width', '2px')
+      await expect(quote('Library')).toHaveCSS('font-style', 'italic')
+
+      const draft = quote('Draft')
+      await expect(draft).toHaveCSS('border-left-width', '3px')
+      await expect(draft).toHaveCSS('font-style', 'normal')
+      await expect(draft).toHaveCSS('padding', '12px 14px')
+      await expect(draft).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
+      // The accent rail is not the turn rail's colour.
+      const rails = await Promise.all(
+        [quote('Library'), draft].map((q) =>
+          q.evaluate((el) => getComputedStyle(el).borderLeftColor),
+        ),
+      )
+      expect(rails[0]).not.toEqual(rails[1])
+
+      await expect(quote('Draft + tint')).not.toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
+    })
+  }
 })

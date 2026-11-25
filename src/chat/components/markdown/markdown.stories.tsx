@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { fn } from 'storybook/test'
 import { answerMarkdown, highlights, mermaidSource, sources } from '../../fixtures/chat'
 import { Markdown } from './markdown'
+import type { MarkdownProps } from './types'
 
 const GFM = `### Everything GFM
 
@@ -30,13 +31,45 @@ const meta = {
   title: 'Chat/Components/Markdown',
   component: Markdown,
   tags: ['autodocs'],
-  args: { text: GFM, streaming: false },
+  args: {
+    text: GFM,
+    streaming: false,
+    quoteRail: 'subtle',
+    quoteFont: 'italic',
+    quoteSpacing: 'snug',
+    quoteTint: false,
+  },
+  argTypes: {
+    quoteRail: {
+      control: 'inline-radio',
+      options: ['subtle', 'accent'],
+      description: 'Blockquote rail: 2px `--rail`, or 3px `--rail-accent`.',
+      table: { category: 'Blockquote' },
+    },
+    quoteFont: {
+      control: 'inline-radio',
+      options: ['italic', 'regular'],
+      description: 'Blockquote text: italic soft ink, or upright full ink.',
+      table: { category: 'Blockquote' },
+    },
+    quoteSpacing: {
+      control: 'inline-radio',
+      options: ['snug', 'roomy'],
+      description: 'Blockquote padding: 16px left only, or 12px × 14px all round.',
+      table: { category: 'Blockquote' },
+    },
+    quoteTint: {
+      control: 'boolean',
+      description: 'A light `--quote-tint` wash behind the blockquote.',
+      table: { category: 'Blockquote' },
+    },
+  },
   decorators: [(Story) => <div className="max-w-3xl">{Story()}</div>],
   parameters: {
     docs: {
       description: {
         component:
-          'The GFM renderer. `[n]` markers become `CitationChip`s only when `n` matches a real source id, so `[sic]` survives; a half-received trailing `[12` is hidden mid-stream so it never flickers as text. ` ```mermaid ` fences render as diagrams.',
+          'The GFM renderer. `[n]` markers become `CitationChip`s only when `n` matches a real source id, so `[sic]` survives; a half-received trailing `[12` is hidden mid-stream so it never flickers as text. ` ```mermaid ` fences render as diagrams. Blockquotes take four independent options — `quoteRail`, `quoteFont`, `quoteSpacing` and `quoteTint` — whose defaults are the library quote.',
       },
     },
   },
@@ -93,4 +126,60 @@ export const StreamingReplay: Story = {
 
 export const Mermaid: Story = {
   args: { text: `Here is the approval flow:\n\n\`\`\`mermaid\n${mermaidSource}\n\`\`\`` },
+}
+
+const QUOTE = `The answer draws on two passages.
+
+> Forecasts must cover at least 30 days of expected outflows, reviewed weekly by the owning team.
+
+Everything else in the policy is guidance rather than a requirement.`
+
+const LOOKS: { title: string; note: string; props: Partial<MarkdownProps> }[] = [
+  { title: 'Library', note: 'The defaults', props: {} },
+  {
+    title: 'Draft',
+    note: 'accent · regular · roomy',
+    props: { quoteRail: 'accent', quoteFont: 'regular', quoteSpacing: 'roomy' },
+  },
+  {
+    title: 'Draft + tint',
+    note: 'accent · regular · roomy · tint',
+    props: { quoteRail: 'accent', quoteFont: 'regular', quoteSpacing: 'roomy', quoteTint: true },
+  },
+]
+
+function QuoteLooksGrid() {
+  return (
+    <div className="grid gap-4 md:grid-cols-3">
+      {LOOKS.map(({ title, note, props }) => (
+        <section
+          key={title}
+          aria-label={title}
+          className="flex flex-col gap-3 rounded-surface border border-line bg-panel-solid p-4"
+        >
+          <header className="flex flex-col gap-0.5">
+            <h3 className="text-[13px] font-semibold text-ink-strong">{title}</h3>
+            <span className="text-xs text-ink-soft">{note}</span>
+          </header>
+          <div className="text-sm text-ink">
+            <Markdown text={QUOTE} {...props} />
+          </div>
+        </section>
+      ))}
+    </div>
+  )
+}
+
+/** The library quote beside the draft look from the design canvas, light mode. */
+export const QuoteLooks: Story = {
+  args: { text: QUOTE },
+  globals: { mode: 'light' },
+  render: () => <QuoteLooksGrid />,
+}
+
+/** The same comparison on a dark canvas. */
+export const QuoteLooksDark: Story = {
+  args: { text: QUOTE },
+  globals: { mode: 'dark' },
+  render: () => <QuoteLooksGrid />,
 }
