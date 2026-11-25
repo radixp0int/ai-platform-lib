@@ -291,6 +291,20 @@ export const messages = {
     },
   } satisfies Message,
   scopedQuestion: { ...question, id: 8, askedOver: scope } satisfies Message,
+  /** An answer that quotes its source word for word. */
+  quoted: {
+    id: 9,
+    role: 'assistant',
+    content: `The runbook sets the rule for large wires word for word:
+
+> Wires over $250,000 need two approvers from different teams [3].
+
+So a wire to cover the tax payment on the 15th needs a second approver lined up before it goes out.`,
+    streaming: false,
+    sources,
+    highlights,
+    trace: traces.ok,
+  } satisfies Message,
 }
 
 // ---------------------------------------------------------------------------

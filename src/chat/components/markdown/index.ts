@@ -4,4 +4,5 @@ export type {
   MarkdownQuoteFont,
   MarkdownQuoteRail,
   MarkdownQuoteSpacing,
+  MarkdownQuoteStyle,
 } from './types'

@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { fn } from 'storybook/test'
 import { answerMarkdown, highlights, mermaidSource, sources } from '../../fixtures/chat'
 import { Markdown } from './markdown'
-import type { MarkdownProps } from './types'
+import type { MarkdownQuoteStyle } from './types'
 
 const GFM = `### Everything GFM
 
@@ -134,24 +134,26 @@ const QUOTE = `The answer draws on two passages.
 
 Everything else in the policy is guidance rather than a requirement.`
 
-const LOOKS: { title: string; note: string; props: Partial<MarkdownProps> }[] = [
-  { title: 'Library', note: 'The defaults', props: {} },
+const ACCENT: MarkdownQuoteStyle = {
+  quoteRail: 'accent',
+  quoteFont: 'regular',
+  quoteSpacing: 'roomy',
+}
+
+const LOOKS: { title: string; note: string; quote: MarkdownQuoteStyle }[] = [
+  { title: 'Default', note: 'subtle · italic · snug', quote: {} },
+  { title: 'Accent', note: 'accent · regular · roomy', quote: ACCENT },
   {
-    title: 'Draft',
-    note: 'accent · regular · roomy',
-    props: { quoteRail: 'accent', quoteFont: 'regular', quoteSpacing: 'roomy' },
-  },
-  {
-    title: 'Draft + tint',
+    title: 'Accent + tint',
     note: 'accent · regular · roomy · tint',
-    props: { quoteRail: 'accent', quoteFont: 'regular', quoteSpacing: 'roomy', quoteTint: true },
+    quote: { ...ACCENT, quoteTint: true },
   },
 ]
 
 function QuoteLooksGrid() {
   return (
     <div className="grid gap-4 md:grid-cols-3">
-      {LOOKS.map(({ title, note, props }) => (
+      {LOOKS.map(({ title, note, quote }) => (
         <section
           key={title}
           aria-label={title}
@@ -162,7 +164,7 @@ function QuoteLooksGrid() {
             <span className="text-xs text-ink-soft">{note}</span>
           </header>
           <div className="text-sm text-ink">
-            <Markdown text={QUOTE} {...props} />
+            <Markdown text={QUOTE} {...quote} />
           </div>
         </section>
       ))}
@@ -170,14 +172,17 @@ function QuoteLooksGrid() {
   )
 }
 
-/** The library quote beside the draft look from the design canvas, light mode. */
+/**
+ * The default quote beside the accent look (from the design canvas), with and
+ * without its wash. Each prop also works on its own — try them in Controls.
+ */
 export const QuoteLooks: Story = {
   args: { text: QUOTE },
   globals: { mode: 'light' },
   render: () => <QuoteLooksGrid />,
 }
 
-/** The same comparison on a dark canvas. */
+/** The same three on a dark canvas. */
 export const QuoteLooksDark: Story = {
   args: { text: QUOTE },
   globals: { mode: 'dark' },

@@ -37,3 +37,9 @@ export type MarkdownProps = {
   /** A light wash behind the blockquote (`--quote-tint`). Defaults to off. */
   quoteTint?: boolean
 }
+
+/** The four blockquote options together, for a host that passes them through. */
+export type MarkdownQuoteStyle = Pick<
+  MarkdownProps,
+  'quoteRail' | 'quoteFont' | 'quoteSpacing' | 'quoteTint'
+>

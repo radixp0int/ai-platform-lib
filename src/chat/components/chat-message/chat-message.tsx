@@ -27,6 +27,7 @@ export function ChatMessage({
   scopeChips,
   onRestoreScope,
   showSourceTip = false,
+  quote,
 }: ChatMessageProps) {
   const compact = useUiSize() === 'compact'
   const cite = useCite()
@@ -134,6 +135,7 @@ export function ChatMessage({
               // marked. Setting `activeRef` on an answer would mark the answer
               // text at source-document offsets.
               highlights={message.highlights}
+              {...quote}
             />
           </div>
         )}

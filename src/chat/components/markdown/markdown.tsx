@@ -10,7 +10,7 @@ import type { CitationPreviewLookup } from '../citation-chip'
 import { MermaidBlock } from '../../../components/mermaid-block'
 import { useUiSize } from '../../../lib/uiSize'
 import { isClosedFence, mapProse } from './fences'
-import type { MarkdownProps } from './types'
+import type { MarkdownProps, MarkdownQuoteStyle } from './types'
 
 /**
  * The blockquote's classes. With every option at its default this is the
@@ -24,7 +24,7 @@ function quoteClass({
   quoteFont = 'italic',
   quoteSpacing = 'snug',
   quoteTint = false,
-}: Pick<MarkdownProps, 'quoteRail' | 'quoteFont' | 'quoteSpacing' | 'quoteTint'>): string {
+}: MarkdownQuoteStyle): string {
   return [
     'turn-rail my-3',
     quoteRail === 'accent' && 'turn-rail-accent',

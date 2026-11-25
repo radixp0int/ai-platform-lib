@@ -3,6 +3,29 @@
 Changes to the component library as seen from Storybook. Newest first. Each
 entry names the modules it touches so the sidebar entry is easy to find.
 
+## 2026-11-25 — Markdown: blockquote options
+
+- **`Markdown` takes four blockquote options.** Each one works alone, and with
+  none set the quote looks as it did before.
+  - `quoteRail`: `'subtle'` (the 2px turn rail) or `'accent'` (3px, in the new
+    `--rail-accent`).
+  - `quoteFont`: `'italic'` (soft ink) or `'regular'` (upright, full ink).
+  - `quoteSpacing`: `'snug'` (16px left) or `'roomy'` (12px above and below,
+    14px either side).
+  - `quoteTint`: a light `--quote-tint` wash behind the quote.
+- **`ChatMessage` gains `quote`**, which passes those four options to the
+  answer's `Markdown`. `MarkdownQuoteStyle` is the type for that group.
+- **New brand tokens:** `--rail-accent` (`brand-200`) and `--quote-tint`
+  (`brand-600` at 3% in light, `brand-200` at 6% in dark), with
+  `border-rail-accent` and `bg-quote-tint` utilities. `.turn-rail-accent` is the
+  3px modifier for `.turn-rail`. The plain `.turn-rail` that reasoning, tool
+  payloads and the trace use is unchanged. The accent rail is decorative: on a
+  light panel it is under 3:1, so pair it with the tint or with italic when a
+  quote has to stand out by itself.
+- **Stories:** Chat/Components/Markdown: Quote Looks and Quote Looks Dark, with
+  Controls for each option. Chat/Components/ChatMessage: With Quote and With
+  Accent Quote.
+
 ## 2026-11-14 — DataGrid: the table, its filters and export in one
 
 - **New `DataGrid`** (Components/DataGrid). It takes everything `DataTable` takes,
