@@ -11,14 +11,16 @@ import { IconButton } from '../icon-button'
 import { useUiSize } from '../../lib/uiSize'
 import type { AlertProps, AlertTone } from './types'
 
-// Each tone: the icon tile, the list bullets, the solid action and the text
-// link. The panel itself stays neutral whatever the tone.
+// Each tone: the icon tile (panel), the accent colour the bar's edge and
+// glyph take, the list bullets, the solid action and the text link. The
+// surface itself stays neutral whatever the tone.
 const tones: Record<
   AlertTone,
-  { tile: string; dot: string; solid: string; link: string; glyph: ReactNode }
+  { tile: string; accent: string; dot: string; solid: string; link: string; glyph: ReactNode }
 > = {
   info: {
     tile: 'bg-brand-fg/10 text-brand-fg ring-brand-fg/25',
+    accent: '[--alert-accent:var(--brand-fg)]',
     dot: 'bg-brand-fg',
     solid: 'bg-brand-solid text-on-brand-solid hover:bg-brand-fg-hover',
     link: 'text-brand-fg hover:text-brand-fg-hover',
@@ -26,6 +28,7 @@ const tones: Record<
   },
   success: {
     tile: 'bg-success-surface text-success-fg ring-success-line',
+    accent: '[--alert-accent:var(--success-fg)]',
     dot: 'bg-success',
     solid: 'bg-success text-panel-solid hover:brightness-110',
     link: 'text-success-fg',
@@ -33,6 +36,7 @@ const tones: Record<
   },
   warning: {
     tile: 'bg-caution-surface text-caution ring-caution-line',
+    accent: '[--alert-accent:var(--caution)]',
     dot: 'bg-caution',
     solid: 'bg-caution text-panel-solid hover:brightness-110',
     link: 'text-caution',
@@ -40,6 +44,7 @@ const tones: Record<
   },
   error: {
     tile: 'bg-danger/10 text-danger-fg ring-danger/25',
+    accent: '[--alert-accent:var(--danger-fg)]',
     dot: 'bg-danger-solid',
     solid: 'bg-danger-solid text-panel-solid hover:bg-danger-solid-hover',
     link: 'text-danger-fg',
@@ -55,9 +60,14 @@ const tones: Record<
  * title. Lists and native `<details>` carry validation summaries and
  * diagnostic payloads. For a one-line status band in a message flow, use
  * `Notice`.
+ *
+ * `variant="bar"` squares it off into a live-status strip: a 3px tone edge on
+ * the left, the glyph plain and inline in the tone colour, a hairline border
+ * and a faint shadow. Copy, actions and dismiss are the same in both.
  */
 export function Alert({
   tone = 'info',
+  variant = 'panel',
   title,
   bordered: _bordered,
   layout = 'stack',
@@ -77,7 +87,16 @@ export function Alert({
   const compact = useUiSize() === 'compact'
   const treatment = tones[tone]
   const inline = layout === 'inline'
+  const bar = variant === 'bar'
+  const titleSize = compact ? 'text-[13px]' : 'text-[14px]'
   const text = compact ? 'text-[12.5px]' : 'text-[13.5px]'
+
+  // The × centres on the title line: the tile's padded title in a panel, the
+  // bare first line in a bar. Inline, only once it wraps.
+  const dismissOffset = {
+    stack: bar ? '-my-1.5' : '-mt-0.5',
+    inline: `@max-[28rem]:self-start ${bar ? '@max-[28rem]:-my-1.5' : '@max-[28rem]:-mt-0.5'}`,
+  }[layout]
 
   const actions = (action || secondaryAction) && (
     <div className={`flex flex-wrap items-center gap-x-3 gap-y-2 ${inline ? 'ml-auto' : 'mt-2.5'}`}>
@@ -110,8 +129,13 @@ export function Alert({
     <div
       role={role}
       data-tone={tone}
+      data-variant={variant}
       className={[
-        'flex min-w-0 gap-3 rounded-surface border border-line bg-panel-solid shadow-sm shadow-(color:--shadow-soft)',
+        'flex min-w-0 border border-line bg-panel-solid',
+        // The bar's edge is an inset shadow, so it takes no layout.
+        bar
+          ? `gap-2.5 ${treatment.accent} shadow-[inset_3px_0_0_var(--alert-accent),0_1px_2px_var(--shadow-soft)]`
+          : 'gap-3 rounded-surface shadow-sm shadow-(color:--shadow-soft)',
         inline ? '@container items-center' : 'items-start',
         compact ? 'px-3 py-2.5' : 'px-4 py-3.5',
         className,
@@ -123,7 +147,12 @@ export function Alert({
       {icon !== false && (
         <span
           aria-hidden="true"
-          className={`inline-grid shrink-0 place-items-center rounded-control ring-1 ring-inset ${treatment.tile} ${compact ? 'size-7' : 'size-8'} ${inline ? '@max-[28rem]:self-start' : ''}`}
+          className={`inline-grid shrink-0 place-items-center ${
+            bar
+              ? // One title line tall, so the plain glyph centres on the bold lead.
+                `h-[1lh] leading-snug text-(color:--alert-accent) ${titleSize}`
+              : `rounded-control ring-1 ring-inset ${treatment.tile} ${compact ? 'size-7' : 'size-8'}`
+          } ${inline ? '@max-[28rem]:self-start' : ''}`}
         >
           {icon ?? treatment.glyph}
         </span>
@@ -133,7 +162,7 @@ export function Alert({
         className={`min-w-0 flex-1 ${inline ? 'flex flex-wrap items-center gap-x-2.5 gap-y-1.5' : ''}`}
       >
         <p
-          className={`m-0 leading-snug font-extrabold [overflow-wrap:anywhere] text-ink-strong ${compact ? 'text-[13px]' : 'text-[14px]'} ${inline ? '@max-[28rem]:pt-1.5' : 'pt-1.5'}`}
+          className={`m-0 leading-snug font-extrabold [overflow-wrap:anywhere] text-ink-strong ${titleSize} ${bar ? '' : inline ? '@max-[28rem]:pt-1.5' : 'pt-1.5'}`}
         >
           {title}
         </p>
@@ -179,7 +208,7 @@ export function Alert({
           aria-label={dismissLabel}
           title={dismissLabel}
           size="sm"
-          className={`-mr-1.5 shrink-0 ${inline ? '@max-[28rem]:-mt-0.5 @max-[28rem]:self-start' : '-mt-0.5'}`}
+          className={`-mr-1.5 shrink-0 ${dismissOffset}`}
         >
           <XIcon width={13} height={13} />
         </IconButton>

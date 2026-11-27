@@ -1,8 +1,10 @@
 import { useState } from 'react'
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { Decorator, Meta, StoryObj } from '@storybook/react-vite'
 import { expect, fn, userEvent, within } from 'storybook/test'
+import { Composer } from '../../chat/components/composer'
 import { Button } from '../button'
 import { Alert } from './alert'
+import type { AlertTone } from './types'
 
 const meta = {
   title: 'Primitives/Alert',
@@ -10,10 +12,12 @@ const meta = {
   tags: ['autodocs'],
   args: {
     tone: 'info',
+    variant: 'panel',
     title: 'References are still loading',
     children: 'You can continue reading while the source documents are prepared.',
   },
   argTypes: {
+    variant: { control: 'inline-radio', options: ['panel', 'bar'] },
     children: { control: 'text' },
     title: { control: 'text' },
     icon: { control: false },
@@ -27,7 +31,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'A status message on a quiet panel. The tone lives in the tile around the glyph and in the action — a button in the tone\'s own colour — so the one thing to do next is the one thing in colour. Every tone pairs colour with a distinct glyph and a visible title. Lists and native `<details>` carry richer messages; `layout="inline"` makes a one-line page banner. For a one-line status band inside a message flow, use `Notice`.',
+          'A status message on a quiet panel. The tone lives in the tile around the glyph and in the action — a button in the tone\'s own colour — so the one thing to do next is the one thing in colour. Every tone pairs colour with a distinct glyph and a visible title. Lists and native `<details>` carry richer messages; `layout="inline"` makes a one-line page banner. `variant="bar"` squares it into a live-status strip — a 3px tone edge on the left, the glyph plain and inline, a hairline border and a faint shadow — for a notice docked to a page or composer frame; content cards keep the rounded `panel`. For a one-line status band inside a message flow, use `Notice`.',
       },
     },
   },
@@ -35,6 +39,9 @@ const meta = {
 
 export default meta
 type Story = StoryObj<typeof meta>
+
+/** Room for a page banner or two columns side by side. */
+const wide: Decorator = (Story) => <div className="w-[56rem] max-w-full">{Story()}</div>
 
 export const Playground: Story = {}
 
@@ -89,7 +96,7 @@ export const Actions: Story = {
 
 /** `layout="inline"`: a page-level banner on one line, wrapping when it runs out of room. */
 export const InlineBanner: Story = {
-  decorators: [(Story) => <div className="w-[56rem] max-w-full">{Story()}</div>],
+  decorators: [wide],
   args: {
     tone: 'error',
     layout: 'inline',
@@ -166,4 +173,101 @@ export const Retry: Story = {
     await userEvent.click(canvas.getByRole('button', { name: 'Try again' }))
     await expect(args.action!.onClick).toHaveBeenCalledOnce()
   },
+}
+
+const toneSamples: { tone: AlertTone; title: string; body: string }[] = [
+  {
+    tone: 'warning',
+    title: 'Acme can make mistakes.',
+    body: 'Check the sources before you act on an answer.',
+  },
+  {
+    tone: 'info',
+    title: 'Live run',
+    body: 'Step 3 of 5 is retrieving documents from the knowledge base.',
+  },
+  {
+    tone: 'success',
+    title: 'Run complete',
+    body: 'All five steps finished and the summary is ready.',
+  },
+  {
+    tone: 'error',
+    title: 'The run stopped at step 4',
+    body: 'The search service timed out. Retry to pick up where it left off.',
+  },
+]
+
+function LooksGrid() {
+  return (
+    <div className="grid gap-x-6 gap-y-2.5 sm:grid-cols-2">
+      {(['panel', 'bar'] as const).map((variant) => (
+        <div key={variant} className="flex min-w-0 flex-col gap-2.5">
+          <p className="m-0 font-mono text-[11px] text-ink-soft">variant="{variant}"</p>
+          {toneSamples.map(({ tone, title, body }) => (
+            <Alert
+              key={tone}
+              variant={variant}
+              tone={tone}
+              title={title}
+              onDismiss={fn()}
+              secondaryAction={tone === 'error' ? { label: 'Retry', onClick: fn() } : undefined}
+            >
+              {body}
+            </Alert>
+          ))}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+/**
+ * Every tone in both looks. `bar` is square with a 3px tone edge and a plain
+ * glyph; the lead, copy, action and dismiss match the panel.
+ */
+export const Looks: Story = {
+  decorators: [wide],
+  globals: { mode: 'light' },
+  render: () => <LooksGrid />,
+}
+
+/** The same grid in dark: edge and glyph take the dark tone values (warning is a lighter amber). */
+export const LooksDark: Story = {
+  decorators: [wide],
+  globals: { mode: 'dark' },
+  render: () => <LooksGrid />,
+}
+
+function DockedNotice() {
+  const [visible, setVisible] = useState(true)
+  return (
+    <div className="flex flex-col pt-40">
+      {visible && (
+        <Alert
+          variant="bar"
+          tone="warning"
+          title="Acme can make mistakes."
+          secondaryAction={{ label: 'How answers are sourced', onClick: fn() }}
+          onDismiss={() => setVisible(false)}
+          dismissLabel="Dismiss accuracy notice"
+          className="mb-2"
+        >
+          Check the sources before you act on an answer.
+        </Alert>
+      )}
+      <Composer docked onSubmit={fn()} />
+    </div>
+  )
+}
+
+/** `variant="bar"` docked above the chat composer: the live notice on a square strip. */
+export const DockedAboveComposer: Story = {
+  globals: { mode: 'light' },
+  render: () => <DockedNotice />,
+}
+
+export const DockedAboveComposerDark: Story = {
+  globals: { mode: 'dark' },
+  render: () => <DockedNotice />,
 }
