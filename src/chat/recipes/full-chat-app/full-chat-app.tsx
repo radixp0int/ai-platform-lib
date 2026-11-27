@@ -22,8 +22,7 @@ import { APP_NAME, DEMO_USER, DISCLAIMER, acmeBranding } from '../../fixtures/co
 import { FACET_TYPES, describeFacetType } from '../../fixtures/facets'
 import { recentChats } from '../../fixtures/recentChats'
 import { todaysSuggestions, typeaheadPool } from '../../fixtures/suggestions'
-import { FeatureTogglesModal } from '../settings-dialogs/feature-toggles-modal'
-import { UserSettingsModal } from '../settings-dialogs/user-settings-modal'
+import { DemoSettingsDialog, type DemoSettingsSection } from '../settings-dialogs/settings-dialog'
 import { DemoFeaturesProvider, useDemoFeatureState, useDemoFeatures } from '../shared/demoFeatures'
 import { useDemoFacets, useDemoScope } from '../shared/useDemoFacets'
 import { ArticleOriginal } from './article-original'
@@ -274,9 +273,9 @@ export function Chat({
   )
 }
 
-/** The chat as its own page: owns the settings state and the two dialogs
- *  behind the sidebar's account menu. Both are modal, so at most one is ever
- *  open — opening either closes the other.
+/** The chat as its own page: owns the settings state and the Settings dialog
+ *  behind the sidebar's account menu, whose two entries open it on either
+ *  section.
  *
  *  `humanized` shows the assistant as Aristotle, the marble bust. A real app
  *  turns it on for super admins, from the signed-in user. */
@@ -285,18 +284,22 @@ function App({
   humanized = false,
 }: Pick<ChatProps, 'responder'> & { humanized?: boolean }) {
   const demo = useDemoFeatureState()
-  const [dialog, setDialog] = useState<'user' | 'features' | null>(null)
+  const [settings, setSettings] = useState<DemoSettingsSection | null>(null)
   return (
     <BrandingProvider value={acmeBranding}>
       <AssistantAvatarProvider value={assistantAvatarFor({ humanized })}>
         <DemoFeaturesProvider value={demo}>
           <Chat
             responder={responder}
-            onOpenUserSettings={() => setDialog('user')}
-            onOpenFeatureToggles={() => setDialog('features')}
+            onOpenUserSettings={() => setSettings('look')}
+            onOpenFeatureToggles={() => setSettings('features')}
           />
-          <UserSettingsModal open={dialog === 'user'} onClose={() => setDialog(null)} />
-          <FeatureTogglesModal open={dialog === 'features'} onClose={() => setDialog(null)} />
+          <DemoSettingsDialog
+            open={settings !== null}
+            section={settings ?? 'look'}
+            onSectionChange={setSettings}
+            onClose={() => setSettings(null)}
+          />
         </DemoFeaturesProvider>
       </AssistantAvatarProvider>
     </BrandingProvider>

@@ -31,6 +31,48 @@ entry names the modules it touches so the sidebar entry is easy to find.
 - **Stories:** Home Panel, Home Panel Dark, Tablet. The older stories' sample
   rows use neutral names.
 
+## 2026-11-27 — Settings: one dialog for profile, look and answer features
+
+- **New `SettingsDialog`** (Components/Settings → Dialog): a centred dialog,
+  about 980×640, built on `Modal`.
+  - On the left is a list of sections. Below 900px the list becomes a row of
+    tabs above the pane, and the arrow keys move between sections either way.
+  - The pane shows the open section's title, a line under it, and its content.
+  - The footer has the section's own reset button, a "Saved" note and a
+    primary Done button.
+  - Sections are data: `sections` takes `id`, `label`, `icon`, `description`,
+    `content` and `reset`. The open section can be left to the dialog
+    (`defaultSection`) or controlled (`section`, `onSectionChange`).
+  - Focus opens on the pane, so the close button no longer opens with a focus
+    ring.
+- **New pieces for the dialog**, all in `components/settings`:
+  - `ProfileCard`: avatar, name, a plan pill, the email and a "Manage
+    account" link.
+  - `ThemeModePicker`: Light / Dark / Match system on the `SegmentedControl`.
+  - `AnswerPreview`: a small sample answer that shows or hides reasoning, tool
+    calls, citations and the source strip, message actions, turn details and
+    follow-ups (on the follow-up circle rail), driven by `show`.
+- **New `useThemeMode`** (`lib/settings`) returns `mode`, `setMode` and `dark`.
+  It stores `light`, `dark`, or an empty value for "match system", which is
+  the shape `brand/head.html` already reads. It applies the `dark` / `light`
+  class when the choice changes, but not on mount.
+- **`PalettePicker`** now draws cards with a check on the chosen one, and a
+  one-line note about it under them. Its default title is "Dark palette". The
+  shipped palette notes are rewritten.
+- **`HighlightPicker`** now draws named swatch chips, plus a preview line
+  whose `<mark>` takes the chosen highlight (`preview`; `null` hides it).
+- **`FeatureToggles`** rows now use the `Switch` primitive, with the label on
+  the left and the switch on the right. Sections are divided by hairlines.
+- **Demo recipes:** the two side panels (User settings, Feature toggles) are
+  replaced by one Settings dialog (Chat/Recipes/Settings dialog). The account
+  menu's two entries open it on "Profile and look" or "Answer features". The
+  demo state gains `themeMode`, `setThemeMode` and `dark`, and the top bars'
+  theme buttons now follow the same setting. "Reset appearance" also returns
+  the theme to Match system.
+- **Stories:** Components/Settings gains Theme mode, Profile, Preview and
+  Dialog. Chat/Recipes/Settings dialog has Profile And Look, Answer Features,
+  Dark, Dark Profile And Look and Narrow.
+
 ## 2026-11-27 — StatTile: the Insights tile
 
 - **`StatTile` takes `size`: `'large'` or `'small'`.** With it, the tile is a

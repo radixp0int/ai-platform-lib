@@ -2,6 +2,7 @@ import { IconButton } from '../../../primitives/icon-button'
 import { ChatIcon, MenuIcon } from '../../../primitives/icons'
 import { Link } from '../../../primitives/link'
 import { ThemeToggle } from '../../../primitives/theme-toggle'
+import { useDemoFeatures } from '../shared/demoFeatures'
 
 type TopBarProps = {
   /** Leave out inside the platform shell, whose own top bar opens the menu. */
@@ -11,6 +12,9 @@ type TopBarProps = {
 }
 
 export function TopBar({ onOpenSidebar, showThemeToggle = true }: TopBarProps) {
+  // The button and the Settings dialog's Theme control are one setting, owned
+  // by the demo state; the button only shows it and flips it.
+  const { dark, setThemeMode } = useDemoFeatures()
   return (
     <header className="flex items-center gap-3 px-5 py-4">
       {/* lg:hidden — this control only ever exists on a touch screen, so it
@@ -35,7 +39,14 @@ export function TopBar({ onOpenSidebar, showThemeToggle = true }: TopBarProps) {
         <ChatIcon width={16} height={16} />
         <span className="max-sm:hidden">Widget demo</span>
       </Link>
-      {showThemeToggle && <ThemeToggle />}
+      {showThemeToggle && (
+        <ThemeToggle
+          dark={dark}
+          onDarkChange={(next) => setThemeMode(next ? 'dark' : 'light')}
+          storageKey={null}
+          applyToDocument={false}
+        />
+      )}
     </header>
   )
 }
