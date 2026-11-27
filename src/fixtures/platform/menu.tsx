@@ -76,3 +76,138 @@ export function buildMenu(tenant: Tenant, waiting: number): MenuSection[] {
   if (data.length > 0) sections.push({ id: 'data', label: 'Data', items: data })
   return sections
 }
+
+/**
+ * The Home panel of the Finals 2.0 pages: every area the tenant has, grouped by
+ * what it is for, each with a line on how it is doing. Tenant Admin's pages sit
+ * under it. Listing a page here makes Home the app you are in when you open it.
+ */
+export function buildHomePanel(tenant: Tenant): MenuSection[] {
+  const base = `/t/${tenant.id}`
+  const has = (space: SpaceId) => tenant.spaces.includes(space)
+  const groups: MenuSection[] = [
+    {
+      id: 'home-overview',
+      items: [
+        {
+          id: 'home',
+          label: 'Overview',
+          href: `${base}/home`,
+          description: 'Everything at a glance',
+        },
+      ],
+    },
+  ]
+  if (has('chat')) {
+    groups.push({
+      id: 'home-use',
+      label: 'Use',
+      items: [
+        {
+          id: 'home-chat',
+          label: 'Chat',
+          href: `${base}/chat`,
+          description: 'Ask across 14 sources',
+        },
+      ],
+    })
+  }
+  if (has('ingestion')) {
+    groups.push({
+      id: 'home-build',
+      label: 'Build',
+      items: [
+        {
+          id: 'home-ingestion',
+          label: 'Ingestion',
+          href: `${base}/ingestion`,
+          description: '13 of 14 sources syncing',
+          status: 'warning',
+        },
+        {
+          id: 'chat-config',
+          label: 'Chat Config',
+          href: `${base}/chat-config`,
+          description: 'Instructions and tools',
+          status: 'idle',
+        },
+      ],
+    })
+  }
+  if (has('workflows')) {
+    groups.push({
+      id: 'home-automate',
+      label: 'Automate',
+      items: [
+        {
+          id: 'home-workflows',
+          label: 'Workflows Studio',
+          href: `${base}/workflows`,
+          description: '4 running',
+          status: 'info',
+        },
+      ],
+    })
+  }
+  if (has('insights')) {
+    groups.push({
+      id: 'home-measure',
+      label: 'Measure',
+      items: [
+        {
+          id: 'home-insights',
+          label: 'Insights',
+          href: `${base}/insights`,
+          description: 'Eval scores, feedback, errors',
+        },
+        {
+          id: 'evaluations',
+          label: 'Evaluations Manager',
+          href: `${base}/evaluations`,
+          description: '4 of 5 suites passing',
+          status: 'error',
+        },
+      ],
+    })
+  }
+  groups.push({
+    id: 'home-govern',
+    label: 'Govern',
+    items: [
+      {
+        id: 'audit',
+        label: 'Audit & Compliance',
+        href: `${base}/audit`,
+        description: '12 flagged',
+        status: 'warning',
+      },
+      {
+        id: 'tenant-admin',
+        label: 'Tenant Admin',
+        href: '/tenants',
+        description: '14 tenants · 1,204 people',
+        children: [
+          {
+            id: 'tenants',
+            label: 'Tenants',
+            href: '/tenants',
+            description: '3 waiting on an invite',
+          },
+          {
+            id: 'people',
+            label: 'People and roles',
+            href: `${base}/people`,
+            description: '1,204 people',
+          },
+          {
+            id: 'usage',
+            label: 'Usage and plans',
+            href: `${base}/usage`,
+            description: '78% of seats in use',
+          },
+        ],
+      },
+    ],
+  })
+  return groups
+}

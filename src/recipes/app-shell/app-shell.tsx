@@ -13,17 +13,10 @@ import { WizardPage } from './pages/WizardPage'
 // callbacks and know nothing of the router; this file is where routing,
 // the demo's fixtures meet them.
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { PinnedPages, type PinnedPage } from '../../components/pinned-pages'
-import {
-  SideMenu,
-  SideMenuSlotProvider,
-  flattenMenu,
-  matchDestination,
-  parentOf,
-} from '../../components/side-menu'
+import { SideMenu, SideMenuSlotProvider, matchDestination } from '../../components/side-menu'
 import { TenantSwitcher } from '../../components/tenant-switcher'
 import { TopBar, TopBarButton } from '../../components/top-bar'
-import { buildMenu } from '../../fixtures/platform/menu'
+import { buildHomePanel, buildMenu } from '../../fixtures/platform/menu'
 import {
   DEFAULT_TENANT_ID,
   INITIAL_TENANTS,
@@ -52,8 +45,6 @@ import { SpaceUnavailablePage } from './pages/SpaceUnavailablePage'
 import { WorkflowsFlyout, WorkflowsPanel } from './menu-panels'
 import { PlatformContext, type PlatformValue } from './platform-context'
 
-const DEFAULT_PINS = ['tasks', 'runs', 'chat']
-const MAX_PINS = 3
 /** How many tenants the switcher lists before "Load more". */
 const SWITCHER_PAGE = 6
 
@@ -119,7 +110,25 @@ export function AppShell({
   const runs = useMemo(() => runsFor(tenant), [tenant])
   const tasks = useMemo(() => tasksFor(tenant), [tenant])
   const sections = useMemo(() => buildMenu(tenant, tasks.length), [tenant, tasks.length])
-  const active = routeTenantId ? matchDestination(sections, pathname) : undefined
+  const homeSections = useMemo(() => buildHomePanel(tenant), [tenant])
+  // Home's panel lists every area. A page with an app in the rail (Chat,
+  // Workflows, Tasks) belongs to that app; the rest — Ingestion, Insights,
+  // Tenants — are Home's pages, so opening one keeps Home's panel up with its
+  // row marked. The rail's entries go last, so on a tie Chat stays Chat.
+  const railSections = useMemo(
+    () =>
+      sections.map((section) => ({
+        ...section,
+        items: section.items.filter((item) => RAIL.includes(item.id)),
+      })),
+    [sections],
+  )
+  const routed = pathname === '/tenants' || pathname.startsWith('/tenants?') || !!routeTenantId
+  const path = pathname.split('?')[0]
+  const active = routed
+    ? (matchDestination([...homeSections, ...railSections], path) ??
+      matchDestination(sections, path))
+    : undefined
 
   // ── Side menu ────────────────────────────────────────────────────────────
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -144,32 +153,6 @@ export function AppShell({
     },
     [navigate],
   )
-
-  // ── Pinned pages ─────────────────────────────────────────────────────────
-  const [pinsByTenant, setPinsByTenant] = useState<Record<string, string[]>>({})
-  const pinIds = pinsByTenant[tenant.id] ?? DEFAULT_PINS
-  const destinations = useMemo(() => flattenMenu(sections), [sections])
-  const toPinned = useCallback(
-    (id: string): PinnedPage | undefined => {
-      const item = destinations.find((destination) => destination.id === id)
-      if (!item) return undefined
-      const parent = parentOf(sections, id)
-      return {
-        id: item.id,
-        label: item.label,
-        href: item.href,
-        icon: item.icon ?? parent?.icon,
-        context: parent?.label,
-      }
-    },
-    [destinations, sections],
-  )
-  // A pin for a space this tenant lost simply does not resolve.
-  const pinned = pinIds.flatMap((id) => toPinned(id) ?? []).slice(0, MAX_PINS)
-  const setPinned = (pages: PinnedPage[]) => {
-    const ids = pages.map((page) => page.id)
-    setPinsByTenant((all) => ({ ...all, [tenant.id]: ids }))
-  }
 
   // ── Tenant switcher ──────────────────────────────────────────────────────
   const [loaded, setLoaded] = useState(SWITCHER_PAGE)
@@ -220,6 +203,7 @@ export function AppShell({
   // The panels of the apps that have one. Chat's is filled by the chat page itself.
   const panels = useMemo(
     () => ({
+      home: { sections: homeSections },
       ...(tenant.spaces.includes('workflows')
         ? {
             workflows: {
@@ -237,7 +221,7 @@ export function AppShell({
         : {}),
       ...(tenant.spaces.includes('chat') ? { chat: { title: 'Chat' } } : {}),
     }),
-    [tenant.spaces, base, runs, active?.id, onNavigate],
+    [tenant.spaces, base, runs, active?.id, onNavigate, homeSections],
   )
   const places = [
     ...runs.slice(0, 2).map((run) => ({
@@ -292,25 +276,6 @@ export function AppShell({
                 }
                 trailing={
                   <>
-                    <TenantSwitcher
-                      tenants={listed.map((item) => ({
-                        id: item.id,
-                        name: item.name,
-                        initials: item.initials,
-                        description:
-                          item.status === 'active'
-                            ? describeSpaces(item.spaces)
-                            : `${item.status === 'pending' ? 'Pending' : 'Suspended'} · ${describeSpaces(item.spaces)}`,
-                      }))}
-                      currentId={tenant.id}
-                      onSelect={switchTo}
-                      readOnly={wizard}
-                      remaining={tenants.length - listed.length}
-                      pageSize={SWITCHER_PAGE}
-                      onLoadMore={() => setLoaded((count) => count + SWITCHER_PAGE)}
-                      onViewAll={() => navigate('/tenants')}
-                      onEditTenant={(id) => navigate(`/tenants?edit=${id}`)}
-                    />
                     {!wizard && (
                       <>
                         {/* Search is not built yet. The control keeps its place in
@@ -356,13 +321,24 @@ export function AppShell({
                     items={[{ label: 'Ingestion' }, { label: 'Add a source' }]}
                   />
                 ) : (
-                  <PinnedPages
-                    pages={pinned}
-                    activeId={active?.id}
-                    current={active ? toPinned(active.id) : undefined}
-                    onPagesChange={setPinned}
-                    onNavigate={onNavigate}
-                    max={MAX_PINS}
+                  <TenantSwitcher
+                    tenants={listed.map((item) => ({
+                      id: item.id,
+                      name: item.name,
+                      initials: item.initials,
+                      description:
+                        item.status === 'active'
+                          ? describeSpaces(item.spaces)
+                          : `${item.status === 'pending' ? 'Pending' : 'Suspended'} · ${describeSpaces(item.spaces)}`,
+                    }))}
+                    currentId={tenant.id}
+                    onSelect={switchTo}
+                    readOnly={wizard}
+                    remaining={tenants.length - listed.length}
+                    pageSize={SWITCHER_PAGE}
+                    onLoadMore={() => setLoaded((count) => count + SWITCHER_PAGE)}
+                    onViewAll={() => navigate('/tenants')}
+                    onEditTenant={(id) => navigate(`/tenants?edit=${id}`)}
                   />
                 )}
               </TopBar>
