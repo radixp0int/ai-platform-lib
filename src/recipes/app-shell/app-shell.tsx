@@ -45,9 +45,8 @@ import {
 } from '../../primitives/icons'
 import type { NavigateHandler } from '../../primitives/link'
 import { ThemeToggle } from '../../primitives/theme-toggle'
-import { FeatureTogglesModal } from '../settings/feature-toggles-modal'
 import { DemoFeaturesProvider, useDemoFeatureState } from '../settings/settings-state'
-import { UserSettingsModal } from '../settings/user-settings-modal'
+import { DemoSettingsDialog, type DemoSettingsSection } from '../settings/settings-dialog'
 import { AccountButton } from '../top-bar/account-button'
 import { SpaceUnavailablePage } from './pages/SpaceUnavailablePage'
 import { WorkflowsFlyout, WorkflowsPanel } from './menu-panels'
@@ -98,10 +97,10 @@ export function AppShell({
 }: AppShellProps) {
   const [pathname, navigate] = useState(initialPath)
   const narrow = useNarrow()
-  // Owned here so the chat page and the two settings dialogs share one copy:
-  // the dialogs are opened from the top bar, the flags are read by the chat.
+  // Owned here so the chat page and the Settings dialog share one copy: the
+  // dialog is opened from the top bar, the flags are read by the chat.
   const demo = useDemoFeatureState()
-  const [dialog, setDialog] = useState<'user' | 'features' | null>(null)
+  const [settings, setSettings] = useState<DemoSettingsSection | null>(null)
   const [tenants, setTenants] = useState<Tenant[]>(INITIAL_TENANTS)
 
   const routeTenantId = /^\/t\/([^/]+)/.exec(pathname)?.[1]
@@ -260,7 +259,7 @@ export function AppShell({
           id: 'settings',
           label: 'Settings',
           icon: <SlidersIcon />,
-          onSelect: () => setDialog('user'),
+          onSelect: () => setSettings('look'),
         },
       ]}
       panelOpen={panelOpen}
@@ -327,7 +326,13 @@ export function AppShell({
                         {/* The one theme switch for every page under this bar, so
                         no page needs to carry its own. Restyled from the
                         primitive's glass disc to sit among the bar's buttons. */}
-                        <ThemeToggle className="!size-11 shrink-0 !rounded-control !border-0 !bg-transparent !text-brand-100 !backdrop-filter-none hover:!bg-white/10 hover:!text-white max-sm:hidden" />
+                        <ThemeToggle
+                          dark={demo.dark}
+                          onDarkChange={(next) => demo.setThemeMode(next ? 'dark' : 'light')}
+                          storageKey={null}
+                          applyToDocument={false}
+                          className="!size-11 shrink-0 !rounded-control !border-0 !bg-transparent !text-brand-100 !backdrop-filter-none hover:!bg-white/10 hover:!text-white max-sm:hidden"
+                        />
                         <TopBarButton
                           aria-label="Notifications"
                           title="Notifications"
@@ -338,8 +343,8 @@ export function AppShell({
                       </>
                     )}
                     <AccountButton
-                      onOpenUserSettings={() => setDialog('user')}
-                      onOpenFeatureToggles={() => setDialog('features')}
+                      onOpenUserSettings={() => setSettings('look')}
+                      onOpenFeatureToggles={() => setSettings('features')}
                     />
                   </>
                 }
@@ -407,8 +412,8 @@ export function AppShell({
                           path: rest,
                           tenant,
                           base,
-                          onOpenUserSettings: () => setDialog('user'),
-                          onOpenFeatureToggles: () => setDialog('features'),
+                          onOpenUserSettings: () => setSettings('look'),
+                          onOpenFeatureToggles: () => setSettings('features'),
                         }) ?? (
                           // The workflows list is the workflows recipe's: a host
                           // supplies it through `renderSpace`, as the stories do.
@@ -436,8 +441,12 @@ export function AppShell({
             </div>
           </SideMenuSlotProvider>
 
-          <UserSettingsModal open={dialog === 'user'} onClose={() => setDialog(null)} />
-          <FeatureTogglesModal open={dialog === 'features'} onClose={() => setDialog(null)} />
+          <DemoSettingsDialog
+            open={settings !== null}
+            section={settings ?? 'look'}
+            onSectionChange={setSettings}
+            onClose={() => setSettings(null)}
+          />
         </PlatformContext.Provider>
       </DemoFeaturesProvider>
     </NavigateProvider>

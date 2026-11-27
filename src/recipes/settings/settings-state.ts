@@ -4,9 +4,11 @@ import {
   SHIPPED_PALETTES,
   usePaletteClass,
 } from '../../lib/settings/appearance'
+import { useThemeMode, type ThemeMode } from '../../lib/settings/theme-mode'
 import { type FeatureCatalogue } from '../../lib/settings/types'
 import { useFeatureFlags, type FeatureFlagsValue } from '../../lib/settings/useFeatureFlags'
 import { useStoredChoice } from '../../lib/settings/useStoredChoice'
+import { THEME_MODE_KEY } from '../../primitives/theme-toggle'
 
 /**
  * The demo's settings surface, built on the library's generic machinery
@@ -148,9 +150,15 @@ export type DemoFeaturesValue = FeatureFlagsValue<DemoFeatureId> & {
   setHighlight: (id: string) => void
   palette: string
   setPalette: (id: string) => void
-  /** Appearance only. The feature flags have their own `reset`, because the
-   *  two now live behind separate entries in the account menu and a reset in
-   *  one dialog must not silently undo the other's. */
+  /** Light, dark or match system. Shares the head script's key, so the top
+   *  bar's theme button and the Settings dialog are one setting. */
+  themeMode: ThemeMode
+  setThemeMode: (mode: ThemeMode) => void
+  /** The mode as it resolves now — what the top bar's button shows. */
+  dark: boolean
+  /** Appearance only: theme, palette and highlight. The feature flags have
+   *  their own `reset`, because the Settings dialog resets one section at a
+   *  time and a reset in one must not silently undo the other. */
   resetAppearance: () => void
 }
 
@@ -177,13 +185,19 @@ export function useDemoFeatureState(): DemoFeaturesValue {
   // a reload does not flash the default palette.
   usePaletteClass(palette)
 
+  const theme = useThemeMode({ storageKey: THEME_MODE_KEY })
+
   return {
     ...features,
     palette,
     setPalette,
     highlight,
     setHighlight,
+    themeMode: theme.mode,
+    setThemeMode: theme.setMode,
+    dark: theme.dark,
     resetAppearance: () => {
+      theme.setMode('system')
       setPalette(DEFAULT_PALETTE)
       setHighlight(DEFAULT_HIGHLIGHT)
     },

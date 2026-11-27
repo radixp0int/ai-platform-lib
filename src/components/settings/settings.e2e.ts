@@ -19,10 +19,12 @@ test.describe('Settings', () => {
 
   test('the palette picker is a radio group, one choice at a time', async ({ story, page }) => {
     await story.open('components-settings--palette')
-    const group = page.getByRole('radiogroup', { name: 'Palette' })
+    const group = page.getByRole('radiogroup', { name: 'Dark palette' })
     await group.getByRole('radio', { name: 'Graphite' }).click()
     await expect(group.getByRole('radio', { name: 'Graphite' })).toBeChecked()
     await expect(group.getByRole('radio', { name: 'Navy' })).not.toBeChecked()
+    // The chosen palette's note sits under the cards.
+    await expect(page.getByText('Near-neutral charcoal.', { exact: false })).toBeVisible()
   })
 
   test('the highlight picker offers six swatches, each named', async ({ story, page }) => {
@@ -31,5 +33,44 @@ test.describe('Settings', () => {
     await expect(group.getByRole('radio')).toHaveCount(6)
     await group.getByRole('radio', { name: 'Teal' }).click()
     await expect(group.getByRole('radio', { name: 'Teal' })).toBeChecked()
+    // The preview line's mark takes the chosen colour.
+    await expect(page.locator('[data-chat-highlight]')).toHaveAttribute(
+      'data-chat-highlight',
+      'teal',
+    )
+  })
+
+  test('the theme control offers light, dark and match system', async ({ story, page }) => {
+    await story.open('components-settings--theme-mode-story')
+    const group = page.getByRole('group', { name: 'Theme' })
+    await expect(group.getByRole('button', { name: 'Match system' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+    await group.getByRole('button', { name: 'Dark' }).click()
+    await expect(group.getByRole('button', { name: 'Dark' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+  })
+
+  test('the preview follows the switches beside it', async ({ story, page }) => {
+    await story.open('components-settings--preview')
+    const preview = page.getByRole('complementary', { name: 'Preview' })
+    await expect(preview.getByText('sync_log.read')).toHaveCount(0)
+    await page.getByRole('switch', { name: /^Tool calls/ }).click()
+    await expect(preview.getByText('sync_log.read')).toBeVisible()
+    await page.getByRole('switch', { name: /^Reasoning/ }).click()
+    await expect(preview.getByText('Thought for 4s')).toHaveCount(0)
+  })
+
+  test('the dialog shell switches section and closes with Done', async ({ story, page }) => {
+    await story.open('components-settings--dialog')
+    const dialog = page.getByRole('dialog', { name: 'Settings' })
+    await expect(dialog).toBeVisible()
+    await dialog.getByRole('tab', { name: 'Features' }).click()
+    await expect(dialog.getByRole('button', { name: 'Reset to defaults' })).toBeVisible()
+    await dialog.getByRole('button', { name: 'Done' }).click()
+    await expect(dialog).toBeHidden()
   })
 })
