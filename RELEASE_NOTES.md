@@ -3,6 +3,28 @@
 Changes to the component library as seen from Storybook. Newest first. Each
 entry names the modules it touches so the sidebar entry is easy to find.
 
+## 2026-11-27 — Alert: a square status-bar look
+
+- **`Alert` takes `variant`: `'panel'` (default) or `'bar'`.** Leave it out and
+  the alert looks as it did before: a rounded card with the glyph in a tile.
+  `bar` is the look for a live status strip docked to a page or a composer:
+  - square corners;
+  - a 3px edge down the left in the tone colour, drawn as an inset shadow so
+    nothing shifts;
+  - the glyph plain and inline in the tone colour, with no tile behind it;
+  - a hairline border and a faint shadow instead of the lifted card shadow.
+
+  The bold lead, the copy, the tone-coloured actions and the dismiss × are the
+  same in both looks. It works with every tone. In dark mode the edge and glyph
+  take the dark tone values (warning is a lighter amber). No new tokens: the
+  edge uses `--brand-fg`, `--success-fg`, `--caution` and `--danger-fg`.
+  `AlertVariant` is the type. The rule of thumb: live status bars are square,
+  content cards stay rounded.
+
+- **Stories:** Primitives/Alert gains a Variant control, Looks and Looks Dark
+  (every tone in both looks), and Docked Above Composer (light and dark), the
+  "Acme can make mistakes" notice on a bar above the chat composer.
+
 ## 2026-11-25 — Markdown: blockquote options
 
 - **`Markdown` takes four blockquote options.** Each one works alone, and with
