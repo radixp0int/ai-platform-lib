@@ -45,6 +45,29 @@ entry names the modules it touches so the sidebar entry is easy to find.
   Dialog. Chat/Recipes/Settings dialog has Profile And Look, Answer Features,
   Dark, Dark Profile And Look and Narrow.
 
+## 2026-11-27 — StatTile: the Insights tile
+
+- **`StatTile` takes `size`: `'large'` or `'small'`.** With it, the tile is a
+  card with the label above the value, as at the top of an Insights page. Leave
+  it out and the tile is the bare figure it was before (value above label,
+  styled with the class props), so existing uses don't change.
+- **`unit`**: set after the value, smaller and in soft ink ("92.4 %",
+  "371 of 500", "1.4 s").
+- **`change`** (`StatTileChange`: `text`, `direction`, `upIsGood`): the line
+  under the value. The tile draws the arrow and colours the line by whether the
+  move is good news, never by its sign: `upIsGood: false` makes "↑ 14%" red for
+  an error count and "↓ 0.1 s" green for a wait time. Without a `direction` the
+  line is muted and has no arrow ("No change", "24 people"). Screen readers hear
+  "Up" or "Down" in words.
+- **`sparkline`**: an array of numbers, oldest first, drawn as a 2px accent line
+  over a soft fill of the same hue, with no axes. It is decorative (hidden from
+  assistive tech) and takes the dark accent in dark mode. Fewer than two
+  numbers draw nothing.
+- **`footer`**: the tile's last line, usually a `Link` to the section behind
+  the figure ("Evaluation scores ↓").
+- **Stories:** Large, Small, Changes, Large Without Sparkline, Playground,
+  Dark. The Compact story's label is now "Median response".
+
 ## 2026-11-27 — PageBand: the navy title band
 
 - **New `PageBand`** (Components/Page band), exported next to `PageHeader`. It
