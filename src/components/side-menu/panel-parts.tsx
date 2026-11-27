@@ -52,8 +52,10 @@ export type MenuPanelRowProps = {
   onNavigate?: NavigateHandler
 }
 
+// The focus ring is drawn inside the row: a row spans its panel's scroll area,
+// which would cut off a ring drawn outside it.
 const row =
-  'flex w-full min-w-0 items-center gap-2 rounded-control px-2 py-1.5 text-left text-sm transition'
+  'flex w-full min-w-0 items-center gap-2 rounded-control px-2 py-1.5 text-left text-sm transition focus-visible:-outline-offset-2'
 const on = 'bg-chip font-bold text-chip-fg'
 const off = 'text-ink hover:bg-tint/5'
 

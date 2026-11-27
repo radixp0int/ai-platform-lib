@@ -450,7 +450,7 @@ function AppsView({
               aria-current={current ? 'page' : undefined}
               onNavigate={onNavigate}
               onClick={(event) => onPick(item, event)}
-              className={`flex flex-col items-start gap-2 rounded-surface border p-3 text-[13px] font-bold text-ink-strong transition ${
+              className={`flex flex-col items-start gap-2 rounded-surface border p-3 text-[13px] font-bold text-ink-strong transition focus-visible:-outline-offset-2 ${
                 current
                   ? 'border-accent bg-chip'
                   : 'border-line hover:border-ink-soft/40 hover:bg-tint/5'

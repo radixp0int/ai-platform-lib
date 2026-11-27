@@ -1,4 +1,31 @@
+import type { Locator } from '@playwright/test'
 import { expect, test } from '../../../tests/story'
+
+/**
+ * How far the focused element's ring reaches past each side of the scroll
+ * area it sits in. Zero or less on every side: the ring is all on show.
+ */
+function ringOverflow(row: Locator) {
+  return row.evaluate((element) => {
+    const style = getComputedStyle(element)
+    if (style.outlineStyle === 'none') throw new Error('no focus ring is drawn')
+    const reach = parseFloat(style.outlineOffset) + parseFloat(style.outlineWidth)
+    let area = element.parentElement!
+    while (!/auto|scroll/.test(getComputedStyle(area).overflowY)) area = area.parentElement!
+    const ring = element.getBoundingClientRect()
+    const clip = area.getBoundingClientRect()
+    return {
+      left: clip.left - (ring.left - reach),
+      right: ring.right + reach - clip.right,
+      top: clip.top - (ring.top - reach),
+      bottom: ring.bottom + reach - clip.bottom,
+    }
+  })
+}
+
+const inside = { left: 0, right: 0, top: 0, bottom: 0 }
+const fits = (overflow: typeof inside) =>
+  Object.fromEntries(Object.entries(overflow).map(([side, by]) => [side, Math.max(0, by)]))
 
 test.describe('SideMenu', () => {
   test('the rail lists the apps by their short names, the current one marked', async ({
@@ -212,5 +239,44 @@ test.describe('SideMenu', () => {
     await expect(panel).toHaveCount(0)
     await page.setViewportSize({ width: 1280, height: 800 })
     await expect(panel).toBeVisible()
+  })
+
+  test('a focused row’s ring stays inside the panel’s scroll area, top-level or nested', async ({
+    story,
+    page,
+  }) => {
+    for (const mode of ['light', 'dark'] as const) {
+      await story.open('components-side-menu--home-panel', { mode })
+      const panel = page.getByRole('complementary', { name: 'Home' })
+      // Tab from the collapse button, so the browser shows the keyboard ring.
+      await panel.getByRole('button', { name: 'Collapse panel' }).focus()
+      await page.keyboard.press('Tab')
+      const overview = panel.getByRole('link', { name: /^Overview/ })
+      await expect(overview).toBeFocused()
+      expect(fits(await ringOverflow(overview))).toEqual(inside)
+      const child = panel.getByRole('link', { name: /^People and roles/ })
+      await panel.getByRole('link', { name: /^Tenants/ }).focus()
+      await page.keyboard.press('Tab')
+      await expect(child).toBeFocused()
+      expect(fits(await ringOverflow(child))).toEqual(inside)
+    }
+  })
+
+  test.describe('below 1200px, where the list scrolls', () => {
+    test.use({ viewport: { width: 1024, height: 800 } })
+
+    test('the last row’s ring is all on show when focus scrolls it into view', async ({
+      story,
+      page,
+    }) => {
+      await story.open('components-side-menu--tablet')
+      await page.getByRole('link', { name: 'Home' }).click()
+      const panel = page.getByRole('complementary', { name: 'Home' })
+      await panel.getByRole('link', { name: /^People and roles/ }).focus()
+      await page.keyboard.press('Tab')
+      const last = panel.getByRole('link', { name: /^Usage and plans/ })
+      await expect(last).toBeFocused()
+      expect(fits(await ringOverflow(last))).toEqual(inside)
+    })
   })
 })
