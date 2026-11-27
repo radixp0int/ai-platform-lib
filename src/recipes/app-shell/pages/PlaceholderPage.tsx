@@ -28,8 +28,8 @@ export function PlaceholderPage({ title, addSource = false }: PlaceholderPagePro
       />
       <EmptyState className="flex flex-col items-start gap-4 rounded-xl border border-dashed border-line px-6 py-8">
         <p className="max-w-prose text-[15px] leading-relaxed text-ink">
-          This page has not been designed yet. It is here so the menu, the pinned tabs and the
-          routes can be tried with every space a tenant can have.
+          This page has not been designed yet. It is here so the menu and the routes can be tried
+          with every space a tenant can have.
         </p>
         {addSource && (
           <ButtonLink href={`${base}/ingestion/new`} variant="primary" size="lg">

@@ -3,6 +3,30 @@
 Changes to the component library as seen from Storybook. Newest first. Each
 entry names the modules it touches so the sidebar entry is easy to find.
 
+## 2026-11-27 — App shell: the Finals 2.0 frame
+
+The first step of moving every recipe onto the Finals 2.0 designs.
+
+- **Home's panel lists every area.** Recipes/App shell's Home app now opens
+  the panel from the Finals 2.0 pages, using the SideMenu destinations that
+  landed with the panel rows:
+  - Overview, then Use (Chat), Build (Ingestion, Chat Config), Automate
+    (Workflows Studio), Measure (Insights, Evaluations Manager) and Govern
+    (Audit & Compliance, and Tenant Admin with Tenants, People and roles, and
+    Usage and plans under it);
+  - each row has a line on how it is doing and a status dot.
+    `buildHomePanel(tenant)` in the platform fixtures builds it, listing only the
+    areas the tenant has.
+- **Ingestion, Insights and Tenants are Home's pages.** Opening one keeps the
+  Home panel up with its row marked, rather than leaving you in an app with no
+  panel. Chat, Workflows and Tasks stay apps of their own. All apps still lists
+  Ingestion and Insights.
+- **The top bar matches Finals 2.0.** The tenant switcher moves beside the logo,
+  and the pinned tabs leave the shell. The `PinnedPages` component itself is
+  unchanged.
+- **Tests:** the shell's e2e tests cover the Home panel, Ingestion and Tenants
+  marking their rows, Chat keeping its own panel, and where the switcher sits.
+
 ## 2026-11-27 — SideMenu: destinations in the panel, and an overlay below 1200px
 
 - **A panel can list destinations: `SideMenuPanel.sections`** (grouped like the
