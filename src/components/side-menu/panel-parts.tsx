@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { SearchIcon } from '../../primitives/icons'
 import { Link, type NavigateHandler } from '../../primitives/link'
 import { SectionLabel } from '../../primitives/section-label'
+import { StatusDot } from '../../primitives/status-dot'
 
 // The few shapes every panel is made of, so the panels of different apps read
 // as one menu: a search box, a small heading, and a row.
@@ -71,7 +72,7 @@ export function MenuPanelRow({
   const className = `${row} ${sub ? 'min-h-11' : 'min-h-9'} ${current ? on : off}`
   const body = (
     <>
-      {leading ?? (dot && <span aria-hidden className={`size-2 shrink-0 rounded-full ${dot}`} />)}
+      {leading ?? (dot && <StatusDot className={`size-2 shrink-0 ${dot}`} />)}
       <span className="flex min-w-0 flex-1 flex-col leading-tight">
         <span className="truncate">{name}</span>
         {sub && <span className="truncate text-xs font-normal text-ink-soft">{sub}</span>}

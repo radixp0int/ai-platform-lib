@@ -7,6 +7,7 @@ export type { InSideMenuProps } from './slot'
 export type {
   MenuDestination,
   MenuSection,
+  MenuStatus,
   SideMenuAction,
   SideMenuFootLink,
   SideMenuPanel,

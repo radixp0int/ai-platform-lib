@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState, type MouseEvent } from 'react'
+import { useMediaQuery } from '../../hooks/useMediaQuery'
 import { useResizableWidth } from '../../hooks/useResizableWidth'
 import { AppsIcon, PanelCollapseIcon } from '../../primitives/icons'
 import { Link, type NavigateHandler } from '../../primitives/link'
+import { MenuPanelDestinations } from './panel-destinations'
 import { MenuPanelLabel, MenuPanelRow, MenuPanelSearch } from './panel-parts'
 import { useSideMenuSlots } from './slot-context'
 import type { MenuDestination, SideMenuAction, SideMenuPlace, SideMenuProps } from './types'
@@ -11,8 +13,13 @@ const MIN_WIDTH = 200
 const MAX_WIDTH = 420
 const DEFAULT_WIDTH = 260
 
-const holdsActive = (item: MenuDestination, activeId?: string) =>
-  item.id === activeId || (item.children?.some((child) => child.id === activeId) ?? false)
+/** Below this width the panel slides over the page instead of sitting beside it. */
+const OVERLAY_QUERY = '(width < 1200px)'
+
+/** Whether a destination is `id`, or holds it at any depth. */
+const holds = (item: MenuDestination, id?: string): boolean =>
+  id !== undefined &&
+  (item.id === id || (item.children?.some((child) => holds(child, id)) ?? false))
 
 const railLink =
   'relative flex w-13 flex-col items-center gap-[3px] rounded-control pt-[7px] pb-1.5 text-[10.5px] font-bold transition'
@@ -26,14 +33,18 @@ const quiet =
  * one you are in.
  *
  * The rail is always there. Pressing the icon of the app you are in folds its
- * panel away and brings it back; pressing another goes there. With the panel
+ * panel away and brings it back; pressing another goes there. Below 1200px the
+ * panel slides over the page, with a shadow, and starts closed; picking a page
+ * in it, or Escape, closes it again. With the panel
  * folded, resting on the icon opens a card with the short version. The grid at
  * the top opens every destination, which is how the ones without a place in the
  * rail are reached. The panel's edge is a handle: drag it, or focus it and use
  * the arrow keys.
  *
- * What a panel holds is the host's, and `MenuPanelRow` and its siblings keep
- * the panels of different apps alike. A page whose panel depends on the page's
+ * What a panel holds is the host's: destinations (`sections`), drawn as rows
+ * with their descriptions, status dots and indented children, and anything
+ * else (`content`), where `MenuPanelRow` and its siblings keep the panels of
+ * different apps alike. A page whose panel depends on the page's
  * own state adds to it with `InSideMenu`.
  */
 export function SideMenu({
@@ -55,11 +66,21 @@ export function SideMenu({
   const slots = useSideMenuSlots()
   const items = sections.flatMap((section) => section.items)
   const railItems = rail.flatMap((id) => items.find((item) => item.id === id) ?? [])
-  const activeApp = items.find((item) => holdsActive(item, activeId))
+  // The app you are in: the one that is the page or holds it, else the one
+  // whose panel lists it.
+  const activeApp =
+    items.find((item) => holds(item, activeId)) ??
+    items.find((item) =>
+      panels[item.id]?.sections?.some((section) =>
+        section.items.some((listed) => holds(listed, activeId)),
+      ),
+    )
   const panel = activeApp ? panels[activeApp.id] : undefined
 
-  const [kept, setKept] = useState(defaultPanelOpen)
-  const open = panelOpen ?? kept
+  const overlay = useMediaQuery(OVERLAY_QUERY)
+  // Null until someone opens or shuts the panel: it then follows the width.
+  const [kept, setKept] = useState<boolean | null>(null)
+  const open = panelOpen ?? kept ?? (defaultPanelOpen && !overlay)
   const setOpen = (next: boolean) => {
     setKept(next)
     onPanelOpenChange?.(next)
@@ -75,18 +96,34 @@ export function SideMenu({
     storageKey: widthStorageKey,
   })
 
-  // Arriving at an app brings its panel, and leaves All apps behind.
-  const arrivedAt = useRef(activeApp?.id)
+  // Crossing the breakpoint starts over: open beside the page, shut over it.
+  const wasOverlay = useRef(overlay)
   useEffect(() => {
-    if (arrivedAt.current === activeApp?.id) return
-    arrivedAt.current = activeApp?.id
-    setView('section')
-    setQuery('')
-    if (activeApp && panels[activeApp.id]) {
+    if (wasOverlay.current === overlay) return
+    wasOverlay.current = overlay
+    setKept(null)
+    onPanelOpenChange?.(defaultPanelOpen && !overlay)
+  }, [overlay, defaultPanelOpen, onPanelOpenChange])
+
+  // Arriving at an app brings its panel, and leaves All apps behind. Over the
+  // page, arriving anywhere — another app or a page in this one — shuts it.
+  const arrivedAt = useRef({ app: activeApp?.id, page: activeId })
+  useEffect(() => {
+    const before = arrivedAt.current
+    if (before.app === activeApp?.id && before.page === activeId) return
+    arrivedAt.current = { app: activeApp?.id, page: activeId }
+    if (before.app !== activeApp?.id) {
+      setView('section')
+      setQuery('')
+    }
+    if (overlay) {
+      setKept(false)
+      onPanelOpenChange?.(false)
+    } else if (before.app !== activeApp?.id && activeApp && panels[activeApp.id]) {
       setKept(true)
       onPanelOpenChange?.(true)
     }
-  }, [activeApp, panels, onPanelOpenChange])
+  }, [activeApp, activeId, overlay, panels, onPanelOpenChange])
 
   const inApps = view === 'apps'
   const showPanel = open && (inApps || panel !== undefined)
@@ -114,9 +151,16 @@ export function SideMenu({
   const flyout = panel?.flyout
   const flyoutOpen = hover !== null && hover.id === activeApp?.id && !!flyout && !showPanel
 
+  const railRef = useRef<HTMLElement>(null)
+  const closeOver = () => {
+    setOpen(false)
+    railRef.current?.querySelector<HTMLElement>('[aria-current="page"]')?.focus()
+  }
+
   return (
-    <div className={`flex shrink-0 self-stretch ${className}`}>
+    <div className={`relative flex shrink-0 self-stretch ${className}`}>
       <nav
+        ref={railRef}
         aria-label={label}
         onMouseLeave={() => setHover(null)}
         onBlur={(event) => {
@@ -153,6 +197,7 @@ export function SideMenu({
               href={item.href}
               aria-label={name}
               aria-current={item.id === activeApp?.id ? 'page' : undefined}
+              aria-expanded={item.id === activeApp?.id && panels[item.id] ? showPanel : undefined}
               onNavigate={onNavigate}
               onClick={(event) => pressApp(item, event)}
               onMouseEnter={toFlyout}
@@ -238,8 +283,18 @@ export function SideMenu({
         <aside
           ref={asideRef}
           aria-label={title}
+          data-overlay={overlay || undefined}
           style={{ width: resize.width }}
-          className="relative z-10 flex shrink-0 flex-col border-r border-line bg-panel-solid p-3"
+          onKeyDown={(event) => {
+            if (!overlay || event.key !== 'Escape') return
+            event.stopPropagation()
+            closeOver()
+          }}
+          className={`flex shrink-0 flex-col border-r border-line bg-panel-solid p-3 ${
+            overlay
+              ? 'absolute inset-y-0 left-17 z-30 shadow-[24px_0_48px_-28px_rgb(0_25_50/0.45)]'
+              : 'relative z-10'
+          }`}
         >
           <div className="flex min-h-8 items-center gap-1.5 pt-0.5 pr-0 pb-2.5 pl-1.5">
             <h2 className="flex-1 truncate text-[15px] font-extrabold text-ink-strong">{title}</h2>
@@ -274,6 +329,13 @@ export function SideMenu({
               />
             ) : (
               <>
+                {panel?.sections && (
+                  <MenuPanelDestinations
+                    sections={panel.sections}
+                    activeId={activeId}
+                    onNavigate={onNavigate}
+                  />
+                )}
                 {panel?.content}
                 {/* Where a page adds its own — see InSideMenu. Empty, it takes no room. */}
                 <div ref={slots?.setPanel} className="flex min-h-0 flex-1 flex-col empty:hidden" />

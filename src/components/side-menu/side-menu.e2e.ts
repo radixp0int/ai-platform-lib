@@ -8,10 +8,7 @@ test.describe('SideMenu', () => {
     await story.open('components-side-menu--default')
     const rail = page.getByRole('navigation', { name: 'Apps' })
     await expect(rail.locator('[aria-current="page"]')).toContainText('Flows')
-    await expect(rail.getByRole('link', { name: 'Home' })).toHaveAttribute(
-      'href',
-      '/t/alderfinch-treasury/home',
-    )
+    await expect(rail.getByRole('link', { name: 'Home' })).toHaveAttribute('href', /\/home$/)
     await expect(rail.getByRole('link', { name: 'Tasks, 2 waiting' })).toBeVisible()
   })
 
@@ -104,8 +101,104 @@ test.describe('SideMenu', () => {
   }) => {
     await story.open('components-side-menu--with-page-section')
     const section = page.getByRole('region', { name: 'This page' })
-    await expect(section).toContainText('Positive pay exceptions')
+    await expect(section).toContainText('Supplier onboarding checklist')
     await page.getByRole('button', { name: 'Collapse panel' }).click()
     await expect(section).toHaveCount(0)
+  })
+
+  test('a panel lists destinations with a second line, a status dot and indented children', async ({
+    story,
+    page,
+  }) => {
+    await story.open('components-side-menu--home-panel')
+    const rail = page.getByRole('navigation', { name: 'Apps' })
+    // Tenants is listed only in the Home panel, so Home is the app you are in.
+    await expect(rail.locator('[aria-current="page"]')).toContainText('Home')
+    const panel = page.getByRole('complementary', { name: 'Home' })
+    await expect(panel.getByRole('link', { name: /Ingestion/ })).toContainText(
+      '13 of 14 sources syncing',
+    )
+    for (const status of ['warning', 'error', 'info', 'success', 'idle']) {
+      await expect(panel.locator(`[data-status="${status}"]`)).toHaveCount(1)
+    }
+    const sub = panel.getByRole('group', { name: 'Tenant Admin' })
+    await expect(sub.getByRole('link')).toHaveCount(3)
+    await expect(sub).toHaveCSS('border-left-style', 'solid')
+    await expect(sub.getByRole('link', { name: /^Tenants/ })).toHaveAttribute(
+      'aria-current',
+      'page',
+    )
+    await expect(panel.getByRole('link', { name: /^Tenant Admin/ })).not.toHaveAttribute(
+      'aria-current',
+    )
+    // The children sit to the right of their parent.
+    const parentBox = (await panel.getByRole('link', { name: /^Tenant Admin/ }).boundingBox())!
+    const childBox = (await sub.getByRole('link', { name: /^Tenants/ }).boundingBox())!
+    expect(childBox.x).toBeGreaterThan(parentBox.x + 12)
+  })
+
+  test('the status dots keep distinct colours in dark mode', async ({ story, page }) => {
+    await story.open('components-side-menu--home-panel-dark', { mode: 'dark' })
+    const panel = page.getByRole('complementary', { name: 'Home' })
+    const colour = (status: string) =>
+      panel
+        .locator(`[data-status="${status}"]`)
+        .evaluate((dot) => getComputedStyle(dot).backgroundColor)
+    const colours = await Promise.all(['warning', 'error', 'info', 'success'].map(colour))
+    expect(new Set(colours).size).toBe(4)
+  })
+
+  test.describe('below 1200px', () => {
+    test.use({ viewport: { width: 1024, height: 800 } })
+
+    test('the panel starts closed, and the rail icon slides it over the page', async ({
+      story,
+      page,
+    }) => {
+      await story.open('components-side-menu--tablet')
+      const panel = page.getByRole('complementary', { name: 'Home' })
+      const heading = page.getByRole('heading', { name: 'Tenants', level: 1 })
+      const home = page.getByRole('link', { name: 'Home' })
+      await expect(panel).toHaveCount(0)
+      await expect(home).toHaveAttribute('aria-expanded', 'false')
+      const before = (await heading.boundingBox())!.x
+      await home.click()
+      await expect(panel).toBeVisible()
+      await expect(panel).toHaveAttribute('data-overlay', 'true')
+      await expect(panel).toHaveCSS('position', 'absolute')
+      await expect(home).toHaveAttribute('aria-expanded', 'true')
+      // Over the page, not beside it: the page has not moved.
+      expect((await heading.boundingBox())!.x).toBe(before)
+      await home.click()
+      await expect(panel).toHaveCount(0)
+    })
+
+    test('the collapse button and Escape shut it', async ({ story, page }) => {
+      await story.open('components-side-menu--tablet')
+      const panel = page.getByRole('complementary', { name: 'Home' })
+      const home = page.getByRole('link', { name: 'Home' })
+      await home.click()
+      await panel.getByRole('button', { name: 'Collapse panel' }).click()
+      await expect(panel).toHaveCount(0)
+      await home.click()
+      await panel.getByRole('link', { name: /^People and roles/ }).focus()
+      await page.keyboard.press('Escape')
+      await expect(panel).toHaveCount(0)
+      await expect(home).toBeFocused()
+    })
+  })
+
+  test('narrowing the window shuts the panel, and widening brings it back', async ({
+    story,
+    page,
+  }) => {
+    await story.open('components-side-menu--home-panel')
+    const panel = page.getByRole('complementary', { name: 'Home' })
+    await expect(panel).toBeVisible()
+    await expect(panel).not.toHaveAttribute('data-overlay')
+    await page.setViewportSize({ width: 1024, height: 800 })
+    await expect(panel).toHaveCount(0)
+    await page.setViewportSize({ width: 1280, height: 800 })
+    await expect(panel).toBeVisible()
   })
 })

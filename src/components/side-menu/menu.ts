@@ -2,11 +2,12 @@
 // Plain functions over the same data `SideMenu` draws.
 import type { MenuDestination, MenuSection } from './types'
 
-/** Every destination, children included, in menu order. */
+const flatten = (items: MenuDestination[]): MenuDestination[] =>
+  items.flatMap((item) => [item, ...flatten(item.children ?? [])])
+
+/** Every destination, children at any depth included, in menu order. */
 export function flattenMenu(sections: MenuSection[]): MenuDestination[] {
-  return sections.flatMap((section) =>
-    section.items.flatMap((item) => [item, ...(item.children ?? [])]),
-  )
+  return sections.flatMap((section) => flatten(section.items))
 }
 
 /**
@@ -30,7 +31,5 @@ export function matchDestination(
 
 /** The item a destination sits under, for a pinned page's context label. */
 export function parentOf(sections: MenuSection[], id: string): MenuDestination | undefined {
-  return sections
-    .flatMap((section) => section.items)
-    .find((item) => item.children?.some((child) => child.id === id))
+  return flattenMenu(sections).find((item) => item.children?.some((child) => child.id === id))
 }
