@@ -3,6 +3,33 @@
 Changes to the component library as seen from Storybook. Newest first. Each
 entry names the modules it touches so the sidebar entry is easy to find.
 
+## 2026-11-27 — PageBand: the navy title band
+
+- **New `PageBand`** (Components/Page band), exported next to `PageHeader`. It
+  is the band at the top of every Finals 2.0 page:
+  - an optional trail (`breadcrumbs`, drawn in Breadcrumbs' `inverse` tone);
+  - the title as the page's one `h1`, and a `description` line under it;
+  - the page's `actions` on the right, wrapping under the title on narrow
+    screens;
+  - `details`: a "Show details" link at the end of the description, with an
+    optional `summary` before it in an attention colour ("5 need a look"). It
+    opens a strip of up to four figures (`stats`: label, value, note); a figure
+    with `onSelect` is a button, say to filter the list below. Open state can be
+    left to the band (`defaultOpen`) or controlled (`open`, `onOpenChange`).
+  - `children`: the page body, whose top edge lifts 44px over the band so the
+    first card overlaps it.
+    In dark mode the band is a dark panel with a hairline under it, like the top
+    bar. Inside the band `--on-brand-solid` is pinned to white, so Button's
+    `inverse` stays legible in dark mode too. `PageBandProps`, `PageBandDetails`
+    and `PageBandStat` are the types.
+- **`Button` gains `variant="inverse-solid"`**: a white fill with brand ink, the
+  one primary action on a brand band. It stays white in dark mode. Secondary
+  actions on the band use the existing `inverse`.
+- **New brand token `--on-brand-attention`** (`text-on-brand-attention`): a light
+  amber that reads on the navy band and on the dark panel. Only for counts set
+  on a brand band.
+- **Stories:** Default, Details Open, Nothing Needs Anyone, Title Only, Dark.
+
 ## 2026-11-27 — Alert: a square status-bar look
 
 - **`Alert` takes `variant`: `'panel'` (default) or `'bar'`.** Leave it out and

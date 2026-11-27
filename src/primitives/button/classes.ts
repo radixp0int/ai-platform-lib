@@ -30,6 +30,10 @@ const sizes: Record<ButtonSize, string> = {
  * `secondary` variant's `bg-panel-solid` is a coin toss, and the losing side
  * of it is white text on a white fill.
  *
+ * `inverse-solid` is the one primary action on a brand band (PageBand's "Add a
+ * tenant"): a white fill with brand ink. It stays white in dark mode, where
+ * the band is a dark panel, so the band's main action reads the same in both.
+ *
  * `danger` tints rather than fills. A destructive action wants to be findable,
  * not the loudest thing on the page. `destructive` is the solid treatment and
  * belongs at the confirmation boundary, after intent has already been stated.
@@ -42,6 +46,7 @@ const variants: Record<ButtonVariant, string> = {
   destructive: 'bg-danger-solid text-on-danger-solid hover:bg-danger-solid-hover',
   inverse:
     'border border-transparent bg-on-brand-solid/16 text-on-brand-solid hover:bg-on-brand-solid/28',
+  'inverse-solid': 'border border-transparent bg-white text-brand-900 hover:bg-brand-100',
 }
 
 /** The class string a button is drawn with — shared by `Button` and

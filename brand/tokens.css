@@ -47,6 +47,7 @@
   --color-brand-fg-hover: var(--brand-fg-hover);
   --color-brand-solid: var(--brand-solid);
   --color-on-brand-solid: var(--on-brand-solid);
+  --color-on-brand-attention: var(--on-brand-attention);
   /* The composer's primary button only — see --action in brand.css §1. */
   --color-action: var(--action);
   --color-on-action: var(--on-action);

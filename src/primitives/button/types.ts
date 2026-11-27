@@ -1,7 +1,14 @@
 import type { ButtonHTMLAttributes, ReactNode, Ref } from 'react'
 import type { LinkProps } from '../link'
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'destructive' | 'inverse'
+export type ButtonVariant =
+  | 'primary'
+  | 'secondary'
+  | 'ghost'
+  | 'danger'
+  | 'destructive'
+  | 'inverse'
+  | 'inverse-solid'
 export type ButtonSize = 'sm' | 'md' | 'lg'
 export type AdaptiveButtonCollapse = 'sm' | 'md' | 'lg'
 

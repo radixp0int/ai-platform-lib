@@ -117,6 +117,10 @@
      to remember when re-theming instead of one. */
   --brand-solid: var(--brand-600);
   --on-brand-solid: #ffffff;
+  /* A count that wants a look, set on a brand band (PageBand's "5 need a look").
+     The band is navy in light and a dark panel in dark, so one light amber
+     reads on both; it is not used on the page itself. */
+  --on-brand-attention: oklch(82% 0.12 65);
   /* The composer's send/stop button, and only that control. It defaults to the
      brand fill — light mode has no reason to differ — but it is its own token
      so a dark theme can make that one button warm without dragging every other
