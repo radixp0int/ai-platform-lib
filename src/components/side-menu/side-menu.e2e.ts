@@ -131,6 +131,18 @@ test.describe('SideMenu', () => {
     await expect(panel.getByRole('link', { name: /^Tenant Admin/ })).not.toHaveAttribute(
       'aria-current',
     )
+    // Each child sits on the rule: flush against it, square on the left and
+    // rounded on the right, with the rule still drawn beside it.
+    const tenants = sub.getByRole('link', { name: /^Tenants/ })
+    await expect(tenants).toHaveCSS('border-top-left-radius', '0px')
+    await expect(tenants).toHaveCSS('border-bottom-left-radius', '0px')
+    await expect(tenants).not.toHaveCSS('border-top-right-radius', '0px')
+    const ruleBox = (await sub.boundingBox())!
+    expect((await tenants.boundingBox())!.x).toBe(ruleBox.x + 1)
+    // The whole list fits the story's frame: the last child is not cut off.
+    const last = (await sub.getByRole('link', { name: /^Usage and plans/ }).boundingBox())!
+    const frame = (await panel.boundingBox())!
+    expect(last.y + last.height).toBeLessThanOrEqual(frame.y + frame.height)
     // The children sit to the right of their parent.
     const parentBox = (await panel.getByRole('link', { name: /^Tenant Admin/ }).boundingBox())!
     const childBox = (await sub.getByRole('link', { name: /^Tenants/ }).boundingBox())!

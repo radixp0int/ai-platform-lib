@@ -73,7 +73,9 @@ function Destination({
         <div
           role="group"
           aria-label={item.label}
-          className="ml-5 flex flex-col gap-0.5 border-l border-line"
+          // Each child sits on the rule: its highlight starts flush against it,
+          // square on the left and rounded on the right like the other rows.
+          className="ml-5 flex flex-col gap-0.5 border-l border-line [&>a]:rounded-l-none"
         >
           {children.map((child) => (
             <Destination key={child.id} item={child} activeId={activeId} onNavigate={onNavigate} />

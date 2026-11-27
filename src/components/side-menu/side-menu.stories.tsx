@@ -212,11 +212,18 @@ const home: SideMenuPanel = { sections: homeSections }
  */
 export const HomePanel: Story = {
   args: { activeId: 'tenants', panels: { home, workflows } },
+  // Tall enough for the whole list, so no row is cut off.
+  render: (args) => (
+    <div className="flex h-[700px]">
+      <SideMenu {...args} />
+    </div>
+  ),
 }
 
 /** The same panel in dark mode: the dots carry their own dark values. */
 export const HomePanelDark: Story = {
   args: HomePanel.args,
+  render: HomePanel.render,
   globals: { mode: 'dark' },
 }
 
