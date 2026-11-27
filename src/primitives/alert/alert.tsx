@@ -11,26 +11,16 @@ import { IconButton } from '../icon-button'
 import { useUiSize } from '../../lib/uiSize'
 import type { AlertProps, AlertTone } from './types'
 
-// Each tone: the icon tile (panel), the plain glyph and the left edge (bar),
-// the list bullets, the solid action and the text link. The surface itself
-// stays neutral whatever the tone. The edge is an inset shadow so it takes no
-// layout, paired with the bar's faint drop shadow in one declaration.
+// Each tone: the icon tile (panel), the accent colour the bar's edge and
+// glyph take, the list bullets, the solid action and the text link. The
+// surface itself stays neutral whatever the tone.
 const tones: Record<
   AlertTone,
-  {
-    tile: string
-    fg: string
-    edge: string
-    dot: string
-    solid: string
-    link: string
-    glyph: ReactNode
-  }
+  { tile: string; accent: string; dot: string; solid: string; link: string; glyph: ReactNode }
 > = {
   info: {
     tile: 'bg-brand-fg/10 text-brand-fg ring-brand-fg/25',
-    fg: 'text-brand-fg',
-    edge: 'shadow-[inset_3px_0_0_var(--brand-fg),0_1px_2px_var(--shadow-soft)]',
+    accent: '[--alert-accent:var(--brand-fg)]',
     dot: 'bg-brand-fg',
     solid: 'bg-brand-solid text-on-brand-solid hover:bg-brand-fg-hover',
     link: 'text-brand-fg hover:text-brand-fg-hover',
@@ -38,8 +28,7 @@ const tones: Record<
   },
   success: {
     tile: 'bg-success-surface text-success-fg ring-success-line',
-    fg: 'text-success-fg',
-    edge: 'shadow-[inset_3px_0_0_var(--success-fg),0_1px_2px_var(--shadow-soft)]',
+    accent: '[--alert-accent:var(--success-fg)]',
     dot: 'bg-success',
     solid: 'bg-success text-panel-solid hover:brightness-110',
     link: 'text-success-fg',
@@ -47,8 +36,7 @@ const tones: Record<
   },
   warning: {
     tile: 'bg-caution-surface text-caution ring-caution-line',
-    fg: 'text-caution',
-    edge: 'shadow-[inset_3px_0_0_var(--caution),0_1px_2px_var(--shadow-soft)]',
+    accent: '[--alert-accent:var(--caution)]',
     dot: 'bg-caution',
     solid: 'bg-caution text-panel-solid hover:brightness-110',
     link: 'text-caution',
@@ -56,8 +44,7 @@ const tones: Record<
   },
   error: {
     tile: 'bg-danger/10 text-danger-fg ring-danger/25',
-    fg: 'text-danger-fg',
-    edge: 'shadow-[inset_3px_0_0_var(--danger-fg),0_1px_2px_var(--shadow-soft)]',
+    accent: '[--alert-accent:var(--danger-fg)]',
     dot: 'bg-danger-solid',
     solid: 'bg-danger-solid text-panel-solid hover:bg-danger-solid-hover',
     link: 'text-danger-fg',
@@ -104,15 +91,12 @@ export function Alert({
   const titleSize = compact ? 'text-[13px]' : 'text-[14px]'
   const text = compact ? 'text-[12.5px]' : 'text-[13.5px]'
 
-  // The × centres on the title line: under the tile's padded title in a
-  // panel, on the bare first line in a bar.
-  const dismissOffset = inline
-    ? bar
-      ? '@max-[28rem]:-my-1.5 @max-[28rem]:self-start'
-      : '@max-[28rem]:-mt-0.5 @max-[28rem]:self-start'
-    : bar
-      ? '-my-1.5'
-      : '-mt-0.5'
+  // The × centres on the title line: the tile's padded title in a panel, the
+  // bare first line in a bar. Inline, only once it wraps.
+  const dismissOffset = {
+    stack: bar ? '-my-1.5' : '-mt-0.5',
+    inline: `@max-[28rem]:self-start ${bar ? '@max-[28rem]:-my-1.5' : '@max-[28rem]:-mt-0.5'}`,
+  }[layout]
 
   const actions = (action || secondaryAction) && (
     <div className={`flex flex-wrap items-center gap-x-3 gap-y-2 ${inline ? 'ml-auto' : 'mt-2.5'}`}>
@@ -148,8 +132,9 @@ export function Alert({
       data-variant={variant}
       className={[
         'flex min-w-0 border border-line bg-panel-solid',
+        // The bar's edge is an inset shadow, so it takes no layout.
         bar
-          ? `gap-2.5 rounded-none ${treatment.edge}`
+          ? `gap-2.5 ${treatment.accent} shadow-[inset_3px_0_0_var(--alert-accent),0_1px_2px_var(--shadow-soft)]`
           : 'gap-3 rounded-surface shadow-sm shadow-(color:--shadow-soft)',
         inline ? '@container items-center' : 'items-start',
         compact ? 'px-3 py-2.5' : 'px-4 py-3.5',
@@ -159,23 +144,19 @@ export function Alert({
         .join(' ')}
       {...rest}
     >
-      {icon !== false &&
-        (bar ? (
-          // One title line tall, so the glyph centres on the bold lead.
-          <span
-            aria-hidden="true"
-            className={`inline-flex h-[1lh] shrink-0 items-center leading-snug ${titleSize} ${treatment.fg} ${inline ? '@max-[28rem]:self-start' : ''}`}
-          >
-            {icon ?? treatment.glyph}
-          </span>
-        ) : (
-          <span
-            aria-hidden="true"
-            className={`inline-grid shrink-0 place-items-center rounded-control ring-1 ring-inset ${treatment.tile} ${compact ? 'size-7' : 'size-8'} ${inline ? '@max-[28rem]:self-start' : ''}`}
-          >
-            {icon ?? treatment.glyph}
-          </span>
-        ))}
+      {icon !== false && (
+        <span
+          aria-hidden="true"
+          className={`inline-grid shrink-0 place-items-center ${
+            bar
+              ? // One title line tall, so the plain glyph centres on the bold lead.
+                `h-[1lh] leading-snug text-(color:--alert-accent) ${titleSize}`
+              : `rounded-control ring-1 ring-inset ${treatment.tile} ${compact ? 'size-7' : 'size-8'}`
+          } ${inline ? '@max-[28rem]:self-start' : ''}`}
+        >
+          {icon ?? treatment.glyph}
+        </span>
+      )}
 
       <div
         className={`min-w-0 flex-1 ${inline ? 'flex flex-wrap items-center gap-x-2.5 gap-y-1.5' : ''}`}

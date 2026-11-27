@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { Decorator, Meta, StoryObj } from '@storybook/react-vite'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { Composer } from '../../chat/components/composer'
 import { Button } from '../button'
@@ -39,6 +39,9 @@ const meta = {
 
 export default meta
 type Story = StoryObj<typeof meta>
+
+/** Room for a page banner or two columns side by side. */
+const wide: Decorator = (Story) => <div className="w-[56rem] max-w-full">{Story()}</div>
 
 export const Playground: Story = {}
 
@@ -93,7 +96,7 @@ export const Actions: Story = {
 
 /** `layout="inline"`: a page-level banner on one line, wrapping when it runs out of room. */
 export const InlineBanner: Story = {
-  decorators: [(Story) => <div className="w-[56rem] max-w-full">{Story()}</div>],
+  decorators: [wide],
   args: {
     tone: 'error',
     layout: 'inline',
@@ -224,14 +227,14 @@ function LooksGrid() {
  * glyph; the lead, copy, action and dismiss match the panel.
  */
 export const Looks: Story = {
-  decorators: [(Story) => <div className="w-[56rem] max-w-full">{Story()}</div>],
+  decorators: [wide],
   globals: { mode: 'light' },
   render: () => <LooksGrid />,
 }
 
 /** The same grid in dark: edge and glyph take the dark tone values (warning is a lighter amber). */
 export const LooksDark: Story = {
-  decorators: [(Story) => <div className="w-[56rem] max-w-full">{Story()}</div>],
+  decorators: [wide],
   globals: { mode: 'dark' },
   render: () => <LooksGrid />,
 }
