@@ -59,3 +59,31 @@ export const Running: Story = {
 
 /** A workflow that has only just started: its one run, and no history. */
 export const FirstRun: Story = { args: { runs: spec.runs.slice(0, 1), total: 1 } }
+
+/**
+ * `rowTone` edges the runs that need attention: amber for the run waiting on a person, red for one
+ * that failed a step. The result says the same in words; the rest stay plain.
+ */
+export const NeedsAttention: Story = {
+  args: {
+    runs: [
+      {
+        id: 'bluefin',
+        name: 'Bluefin Logistics · $310,000',
+        startedBy: 'Marcus Lee',
+        result: 'Failed at Credit pull',
+        state: 'stopped',
+        stagesDone: 1,
+        progress: 'Stopped at stage 2 · Gather',
+        started: 'Today 10:14',
+        took: '4m',
+      },
+      ...spec.runs,
+    ],
+    rowTone: (run) =>
+      run.id === 'bluefin' ? 'error' : run.state === 'waiting' ? 'warning' : undefined,
+  },
+}
+
+/** The same in dark. */
+export const NeedsAttentionDark: Story = { ...NeedsAttention, globals: { mode: 'dark' } }

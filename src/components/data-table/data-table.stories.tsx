@@ -9,6 +9,7 @@ import { Pill } from '../../primitives/pill'
 import type { Sort } from '../paging'
 import { DataTable } from './data-table'
 import { sortRows as sortByType, toSortParam } from './sorting'
+import type { RowTone } from './row-tone'
 import type { Column } from './types'
 
 const COLUMNS: Column<Tenant>[] = [
@@ -358,3 +359,161 @@ function SortingHost() {
 export const Sorting: Story = {
   render: () => <SortingHost />,
 }
+
+/** A workflow run, as the runs list shows it. */
+type Run = {
+  id: string
+  name: string
+  startedBy: string
+  result: string
+  started: string
+  took?: string
+  tone?: RowTone
+}
+
+const RUN_COLUMNS: Column<Run>[] = [
+  {
+    id: 'name',
+    header: 'Run',
+    width: '36%',
+    cell: (r) => (
+      <span className="flex min-w-0 flex-col">
+        <span data-row-title className="truncate font-bold text-ink-strong">
+          {r.name}
+        </span>
+        <span className="text-xs text-ink-soft">{r.startedBy}</span>
+      </span>
+    ),
+  },
+  {
+    id: 'result',
+    header: 'Result',
+    width: '30%',
+    cell: (r) => <span className="font-bold text-ink-strong">{r.result}</span>,
+  },
+  { id: 'started', header: 'Started', width: '18%', cell: (r) => r.started },
+  {
+    id: 'took',
+    header: 'Took',
+    align: 'end',
+    cell: (r) => <span className="tabular-nums">{r.took ?? '—'}</span>,
+  },
+]
+
+/** One failed step, three runs that need someone, and the rest plain. */
+const RUNS: Run[] = [
+  {
+    id: 'run-northwind',
+    name: 'Northwind Supplies · invoice 4471',
+    startedBy: 'Dana Whitfield',
+    result: 'Failed at Match to PO',
+    started: 'Today 10:14',
+    took: '4m',
+    tone: 'error',
+  },
+  {
+    id: 'run-harbor',
+    name: 'Harbor Street Bakery · onboarding',
+    startedBy: 'Dana Whitfield',
+    result: 'Waiting on you',
+    started: 'Today 09:02',
+    tone: 'warning',
+  },
+  {
+    id: 'run-copperleaf',
+    name: 'Copperleaf Farms · contract renewal',
+    startedBy: 'Marcus Lee',
+    result: 'Waiting on Priya S.',
+    started: 'Today 08:31',
+    tone: 'warning',
+  },
+  {
+    id: 'run-lantern',
+    name: 'Lantern Print Co · vendor review',
+    startedBy: 'Marcus Lee',
+    result: 'Waiting on legal',
+    started: 'Yesterday',
+    tone: 'warning',
+  },
+  {
+    id: 'run-ridgeline',
+    name: 'Ridgeline Dental · onboarding',
+    startedBy: 'Dana Whitfield',
+    result: 'Running',
+    started: 'Yesterday',
+  },
+  {
+    id: 'run-bluefin',
+    name: 'Bluefin Logistics · invoice 4462',
+    startedBy: 'Priya Shah',
+    result: 'Approved',
+    started: '17 Oct',
+    took: '2h 12m',
+  },
+  {
+    id: 'run-oakmont',
+    name: 'Oakmont Studio · contract renewal',
+    startedBy: 'Marcus Lee',
+    result: 'Approved',
+    started: '15 Oct',
+    took: '1d 4h',
+  },
+]
+
+const runTone = (r: Run) => r.tone
+
+/** Each tone once, and a plain row for comparison. */
+const TONE_RUNS: Run[] = [
+  { ...RUNS[0], id: 'tone-error', result: 'error · failed step' },
+  { ...RUNS[1], id: 'tone-warning', result: 'warning · needs someone' },
+  { ...RUNS[4], id: 'tone-info', result: 'info', tone: 'info' },
+  { ...RUNS[5], id: 'tone-success', result: 'success', tone: 'success' },
+  { ...RUNS[6], id: 'tone-none', result: 'no tone · as before' },
+]
+
+/**
+ * `rowTone` gives a row a 3px edge down its full height: `error`, `warning`, `info` or `success`,
+ * the tone names `Alert` takes. It is an inset shadow, so the cells do not move. No tone, no edge.
+ */
+export const RowTones: Story = {
+  render: () => (
+    <DataTable
+      caption="Row tones"
+      columns={RUN_COLUMNS}
+      rows={TONE_RUNS}
+      rowId={(r) => r.id}
+      rowTone={runTone}
+      minBodyHeight="none"
+    />
+  ),
+}
+
+/** The same tones in dark: each edge takes the tone's dark value. */
+export const RowTonesDark: Story = { ...RowTones, globals: { mode: 'dark' } }
+
+function RunsListHost() {
+  const [selected, setSelected] = useState<string[]>(['run-copperleaf'])
+  return (
+    <DataTable
+      caption="Runs"
+      columns={RUN_COLUMNS}
+      rows={RUNS}
+      rowId={(r) => r.id}
+      rowLabel={(r) => r.name}
+      rowTone={runTone}
+      selectedIds={selected}
+      onSelectionChange={setSelected}
+      minBodyHeight="none"
+    />
+  )
+}
+
+/**
+ * A runs list: the failed run in red, the runs that need someone in amber, the rest plain. The
+ * result says the same in words. One amber row is selected and keeps its edge; hover and focus
+ * keep it too.
+ */
+export const RunsList: Story = { render: () => <RunsListHost /> }
+
+/** The runs list in dark. */
+export const RunsListDark: Story = { ...RunsList, globals: { mode: 'dark' } }

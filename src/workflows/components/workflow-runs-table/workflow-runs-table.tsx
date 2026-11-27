@@ -1,3 +1,4 @@
+import { ROW_TONE_EDGE } from '../../../components/data-table'
 import { Button } from '../../../primitives/button'
 import { Link } from '../../../primitives/link'
 import { StageProgress } from '../stage-progress'
@@ -33,6 +34,7 @@ export function WorkflowRunsTable({
   stageCount,
   total,
   hrefFor,
+  rowTone,
   onShowAll,
   className = '',
 }: WorkflowRunsTableProps) {
@@ -53,9 +55,15 @@ export function WorkflowRunsTable({
       </div>
       {runs.map((run) => {
         const href = hrefFor(run)
-        const rowClass = `${GRID} min-h-15 border-t border-line px-4.5 py-2 text-ink ${
-          run.state === 'waiting' ? 'bg-notify/5' : ''
-        }`
+        const tone = rowTone?.(run)
+        const rowClass = [
+          GRID,
+          'min-h-15 border-t border-line px-4.5 py-2 text-ink',
+          run.state === 'waiting' ? 'bg-notify/5' : '',
+          tone ? ROW_TONE_EDGE[tone] : '',
+        ]
+          .filter(Boolean)
+          .join(' ')
         const cells = (
           <>
             <span className="flex min-w-0 flex-col">
@@ -82,6 +90,7 @@ export function WorkflowRunsTable({
         return href ? (
           <Link
             key={run.id}
+            data-tone={tone}
             variant="plain"
             href={href}
             className={`${rowClass} transition hover:bg-tint/5`}
@@ -89,7 +98,7 @@ export function WorkflowRunsTable({
             {cells}
           </Link>
         ) : (
-          <div key={run.id} className={rowClass}>
+          <div key={run.id} data-tone={tone} className={rowClass}>
             {cells}
           </div>
         )
