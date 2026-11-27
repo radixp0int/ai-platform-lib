@@ -31,7 +31,7 @@ export const SHIPPED_PALETTES: PaletteOption[] = [
   {
     id: 'default',
     label: 'Navy',
-    hint: 'Retail blue, pulled back from the saturation that made it read as a blue page rather than a dark one.',
+    hint: 'The brand navy, calmed down so the page reads dark rather than blue.',
     canvas: '#04172a',
     panel: '#0a2440',
     action: EMBER_ACTION,
@@ -39,7 +39,7 @@ export const SHIPPED_PALETTES: PaletteOption[] = [
   {
     id: 'deep',
     label: 'Deep',
-    hint: 'A corporate navy — deeper, cooler, pure white headings.',
+    hint: 'Deeper and cooler, with pure white headings.',
     canvas: '#001e33',
     panel: '#04263c',
     action: EMBER_ACTION,
@@ -47,7 +47,7 @@ export const SHIPPED_PALETTES: PaletteOption[] = [
   {
     id: 'graphite',
     label: 'Graphite',
-    hint: 'Near-neutral charcoal. Same blue identity in light mode; in dark the colour budget goes to the send button instead of the field.',
+    hint: 'Near-neutral charcoal. In dark, the colour goes to the send button, not the page.',
     canvas: '#0f1214',
     panel: '#16191c',
     action: EMBER_ACTION,

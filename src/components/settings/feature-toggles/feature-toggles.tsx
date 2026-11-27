@@ -1,5 +1,5 @@
-import { useId } from 'react'
-import type { FeatureDescriptor } from '../../../lib/settings/types'
+import { Switch } from '../../../primitives/switch'
+import { SectionHeading } from '../section-heading'
 import type { FeatureTogglesProps } from '../types'
 
 /**
@@ -9,13 +9,17 @@ import type { FeatureTogglesProps } from '../types'
  * Presentational and entirely data-driven: it renders the sections it is
  * handed, in order, and nothing else. There is no dialog, header or reset
  * button here on purpose — every product wants its own settings shell, and an
- * inherited one is the part people end up fighting.
+ * inherited one is the part people end up fighting. SettingsDialog is the
+ * library's shell for it.
  *
  * Entitlement is not this component's job. A feature the tenant does not have
  * is absent from the catalogue, so it cannot render; a feature they have but
  * may not change carries `locked`. A section left empty by that filtering
  * renders nothing at all, which is what lets one catalogue be narrowed per
  * viewer without leaving headings over blank space.
+ *
+ * Each row is the Switch primitive turned around — label on the left, switch
+ * on the right — so the labels line up down the list.
  */
 export function FeatureToggles<Id extends string = string>({
   catalogue,
@@ -34,28 +38,47 @@ export function FeatureToggles<Id extends string = string>({
           hairline vanishes, and this one carries structure. */}
       <div className={spine ? 'ml-1 border-l border-ink-soft/25 pl-5' : undefined}>
         {sections.map((section) => (
-          <section key={section.id} className="relative pb-5 last:pb-0">
+          <section
+            key={section.id}
+            className={`group relative py-4 first:pt-0 last:pb-0 ${spine ? '' : 'border-t border-line first:border-t-0'}`}
+          >
             {spine && (
               // -left-6 puts the node's centre on the spine: pl-5 (20px) plus
-              // the 1px border, less half the node.
+              // the 1px border, less half the node. 21px = the section's pt-4
+              // plus the heading's half line, less half the node.
               <span
                 aria-hidden
-                className="absolute top-[5px] -left-6 size-[7px] rounded-full border border-ink-soft/30 bg-panel-solid"
+                className="absolute top-[21px] -left-6 size-[7px] rounded-full border border-ink-soft/30 bg-panel-solid group-first:top-[5px]"
               />
             )}
-            <h3 className="text-[11px] font-semibold tracking-[0.14em] text-ink-soft uppercase">
-              {section.title}
-            </h3>
-            {section.description && (
-              <p className="mt-1 text-xs leading-snug text-ink-soft">{section.description}</p>
-            )}
-            <div className="mt-1.5 -ml-2">
-              {section.features.map((feature) => (
-                <FeatureRow
-                  key={feature.id}
-                  feature={feature}
-                  on={flags[feature.id] === true}
-                  onChange={onChange}
+            <SectionHeading title={section.title} description={section.description} />
+            <div className="mt-1">
+              {section.features.map(({ id, label, hint, locked, lockedReason }) => (
+                <Switch
+                  key={id}
+                  checked={flags[id] === true}
+                  onChange={(on) => onChange(id, on)}
+                  disabled={locked}
+                  label={
+                    <span className="text-[13.5px] font-semibold text-ink-strong">{label}</span>
+                  }
+                  // The reason is part of the switch's name rather than a
+                  // tooltip: "why can't I change this" is the question a
+                  // locked switch provokes, and a tooltip does not answer it
+                  // for a screen reader.
+                  description={
+                    hint || (locked && lockedReason) ? (
+                      <>
+                        {hint && <span className="block leading-snug">{hint}</span>}
+                        {locked && lockedReason && (
+                          <span className="mt-0.5 block leading-snug text-caution">
+                            {lockedReason}
+                          </span>
+                        )}
+                      </>
+                    ) : undefined
+                  }
+                  className="flex-row-reverse justify-between py-2 text-left"
                 />
               ))}
             </div>
@@ -63,58 +86,5 @@ export function FeatureToggles<Id extends string = string>({
         ))}
       </div>
     </div>
-  )
-}
-
-function FeatureRow<Id extends string>({
-  feature,
-  on,
-  onChange,
-}: {
-  feature: FeatureDescriptor<Id>
-  on: boolean
-  onChange: (id: Id, on: boolean) => void
-}) {
-  const { id, label, hint, locked, lockedReason } = feature
-  // Not derived from the feature id: two panels on one page (a settings dialog
-  // and an onboarding step, say) would then mint the same DOM id and the
-  // description would resolve to whichever rendered first.
-  const reasonId = useId()
-
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={on}
-      disabled={locked}
-      // The reason is announced with the row rather than left in a title
-      // attribute: "why can't I change this" is the question a locked switch
-      // provokes, and a tooltip does not answer it for a screen reader.
-      aria-describedby={locked && lockedReason ? reasonId : undefined}
-      onClick={() => onChange(id, !on)}
-      className="flex w-full items-start gap-4 rounded-control px-2 py-2 text-left transition hover:bg-tint/6 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-transparent"
-    >
-      <span className="min-w-0 flex-1">
-        <span className="block text-[13.5px] font-medium text-ink-strong">{label}</span>
-        {hint && <span className="mt-0.5 block text-xs leading-snug text-ink-soft">{hint}</span>}
-        {locked && lockedReason && (
-          <span id={reasonId} className="mt-0.5 block text-xs leading-snug text-caution">
-            {lockedReason}
-          </span>
-        )}
-      </span>
-      <span
-        aria-hidden
-        className={`relative mt-0.5 h-5 w-9 shrink-0 rounded-full transition-colors ${
-          on ? 'bg-accent' : 'bg-tint/25'
-        }`}
-      >
-        <span
-          className={`absolute top-0.5 left-0.5 size-4 rounded-full bg-panel-solid ring-1 shadow-sm transition-transform ${
-            on ? 'translate-x-4 ring-accent/40' : 'ring-line'
-          }`}
-        />
-      </span>
-    </button>
   )
 }
