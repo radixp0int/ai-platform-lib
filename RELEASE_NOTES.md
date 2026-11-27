@@ -16,9 +16,10 @@ entry names the modules it touches so the sidebar entry is easy to find.
   label. The tone names `Alert` takes — `warning` (the attention orange),
   `error`, `info` (blue, for running work), `success` — plus `idle`, a hollow
   ring. Drawn with `StatusDot`; the label or description says what it means.
-- **Children** of a listed destination sit indented under it behind a thin left
-  rule, as a group named after the parent. The current child is marked; its
-  parent is not. Any depth works.
+- **Children** of a listed destination sit indented under it behind one
+  continuous 1px rule, as a group named after the parent. Their pills stand 6px
+  clear of the rule, and a child's label starts 20px right of its parent's. The
+  current child is marked; its parent is not. Any depth works.
 - **Below 1200px the panel slides over the page** (absolute, beside the rail,
   with a shadow) instead of pushing it, and starts closed whatever
   `defaultPanelOpen` says. The active rail icon (now with `aria-expanded`) and
@@ -27,7 +28,11 @@ entry names the modules it touches so the sidebar entry is easy to find.
   over: open beside the page, shut over it. `onPanelOpenChange` hears each
   change, so a host that controls `panelOpen` can follow.
 - `flattenMenu`, `matchDestination` and `parentOf` now reach grandchildren.
-- `MenuPanelRow`'s `dot` is drawn with `StatusDot`; it looks the same.
+- **`MenuPanelRow`** is one 8px-radius pill for hover, current and keyboard
+  focus (it was 7px), at the top level and in a sub-list. Its focus ring is
+  drawn inside the row, so a panel's scroll area never cuts it off; the All
+  apps tiles do the same. Its `dot` is drawn with `StatusDot` and looks the
+  same as before.
 - **Stories:** Home Panel, Home Panel Dark, Tablet. The older stories' sample
   rows use neutral names.
 

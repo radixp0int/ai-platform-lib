@@ -73,9 +73,10 @@ function Destination({
         <div
           role="group"
           aria-label={item.label}
-          // Each child sits on the rule: its highlight starts flush against it,
-          // square on the left and rounded on the right like the other rows.
-          className="ml-5 flex flex-col gap-0.5 border-l border-line [&>a]:rounded-l-none"
+          // A continuous 1px rule, 13px in; the children's pills sit 6px past
+          // it, never touching it, so a child's label starts 20px right of its
+          // parent's (13 + 1 + 6). The right edge stays the panel's.
+          className="ml-[13px] flex flex-col gap-0.5 border-l border-line pl-1.5"
         >
           {children.map((child) => (
             <Destination key={child.id} item={child} activeId={activeId} onNavigate={onNavigate} />

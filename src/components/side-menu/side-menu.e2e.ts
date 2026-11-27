@@ -158,22 +158,29 @@ test.describe('SideMenu', () => {
     await expect(panel.getByRole('link', { name: /^Tenant Admin/ })).not.toHaveAttribute(
       'aria-current',
     )
-    // Each child sits on the rule: flush against it, square on the left and
-    // rounded on the right, with the rule still drawn beside it.
+    // A child is the same pill as a top-level row, standing 6px clear of the
+    // rule, with its label 20px right of its parent's.
     const tenants = sub.getByRole('link', { name: /^Tenants/ })
-    await expect(tenants).toHaveCSS('border-top-left-radius', '0px')
-    await expect(tenants).toHaveCSS('border-bottom-left-radius', '0px')
-    await expect(tenants).not.toHaveCSS('border-top-right-radius', '0px')
+    const parent = panel.getByRole('link', { name: /^Tenant Admin/ })
+    for (const corner of ['top-left', 'top-right', 'bottom-left', 'bottom-right']) {
+      const radius = `border-${corner}-radius`
+      await expect(tenants).toHaveCSS(radius, '8px')
+      await expect(parent).toHaveCSS(radius, '8px')
+    }
+    await expect(sub).toHaveCSS('border-left-width', '1px')
     const ruleBox = (await sub.boundingBox())!
-    expect((await tenants.boundingBox())!.x).toBe(ruleBox.x + 1)
+    const fill = (await tenants.boundingBox())!
+    const parentFill = (await parent.boundingBox())!
+    expect(fill.x - (ruleBox.x + 1)).toBeCloseTo(6, 0)
+    // The right edge is the same as the top-level rows'.
+    expect(fill.x + fill.width).toBeCloseTo(parentFill.x + parentFill.width, 0)
+    const childLabel = (await tenants.getByText('Tenants', { exact: true }).boundingBox())!
+    const parentLabel = (await parent.getByText('Tenant Admin', { exact: true }).boundingBox())!
+    expect(childLabel.x - parentLabel.x).toBeCloseTo(20, 0)
     // The whole list fits the story's frame: the last child is not cut off.
     const last = (await sub.getByRole('link', { name: /^Usage and plans/ }).boundingBox())!
     const frame = (await panel.boundingBox())!
     expect(last.y + last.height).toBeLessThanOrEqual(frame.y + frame.height)
-    // The children sit to the right of their parent.
-    const parentBox = (await panel.getByRole('link', { name: /^Tenant Admin/ }).boundingBox())!
-    const childBox = (await sub.getByRole('link', { name: /^Tenants/ }).boundingBox())!
-    expect(childBox.x).toBeGreaterThan(parentBox.x + 12)
   })
 
   test('the status dots keep distinct colours in dark mode', async ({ story, page }) => {
