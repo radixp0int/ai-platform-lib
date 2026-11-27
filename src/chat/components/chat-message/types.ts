@@ -1,4 +1,5 @@
 import type { AskedOverChip, AskedOverScope, Message } from '../../engine/types'
+import type { MarkdownQuoteStyle } from '../markdown'
 
 export type ChatMessageProps = {
   message: Message
@@ -29,4 +30,9 @@ export type ChatMessageProps = {
    * its siblings.
    */
   showSourceTip?: boolean
+  /**
+   * How quotes in the answer look — `{ quoteRail, quoteFont, quoteSpacing,
+   * quoteTint }`, passed straight to `Markdown`. Omit for the library quote.
+   */
+  quote?: MarkdownQuoteStyle
 }

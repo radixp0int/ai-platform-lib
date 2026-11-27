@@ -21,6 +21,8 @@
   --color-panel-solid: var(--panel-solid);
   --color-line: var(--line);
   --color-rail: var(--rail);
+  --color-rail-accent: var(--rail-accent);
+  --color-quote-tint: var(--quote-tint);
   --color-scrim: var(--scrim);
 
   /* text */
@@ -215,6 +217,14 @@
   .turn-rail {
     margin-left: 7px;
     border-left: 2px solid var(--rail);
+  }
+
+  /* The heavier, paler rail a markdown quote can opt into (Markdown
+     `quoteRail="accent"`). A modifier, not a change to .turn-rail: the other
+     call sites keep the 2px --rail. Compounded so it outranks .turn-rail
+     whatever order the two land in. */
+  .turn-rail.turn-rail-accent {
+    border-left: 3px solid var(--rail-accent);
   }
 
   /* Where a failed turn's rail runs out. The fade carries the meaning — a

@@ -56,6 +56,14 @@
      applies and it needs 3:1. The alpha is baked in on purpose: components use a bare `border-rail`, so
      no one can reintroduce an opacity modifier and quietly break the ratio. */
   --rail: color-mix(in srgb, var(--brand-600) 70%, transparent);
+  /* The heavier, paler rail a markdown quote can opt into (Markdown
+     `quoteRail="accent"`). Unlike --rail it is decoration: on a light panel it
+     sits under 3:1, so it is never the only thing marking a quote — the element
+     is still a <blockquote>. The same step reads well on a dark canvas, so §2
+     leaves it alone. */
+  --rail-accent: var(--brand-200);
+  /* The wash behind a quote when Markdown `quoteTint` is on. */
+  --quote-tint: color-mix(in srgb, var(--brand-600) 3%, transparent);
   --scrim: var(--brand-950);
   --canvas-glow-a: color-mix(in srgb, var(--brand-600) 8%, transparent);
   --canvas-glow-b: color-mix(in srgb, var(--accent-500) 7%, transparent);
@@ -270,6 +278,7 @@
   /* Same lift for the rail — a light neutral rather than the brand blue, which
      goes muddy against a navy canvas. 45% clears 3:1 in every shipped theme. */
   --rail: color-mix(in srgb, #ffffff 45%, transparent);
+  --quote-tint: color-mix(in srgb, var(--brand-200) 6%, transparent);
   --code: color-mix(in oklab, #ffffff 10%, transparent);
   --code-block: color-mix(in oklab, #ffffff 5%, transparent);
 

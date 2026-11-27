@@ -17,7 +17,7 @@ const meta = {
     busy: false,
     showActions: true,
   },
-  argTypes: { message: { control: 'object' } },
+  argTypes: { message: { control: 'object' }, quote: { control: 'object' } },
   decorators: [
     // Citation chips open the host's reference frame through context; here
     // they land in the Actions panel instead.
@@ -83,3 +83,14 @@ export const AskedOverChanged: Story = {
 export const WithSourceTip: Story = { args: { showSourceTip: true } }
 
 export const WithoutActions: Story = { args: { showActions: false, onFollowup: undefined } }
+
+/** An answer that quotes its source, with the library quote. */
+export const WithQuote: Story = { args: { message: messages.quoted } }
+
+/** The same answer with the accent quote: 3px pale rail, upright ink, more room and a wash. */
+export const WithAccentQuote: Story = {
+  args: {
+    message: messages.quoted,
+    quote: { quoteRail: 'accent', quoteFont: 'regular', quoteSpacing: 'roomy', quoteTint: true },
+  },
+}

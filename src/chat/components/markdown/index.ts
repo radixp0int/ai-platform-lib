@@ -1,2 +1,8 @@
 export { Markdown } from './markdown'
-export type { MarkdownProps } from './types'
+export type {
+  MarkdownProps,
+  MarkdownQuoteFont,
+  MarkdownQuoteRail,
+  MarkdownQuoteSpacing,
+  MarkdownQuoteStyle,
+} from './types'

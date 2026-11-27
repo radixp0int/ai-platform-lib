@@ -37,4 +37,18 @@ test.describe('ChatMessage', () => {
     await story.open('chat-components-chatmessage--question')
     await expect(page.getByRole('button', { name: 'Copy question' })).toBeAttached()
   })
+
+  test('a host can pass the quote look through to the answer', async ({ story, page }) => {
+    await story.open('chat-components-chatmessage--with-quote')
+    await expect(page.getByRole('blockquote')).toHaveCSS('border-left-width', '2px')
+    await expect(page.getByRole('blockquote')).toHaveCSS('font-style', 'italic')
+
+    await story.open('chat-components-chatmessage--with-accent-quote')
+    const quote = page.getByRole('blockquote')
+    await expect(quote).toHaveCSS('border-left-width', '3px')
+    await expect(quote).toHaveCSS('font-style', 'normal')
+    await expect(quote).toHaveCSS('padding', '12px 14px')
+    // The citation inside the quote is still a chip.
+    await expect(quote.getByRole('button', { name: 'Open reference 3' })).toBeVisible()
+  })
 })
