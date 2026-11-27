@@ -27,6 +27,22 @@ describe('PageBand', () => {
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument()
   })
 
+  it('centres the title and its line with align="center", keeping the trail first', () => {
+    render(
+      <PageBand
+        align="center"
+        title="What should we work on?"
+        description="Fourteen sources connected."
+        breadcrumbs={[{ label: 'Overview', href: '#o' }, { label: 'Use' }]}
+      />,
+    )
+    const heading = screen.getByRole('heading', { level: 1 })
+    expect(heading.parentElement?.parentElement).toHaveClass('text-center')
+    const trail = screen.getByRole('navigation', { name: 'Breadcrumb' })
+    expect(trail.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(heading.parentElement?.parentElement).not.toContainElement(trail)
+  })
+
   it('opens and closes the strip from the link, and says which it will do', async () => {
     render(<PageBand title="Tenants" details={{ summary: '5 need a look', stats }} />)
     const link = screen.getByRole('button', {

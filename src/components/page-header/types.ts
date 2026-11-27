@@ -46,6 +46,12 @@ export type PageBandProps = Omit<HTMLAttributes<HTMLElement>, 'title'> & {
   /** A "Show details" link at the end of the description, and the strip it opens. */
   details?: PageBandDetails
   /**
+   * `center` centres the title and its line over a page whose body is one
+   * centred column — a chat's greeting over its composer. The trail stays at
+   * the start, and actions go under the line. Defaults to `start`.
+   */
+  align?: 'start' | 'center'
+  /**
    * The page body. Its top edge lifts over the bottom of the band, so the
    * first card overlaps it.
    */

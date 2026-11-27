@@ -61,10 +61,15 @@ export function PageBand({
   breadcrumbs,
   actions,
   details,
+  align = 'start',
   children,
   className = '',
   ...rest
 }: PageBandProps) {
+  const centred = align === 'center'
+  const trail = breadcrumbs && breadcrumbs.length > 0 && (
+    <Breadcrumbs tone="inverse" items={breadcrumbs} />
+  )
   const stripId = useId()
   const [ownOpen, setOwnOpen] = useState(details?.defaultOpen ?? false)
   const open = details?.open ?? ownOpen
@@ -84,12 +89,21 @@ export function PageBand({
         {...rest}
       >
         <div className={column}>
-          <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3.5">
-            <div className="flex min-w-0 flex-col gap-1.5">
-              {breadcrumbs && breadcrumbs.length > 0 && (
-                <Breadcrumbs tone="inverse" items={breadcrumbs} />
-              )}
-              <h1 className="text-[28px] leading-tight font-light tracking-tight">{title}</h1>
+          {centred && trail}
+          <div
+            className={
+              centred
+                ? 'flex flex-col items-center gap-3.5 pt-6 text-center'
+                : 'flex flex-wrap items-end justify-between gap-x-6 gap-y-3.5'
+            }
+          >
+            <div className={`flex min-w-0 flex-col gap-1.5 ${centred ? 'items-center' : ''}`}>
+              {!centred && trail}
+              <h1
+                className={`leading-tight font-light tracking-tight ${centred ? 'text-[34px] text-balance max-md:text-[28px]' : 'text-[28px]'}`}
+              >
+                {title}
+              </h1>
               {(description || details) && (
                 <p className="text-[13.5px] text-brand-100">
                   {description}

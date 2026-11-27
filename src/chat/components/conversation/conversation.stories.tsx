@@ -6,8 +6,10 @@ import type { Message, QueuedMessage } from '../../engine/types'
 import { createCannedResponder } from '../../engine/chatEngine'
 import { useChat } from '../../engine/useChat'
 import { cannedTurns, messages, queue, suggestions, typeaheadPool } from '../../fixtures/chat'
+import { Alert } from '../../../primitives/alert'
 import { Greeting } from '../greeting'
 import { Conversation } from './conversation'
+import type { ConversationProps } from './types'
 function Example() {
   const responder = useMemo(() => createCannedResponder(cannedTurns), [])
   const chat = useChat(responder)
@@ -54,11 +56,14 @@ function Static({
   busy = false,
   queued = [],
   held = false,
+  extra,
 }: {
   transcript: Message[]
   busy?: boolean
   queued?: QueuedMessage[]
   held?: boolean
+  /** The optional layout props: `landing`, `notice`, `quote`. */
+  extra?: Pick<ConversationProps, 'landing' | 'notice' | 'quote'>
 }) {
   return (
     <CitationsProvider value={fn()}>
@@ -84,6 +89,7 @@ function Static({
           chain={{ state: null, start: fn(), add: fn(), run: fn(), cancel: fn() }}
           suggestions={suggestions}
           typeaheadPool={typeaheadPool}
+          {...extra}
         />
       </div>
     </CitationsProvider>
@@ -109,4 +115,62 @@ export const WithQueuedQuestions: Story = {
 /** A turn that failed outright says so in the transcript and offers a retry. */
 export const FailedTurn: Story = {
   render: () => <Static transcript={[messages.question, messages.failed]} />,
+}
+
+/** `landing` lays out the page before the first message around the composer it
+ *  is handed: here a navy band with the composer lifted over its edge. */
+export const Landing: Story = {
+  render: () => (
+    <Static
+      transcript={[]}
+      extra={{
+        landing: (composer) => (
+          <>
+            <div className="bg-brand-900 px-8 pt-16 pb-20 text-center text-white">
+              <h1 className="text-[34px] font-light">What should we work on?</h1>
+            </div>
+            <div className="relative mx-auto -mt-11 max-w-[760px] px-8">{composer}</div>
+          </>
+        ),
+      }}
+    />
+  ),
+}
+
+const draftQuestion: Message = {
+  id: 21,
+  role: 'user',
+  content: 'Draft a short note asking Dana to renew the API key.',
+}
+const draftAnswer: Message = {
+  id: 22,
+  role: 'assistant',
+  content:
+    'Here is a draft you can send:\n\n> Hi Dana, the pricing sheets API has failed to sync since Nov 23 with an authentication error. Could you renew the key in Ingestion when you have a moment?',
+  followups: ['Who else can renew API keys?', 'Check the sync log tomorrow'],
+}
+
+/** `notice` docks a standing notice above the composer, in place of the
+ *  disclaimer line; `quote` styles the quotes in the answers. */
+export const WithNotice: Story = {
+  render: () => (
+    <Static
+      transcript={[draftQuestion, draftAnswer]}
+      extra={{
+        quote: { quoteRail: 'subtle', quoteFont: 'italic', quoteSpacing: 'snug' },
+        notice: (
+          <Alert
+            variant="bar"
+            tone="warning"
+            title="Acme can make mistakes."
+            secondaryAction={{ label: 'How answers are checked', onClick: fn() }}
+            onDismiss={fn()}
+            dismissLabel="Dismiss this notice"
+          >
+            Check the sources under each answer before you act on it.
+          </Alert>
+        ),
+      }}
+    />
+  ),
 }
