@@ -1,12 +1,14 @@
 import { withDefaults } from '../../lib/withDefaults'
 import { Fragment, useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { Checkbox } from '../../primitives/checkbox'
+import { IconButton } from '../../primitives/icon-button'
 import { RADIO_CLASS } from '../../primitives/radio-group'
 import { Pagination } from '../pagination'
 import { Button } from '../../primitives/button'
 import {
   ArrowDownIcon,
   ArrowUpIcon,
+  ChevronRightIcon,
   InboxIcon,
   RefreshIcon,
   TriangleAlertIcon,
@@ -145,6 +147,7 @@ export function DataTableView<T>({
   renderExpanded,
   expandedIds = [],
   onExpandedChange,
+  expandToggle = 'row',
   rowActions,
   rowActionsVisible = 'hover',
   rowTone,
@@ -162,6 +165,9 @@ export function DataTableView<T>({
 
   const selectable = Boolean(onSelectionChange)
   const expandable = Boolean(renderExpanded)
+  // A chevron button of its own opens the row, and the row itself stays inert:
+  // for rows full of links, where a stray click should not open anything.
+  const chevron = expandable && expandToggle === 'button'
   const single = maxSelections === 1
   const selected = clampSelection(selectedIds ?? [], maxSelections)
 
@@ -170,7 +176,7 @@ export function DataTableView<T>({
   const someSelected = selected.length > 0 && !allSelected
   const showSelectAll = canSelectAll(pageIds.length, maxSelections)
 
-  const extraCols = (selectable ? 1 : 0) + (rowActions ? 1 : 0)
+  const extraCols = (chevron ? 1 : 0) + (selectable ? 1 : 0) + (rowActions ? 1 : 0)
   const totalCols = columns.length + extraCols
   const nameOf = (row: T) => (rowLabel ? rowLabel(row) : rowId(row))
 
@@ -206,7 +212,9 @@ export function DataTableView<T>({
 
   // One radio per row picks on a row click too: there is nothing else for the row to do.
   const rowClick = expandable
-    ? (id: string) => toggleExpanded(id)
+    ? chevron
+      ? null
+      : (id: string) => toggleExpanded(id)
     : selectable && single
       ? (id: string) => toggleRow(id)
       : null
@@ -288,6 +296,11 @@ export function DataTableView<T>({
 
           <thead>
             <tr className="border-b border-line bg-canvas">
+              {chevron && (
+                <th scope="col" style={{ width: '40px' }} className="py-0 pr-0 pl-3">
+                  <span className="sr-only">{t.expandRow('').trim()}</span>
+                </th>
+              )}
               {selectable && (
                 <th scope="col" style={{ width: '44px' }} className="px-4 py-0">
                   {showSelectAll ? (
@@ -411,12 +424,32 @@ export function DataTableView<T>({
                             ? 'bg-chip/50'
                             : 'hover:bg-tint/4',
                         !isOpen &&
+                          !chevron &&
                           'hover:[&_[data-row-title]]:underline has-[button:focus-visible]:[&_[data-row-title]]:underline [&_[data-row-title]]:decoration-ink-soft/40 [&_[data-row-title]]:decoration-[1.5px] [&_[data-row-title]]:underline-offset-4',
                         rowClick ? 'cursor-pointer' : '',
                       ]
                         .filter(Boolean)
                         .join(' ')}
                     >
+                      {chevron && (
+                        <td className="py-0 pr-0 pl-3">
+                          <IconButton
+                            size="sm"
+                            shape="rounded"
+                            aria-expanded={isOpen}
+                            aria-controls={panelId}
+                            aria-label={t.expandRow(nameOf(row))}
+                            title={t.expandRow(nameOf(row))}
+                            onClick={() => toggleExpanded(id)}
+                          >
+                            <ChevronRightIcon
+                              width={15}
+                              height={15}
+                              className={`transition-transform ${isOpen ? 'rotate-90' : ''}`}
+                            />
+                          </IconButton>
+                        </td>
+                      )}
                       {selectable && (
                         <td className="px-4">
                           {single ? (
@@ -445,7 +478,7 @@ export function DataTableView<T>({
                           .filter(Boolean)
                           .join(' ')}
                       >
-                        {expandable ? (
+                        {expandable && !chevron ? (
                           <button
                             type="button"
                             aria-expanded={isOpen}
@@ -497,7 +530,13 @@ export function DataTableView<T>({
                           id={panelId}
                           colSpan={visibleCols}
                           className="px-4 py-4"
-                          style={selectable ? { paddingLeft: 'calc(44px + 1rem)' } : undefined}
+                          style={
+                            selectable || chevron
+                              ? {
+                                  paddingLeft: `calc(${(selectable ? 44 : 0) + (chevron ? 40 : 0)}px + 1rem)`,
+                                }
+                              : undefined
+                          }
                         >
                           {renderExpanded?.(row)}
                         </td>

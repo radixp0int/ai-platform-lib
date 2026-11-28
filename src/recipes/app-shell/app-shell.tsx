@@ -45,6 +45,8 @@ import { TenantsPage } from '../tenants'
 import { AccountButton } from '../top-bar/account-button'
 import { ChatSpace } from '../chat/chat-space'
 import { SpaceUnavailablePage } from './pages/SpaceUnavailablePage'
+import { WORKFLOWS } from '../workflows/fixtures/workflows'
+import { WorkflowsRoute } from '../workflows/workflows-route'
 import { WorkflowsFlyout, WorkflowsPanel } from './menu-panels'
 import { PlatformContext, type PlatformValue } from './platform-context'
 
@@ -54,7 +56,7 @@ const SWITCHER_PAGE = 6
 /** The apps with a place in the rail, in order. The rest are under All apps. */
 const RAIL = ['home', 'chat', 'workflows', 'tasks']
 /** A run on its canvas. It has a run panel of its own beside the rail, so the app's panel starts folded. */
-const RUN_PAGE = /\/workflows\/(demo|live)(\/|$)/
+const RUN_PAGE = /\/workflows\/[^/]+\/runs\//
 /** A wizard: no menu at all, a close button, and the tenant shown as a label. */
 const WIZARD = /^\/ingestion\/new(\/|$)/
 
@@ -213,18 +215,24 @@ export function AppShell({
               content: (
                 <WorkflowsPanel
                   base={base}
-                  runs={runs}
-                  activeId={active?.id}
+                  workflows={runs.length ? WORKFLOWS : []}
+                  path={rest.split('?')[0]}
                   onNavigate={onNavigate}
                 />
               ),
-              flyout: <WorkflowsFlyout base={base} runs={runs} onNavigate={onNavigate} />,
+              flyout: (
+                <WorkflowsFlyout
+                  base={base}
+                  workflows={runs.length ? WORKFLOWS : []}
+                  onNavigate={onNavigate}
+                />
+              ),
             },
           }
         : {}),
       ...(tenant.spaces.includes('chat') ? { chat: { title: 'Chat' } } : {}),
     }),
-    [tenant.spaces, base, runs, active?.id, onNavigate, homeSections],
+    [tenant.spaces, base, runs, rest, onNavigate, homeSections],
   )
   const places = [
     ...runs.slice(0, 2).map((run) => ({
@@ -403,18 +411,13 @@ export function AppShell({
                           <ChatSpace path={rest} base={base} />
                         ) : space === 'insights' ? (
                           <InsightsPage base={base} />
+                        ) : space === 'workflows' ? (
+                          <WorkflowsRoute path={rest} />
                         ) : space === 'ingestion' && rest === '/ingestion' ? (
                           <IngestionPage />
                         ) : (
-                          // Chat's and Insights' pages are their recipes'. The
-                          // workflows list is the workflows recipe's: a host
-                          // supplies it through `renderSpace`, as the stories do.
-                          <PlaceholderPage
-                            title={
-                              active?.label ?? (space === 'workflows' ? 'Workflows' : 'Ingestion')
-                            }
-                            addSource={space === 'ingestion'}
-                          />
+                          // The rest of Ingestion has no screens yet.
+                          <PlaceholderPage title={active?.label ?? 'Ingestion'} addSource />
                         )))
                       ) : (
                         <PlaceholderPage title="Page unavailable" />

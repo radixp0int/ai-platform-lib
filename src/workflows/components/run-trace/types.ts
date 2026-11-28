@@ -16,6 +16,8 @@ export type TraceCall = {
   startedAt: number
   /** Seconds. */
   duration: number
+  /** The call failed: its bar is drawn in red. */
+  failed?: boolean
 }
 
 /** What a step that called a model spent. */
@@ -58,6 +60,21 @@ export type TraceStep = {
    * someone reading a trace most wants to find.
    */
   failure?: string
+  /**
+   * The step's Summary: what it found, headed ("Agent recommendation", "Policy
+   * exception"). With notes or a history, the inspector opens on Summary, and
+   * the Trace tab shows only for a step that made calls.
+   */
+  notes?: { heading: string; body: string }[]
+  /** The events on this step: routed, assigned, reminded, retried. */
+  history?: { at: string; text: string }[]
+  /** A person step: how long it has waited, and when it is due. */
+  waited?: string
+  due?: string
+  /** A decision: the route it took. */
+  route?: string
+  /** A system call: retries used, "2 of 2". */
+  retries?: string
 }
 
 export type TraceStage = { id: string; name: string }

@@ -39,3 +39,51 @@ export const TenStages: Story = {
 export const NotStarted: Story = {
   args: { label: 'Not started, 8 stages', segments: Array(8).fill('upcoming') },
 }
+
+/** A step failed: the current stage turns the danger red. */
+export const Failed: Story = {
+  args: {
+    label: 'Stage 5 of 8, Exceptions',
+    current: 'failed',
+    segments: [...Array(4).fill('done'), 'current', 'upcoming', 'upcoming', 'upcoming'],
+  },
+}
+
+/** With room to spare, each segment carries its stage's name. */
+export const Named: Story = {
+  decorators: [
+    (Story) => (
+      <div className="w-[30rem]">
+        <Story />
+      </div>
+    ),
+  ],
+  args: {
+    current: 'waiting',
+    names: ['Intake', 'Gather', 'Analyze', 'Approve', 'Decide & notify'],
+  },
+}
+
+/** On the navy band over a run. */
+export const NamedOnNavy: Story = {
+  decorators: [
+    (Story) => (
+      <div className="w-[30rem] bg-brand-900 p-4">
+        <Story />
+      </div>
+    ),
+  ],
+  args: {
+    current: 'waiting',
+    tone: 'inverse',
+    names: ['Intake', 'Gather', 'Analyze', 'Approve', 'Decide & notify'],
+  },
+}
+
+/** Past twelve stages: one continuous bar, filled to the share done, with a mark where the run is. */
+export const TwentyStages: Story = {
+  args: {
+    label: 'Stage 11 of 20, Verify links',
+    segments: [...Array(10).fill('done'), 'current', ...Array(9).fill('upcoming')],
+  },
+}
