@@ -3,7 +3,6 @@ import { NavigateProvider } from '../../primitives/link'
 import { HomePage } from './pages/HomePage'
 import { PlaceholderPage } from './pages/PlaceholderPage'
 import { TasksPage } from './pages/TasksPage'
-import { TenantsPage } from './pages/TenantsPage'
 import { WizardPage } from './pages/WizardPage'
 // The platform shell: one top bar and one side menu around every page.
 //
@@ -38,8 +37,10 @@ import {
 } from '../../primitives/icons'
 import type { NavigateHandler } from '../../primitives/link'
 import { ThemeToggle } from '../../primitives/theme-toggle'
+import { IngestionPage } from '../ingestion'
 import { DemoFeaturesProvider, useDemoFeatureState } from '../settings/settings-state'
 import { DemoSettingsDialog, type DemoSettingsSection } from '../settings/settings-dialog'
+import { TenantsPage } from '../tenants'
 import { AccountButton } from '../top-bar/account-button'
 import { SpaceUnavailablePage } from './pages/SpaceUnavailablePage'
 import { WorkflowsFlyout, WorkflowsPanel } from './menu-panels'
@@ -372,9 +373,14 @@ export function AppShell({
                       }
                     >
                       {pathname.split('?')[0] === '/tenants' ? (
+                        // `/tenants?q=…` starts with a search, `?details` with the strip open.
                         <TenantsPage
-                          editId={new URLSearchParams(pathname.split('?')[1]).get('edit')}
-                          onClearEdit={() => navigate('/tenants')}
+                          initialQuery={
+                            new URLSearchParams(pathname.split('?')[1]).get('q') ?? undefined
+                          }
+                          defaultDetailsOpen={new URLSearchParams(pathname.split('?')[1]).has(
+                            'details',
+                          )}
                         />
                       ) : rest === '/home' || !rest ? (
                         <HomePage />
@@ -390,7 +396,10 @@ export function AppShell({
                           base,
                           onOpenUserSettings: () => setSettings('look'),
                           onOpenFeatureToggles: () => setSettings('features'),
-                        }) ?? (
+                        }) ??
+                        (space === 'ingestion' && rest === '/ingestion' ? (
+                          <IngestionPage />
+                        ) : (
                           // The workflows list is the workflows recipe's: a host
                           // supplies it through `renderSpace`, as the stories do.
                           <PlaceholderPage
@@ -406,7 +415,7 @@ export function AppShell({
                             }
                             addSource={space === 'ingestion'}
                           />
-                        ))
+                        )))
                       ) : (
                         <PlaceholderPage title="Page unavailable" />
                       )}

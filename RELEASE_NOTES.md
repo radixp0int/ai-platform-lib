@@ -3,6 +3,39 @@
 Changes to the component library as seen from Storybook. Newest first. Each
 entry names the modules it touches so the sidebar entry is easy to find.
 
+## 2026-11-27 — Recipes: Ingestion and Tenants from Finals 2.0
+
+- **Recipes/Ingestion** (new), the shell's `/t/<tenant>/ingestion` page.
+  `PageBand` with "1 failing · Show details" and its figures (Documents,
+  Sources syncing, Added this week, Last sync), and Schedule a sync, Connect an
+  API and Upload documents in the band. Upload documents opens the Add a source
+  wizard. Below it, one card holds the sources `DataGrid`: a Filters panel
+  (Status, Type), chips in the search box, Export (CSV, JSON), a bulk bar
+  (Sync now, Pause), pagination, and Sync now / Edit / More on every row.
+- **Recipes/Tenants** (new) replaces the shell's old `/tenants` page.
+  `PageBand` with "5 need a look · Show details"; Active, Waiting on an invite
+  and Suspended filter the grid to them, and Seats in use sums the paid seats.
+  Import from CSV and Add a tenant sit in the band. The grid shows plan · region
+  under each name, a status pill, the primary contact, a seats bar that says
+  "nearly full" at 90%, and one action per row: Resend invite (primary),
+  Reactivate, or a quiet Open. Filters: Status, Plan, Region, Created (Last 30
+  days, Last 90 days, Over a year ago) and Has active seats. Bulk: Change plan,
+  Suspend, Email contacts. `/tenants?q=…` starts with a search and
+  `/tenants?details` with the strip open.
+  - The orange and red left edges for pending and suspended rows wait on
+    DataTable's `rowTone`, which is not on main yet; `toneOf` is ready for it.
+- **DataTable: `rowActionsVisible`** (`'hover'` by default, or `'always'`).
+  `always` draws the row actions on every row instead of on hover, for a list
+  whose action is the point of the row. `DataGrid` passes it through. New story:
+  Components/DataTable › Row Actions Always.
+- Each recipe has Default, Dark, Details open, Tablet (1024), Portrait (834,
+  dark), Empty and No match stories. Fixture dates move with today, so date
+  filters always find something.
+- **Tests:** e2e for both pages (Details, the figures as filters, filters,
+  sorting, bulk select, row actions, export, empty and no-match states, and
+  nothing cut off at 1024 and 834), and for `rowActionsVisible`. The shell's
+  older tenants-table tests are gone with that page.
+
 ## 2026-11-27 — App shell: the Finals 2.0 frame
 
 The first step of moving every recipe onto the Finals 2.0 designs.

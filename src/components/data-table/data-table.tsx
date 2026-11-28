@@ -145,6 +145,7 @@ export function DataTableView<T>({
   expandedIds = [],
   onExpandedChange,
   rowActions,
+  rowActionsVisible = 'hover',
   empty,
   emptyAction,
   noMatch,
@@ -466,7 +467,13 @@ export function DataTableView<T>({
 
                       {rowActions && (
                         <td className="px-3">
-                          <div className="flex items-center justify-end gap-0.5 opacity-0 transition group-hover/row:opacity-100 group-data-[open=true]/row:opacity-100 group-data-[selected=true]/row:opacity-100 focus-within:opacity-100 [@media(hover:none)]:opacity-100">
+                          <div
+                            className={`flex items-center justify-end gap-0.5 ${
+                              rowActionsVisible === 'always'
+                                ? ''
+                                : 'opacity-0 transition group-hover/row:opacity-100 group-data-[open=true]/row:opacity-100 group-data-[selected=true]/row:opacity-100 focus-within:opacity-100 [@media(hover:none)]:opacity-100'
+                            }`}
+                          >
                             {rowActions(row)}
                           </div>
                         </td>
