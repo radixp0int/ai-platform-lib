@@ -12,6 +12,8 @@ import {
   TriangleAlertIcon,
 } from '../../primitives/icons'
 import { BulkBar } from './bulk-bar'
+import { RowActions } from './row-actions'
+import { actionsColumnWidth, DEFAULT_ACTIONS_WIDTH, DEFAULT_SHOW_VISIBLE } from './row-action-model'
 import { directionFor, isColumnSortable, toggleSort } from './sorting'
 import {
   canSelectAll,
@@ -132,7 +134,7 @@ export function DataTableView<T>({
   rowLabel,
   caption,
   minWidth = '680px',
-  actionsWidth = '128px',
+  actionsWidth: actionsWidthProp,
   loading = false,
   skeletonRows = 5,
   sort = [],
@@ -145,6 +147,7 @@ export function DataTableView<T>({
   expandedIds = [],
   onExpandedChange,
   rowActions,
+  showVisible = DEFAULT_SHOW_VISIBLE,
   rowActionsVisible = 'hover',
   actionsHeader = 'hidden',
   empty,
@@ -169,7 +172,15 @@ export function DataTableView<T>({
   const someSelected = selected.length > 0 && !allSelected
   const showSelectAll = canSelectAll(pageIds.length, maxSelections)
 
-  const extraCols = (selectable ? 1 : 0) + (rowActions ? 1 : 0)
+  // `rowActions` is a function that draws a row's controls, or a list the table draws itself.
+  const actionList = typeof rowActions === 'function' ? undefined : rowActions
+  const hasActions = typeof rowActions === 'function' || Boolean(actionList?.length)
+  const actionsWidth =
+    actionsWidthProp ??
+    (actionList && actionsColumnWidth(actionList, showVisible)) ??
+    DEFAULT_ACTIONS_WIDTH
+
+  const extraCols = (selectable ? 1 : 0) + (hasActions ? 1 : 0)
   const totalCols = columns.length + extraCols
   const nameOf = (row: T) => (rowLabel ? rowLabel(row) : rowId(row))
 
@@ -349,7 +360,7 @@ export function DataTableView<T>({
                 )
               })}
 
-              {rowActions &&
+              {hasActions &&
                 (actionsHeader === 'visible' ? (
                   // `px-3`, like the cells below, so the word ends where the last button does.
                   <th
@@ -377,7 +388,7 @@ export function DataTableView<T>({
                 cellClasses={[
                   ...(selectable ? [''] : []),
                   ...columns.map(hideClass),
-                  ...(rowActions ? [''] : []),
+                  ...(hasActions ? [''] : []),
                 ]}
               />
             )}
@@ -478,16 +489,26 @@ export function DataTableView<T>({
                         </td>
                       ))}
 
-                      {rowActions && (
+                      {hasActions && (
                         <td className="px-3">
                           <div
                             className={`flex items-center justify-end gap-0.5 ${
                               rowActionsVisible === 'always'
                                 ? ''
-                                : 'opacity-0 transition group-hover/row:opacity-100 group-data-[open=true]/row:opacity-100 group-data-[selected=true]/row:opacity-100 focus-within:opacity-100 [@media(hover:none)]:opacity-100'
+                                : 'opacity-0 transition group-hover/row:opacity-100 group-data-[open=true]/row:opacity-100 group-data-[selected=true]/row:opacity-100 focus-within:opacity-100 has-[[aria-expanded=true]]:opacity-100 [@media(hover:none)]:opacity-100'
                             }`}
                           >
-                            {rowActions(row)}
+                            {typeof rowActions === 'function' ? (
+                              rowActions(row)
+                            ) : (
+                              <RowActions
+                                actions={rowActions ?? []}
+                                row={row}
+                                name={nameOf(row)}
+                                showVisible={showVisible}
+                                labels={t}
+                              />
+                            )}
                           </div>
                         </td>
                       )}

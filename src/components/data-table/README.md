@@ -50,3 +50,53 @@ of a `[used, total]` pair, or when `sortKey` is not a property of the row.
 
 `sortRows` returns the same array when there is nothing to sort by, and never changes the one it
 was given.
+
+# DataTable row actions
+
+`rowActions` is the trailing column of per-row controls. Give it a function and it draws whatever
+you return. Give it a list of `RowAction`s and the table draws the controls itself: the first
+`showVisible` as buttons, the rest in a ⋯ menu that works with nothing more from you.
+
+```tsx
+<DataTable
+  rowLabel={(t) => t.name}
+  actionsHeader="visible"
+  rowActions={[
+    { id: 'view', label: 'View details', icon: <EyeIcon />, onSelect: openDetails },
+    { id: 'edit', label: 'Edit', icon: <PencilIcon />, onSelect: edit },
+    { id: 'copy', label: 'Copy tenant ID', icon: <CopyIcon />, onSelect: copyId },
+    {
+      id: 'delete',
+      label: 'Delete tenant…',
+      icon: <TrashIcon />,
+      tone: 'danger',
+      separatorBefore: true,
+      disabled: (t) => t.id === currentId,
+      hint: (t) => (t.id === currentId ? 'You are in it' : undefined),
+      onSelect: remove,
+    },
+  ]}
+/>
+```
+
+That draws View details and Edit as icon buttons and a ⋯ holding Copy tenant ID, a rule and Delete.
+
+| Setting                           | Effect                                                                                                                   |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `showVisible` (default `2`)       | How many are buttons. Enough to show them all leaves no ⋯; `0` leaves only the ⋯.                                        |
+| `icon`                            | With one, a visible action is an icon button. Without, a small text button. In the menu the glyph is optional.           |
+| `hidden`, `disabled`, `hint`      | A value, or a function of the row. A hidden action is left out before counting, so the next one moves up into its place. |
+| `tone: 'danger'`                  | Colours the menu item, and a text button. An icon button stays neutral.                                                  |
+| `separatorBefore`                 | A rule above the item when it is in the menu. Not drawn above the first one.                                             |
+| `labels.rowAction`, `moreActions` | The buttons' accessible names ("Edit for Bayshore Foods"), and the ⋯'s ("More actions for …").                           |
+
+Pass `rowLabel`, or the names use the row id.
+
+The column's width follows from `showVisible` when every visible action has an icon: two buttons and
+the ⋯ fit in `124px`, and each button after adds `34px`. A text button's width is not known to the
+table, so give `actionsWidth` for one.
+
+The ⋯ menu opens below its button, lined up with its right edge, and opens upward instead when it
+would run off the bottom of the screen and there is more room above. Escape closes it and returns
+focus to the ⋯; so does choosing an item, before the action runs. Clicks in the cell never toggle an
+expandable row. With `rowActionsVisible="hover"` the ⋯ stays showing while its menu is open.

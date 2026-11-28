@@ -165,7 +165,7 @@ test.describe('Recipes/Tenants, the grid', () => {
     await story.open(id('default'))
     await page.getByRole('button', { name: 'View details for Bayshore Foods' }).click()
     await expect(page.getByRole('status')).toHaveText('Details for Bayshore Foods would open here')
-    await page.getByRole('button', { name: 'Edit Bayshore Foods' }).click()
+    await page.getByRole('button', { name: 'Edit for Bayshore Foods' }).click()
     await expect(page.getByRole('status')).toHaveText('Editing Bayshore Foods would open here')
     await expect(more(page, 'Bayshore Foods')).toBeVisible()
   })
