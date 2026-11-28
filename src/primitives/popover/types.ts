@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-export type PopoverAlign = 'start' | 'end' | 'side' | 'above'
+export type PopoverAlign = 'start' | 'end' | 'side' | 'above' | 'above-end'
 
 export type PopoverProps = {
   /** The control the panel hangs from. Nothing renders until it is mounted. */
@@ -16,7 +16,8 @@ export type PopoverProps = {
    * Where the panel sits. `start` and `end` hang below the anchor, lined up
    * with its left or right edge. `side` opens to the anchor's right, level
    * with its top — for a control in a narrow rail. `above` rises from an
-   * anchor pinned to the bottom of the screen.
+   * anchor pinned to the bottom of the screen. `above-end` rises too, lined up
+   * with the anchor's right edge — for a row menu near the bottom of a list.
    */
   align?: PopoverAlign
   /** `dialog` for a panel of mixed content, `menu` for a list of actions. */

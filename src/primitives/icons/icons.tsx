@@ -522,3 +522,19 @@ export const PanelCollapseIcon = (p: IconProps) => (
     <path d="M9.5 4.5v15M16 10l-2 2 2 2" />
   </svg>
 )
+
+/** Two people: members, people and roles. */
+export const UsersIcon = (p: IconProps) => (
+  <svg {...base(p)}>
+    <circle cx="9" cy="8" r="3.2" />
+    <path d="M3 20a6 6 0 0 1 12 0" />
+    <path d="M16 4.5a3.2 3.2 0 0 1 0 6.2M21 20a6 6 0 0 0-3.5-5.4" />
+  </svg>
+)
+
+/** Two opposed arrows: switch to another of the same thing. */
+export const SwitchIcon = (p: IconProps) => (
+  <svg {...base(p)}>
+    <path d="M4 7h13l-3-3M20 17H7l3 3" />
+  </svg>
+)

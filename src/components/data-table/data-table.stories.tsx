@@ -189,6 +189,22 @@ export const ExpandableRows: Story = {
   },
 }
 
+/**
+ * `rowActionsVisible="always"`: the actions are on every row, not only on hover.
+ * For a list whose action is the point of the row.
+ */
+export const RowActionsAlways: Story = {
+  args: {
+    rowActionsVisible: 'always',
+    actionsWidth: '120px',
+    rowActions: (t) => (
+      <Button size="sm" variant={t.status === 'pending' ? 'primary' : 'ghost'}>
+        {t.status === 'pending' ? 'Resend invite' : 'Open'}
+      </Button>
+    ),
+  },
+}
+
 /** Skeleton rows keep the header and frame; match `skeletonRows` to the page size. */
 export const Loading: Story = { args: { loading: true, skeletonRows: 6 } }
 

@@ -38,3 +38,11 @@ export function Menu({ className = '', onKeyDown, children, ...rest }: MenuProps
     </div>
   )
 }
+
+/**
+ * A rule between groups of items — before a destructive one, say. Arrow keys
+ * pass over it.
+ */
+export function MenuSeparator({ className = '' }: { className?: string }) {
+  return <div role="separator" className={`mx-2 my-1 h-px bg-line ${className}`} />
+}

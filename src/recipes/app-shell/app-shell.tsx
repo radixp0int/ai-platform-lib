@@ -4,7 +4,6 @@ import { InsightsPage } from '../insights'
 import { OverviewPage } from '../overview'
 import { PlaceholderPage } from './pages/PlaceholderPage'
 import { TasksPage } from './pages/TasksPage'
-import { TenantsPage } from './pages/TenantsPage'
 import { WizardPage } from './pages/WizardPage'
 // The platform shell: one top bar and one side menu around every page.
 //
@@ -39,8 +38,10 @@ import {
 } from '../../primitives/icons'
 import type { NavigateHandler } from '../../primitives/link'
 import { ThemeToggle } from '../../primitives/theme-toggle'
+import { IngestionPage } from '../ingestion'
 import { DemoFeaturesProvider, useDemoFeatureState } from '../settings/settings-state'
 import { DemoSettingsDialog, type DemoSettingsSection } from '../settings/settings-dialog'
+import { TenantsPage } from '../tenants'
 import { AccountButton } from '../top-bar/account-button'
 import { ChatSpace } from '../chat/chat-space'
 import { SpaceUnavailablePage } from './pages/SpaceUnavailablePage'
@@ -374,9 +375,14 @@ export function AppShell({
                       }
                     >
                       {pathname.split('?')[0] === '/tenants' ? (
+                        // `/tenants?q=…` starts with a search, `?details` with the strip open.
                         <TenantsPage
-                          editId={new URLSearchParams(pathname.split('?')[1]).get('edit')}
-                          onClearEdit={() => navigate('/tenants')}
+                          initialQuery={
+                            new URLSearchParams(pathname.split('?')[1]).get('q') ?? undefined
+                          }
+                          defaultDetailsOpen={new URLSearchParams(pathname.split('?')[1]).has(
+                            'details',
+                          )}
                         />
                       ) : rest === '/home' || !rest ? (
                         <OverviewPage />
@@ -397,6 +403,8 @@ export function AppShell({
                           <ChatSpace path={rest} base={base} />
                         ) : space === 'insights' ? (
                           <InsightsPage base={base} />
+                        ) : space === 'ingestion' && rest === '/ingestion' ? (
+                          <IngestionPage />
                         ) : (
                           // Chat's and Insights' pages are their recipes'. The
                           // workflows list is the workflows recipe's: a host

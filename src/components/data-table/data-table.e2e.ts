@@ -206,3 +206,26 @@ test.describe('DataTable', () => {
     })
   })
 })
+
+test.describe('DataTable, row actions', () => {
+  test('are hidden until hover by default', async ({ story, page }) => {
+    await story.open('components-datatable--expandable-rows')
+    const row = page.getByRole('row').nth(3)
+    // The opacity is on the cell's wrapper, not on each button.
+    const actions = row.getByRole('button', { name: /^Edit / }).locator('..')
+    await expect(actions).toHaveCSS('opacity', '0')
+    await row.hover()
+    await expect(actions).toHaveCSS('opacity', '1')
+  })
+
+  test('rowActionsVisible="always" draws them on every row', async ({ story, page }) => {
+    await story.open('components-datatable--row-actions-always')
+    const buttons = page.getByRole('table', { name: 'Tenants' }).getByRole('button', {
+      name: /^(Resend invite|Open)$/,
+    })
+    await expect(buttons).toHaveCount(6)
+    for (const button of await buttons.all()) {
+      await expect(button.locator('..')).toHaveCSS('opacity', '1')
+    }
+  })
+})
