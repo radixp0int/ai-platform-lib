@@ -6,8 +6,14 @@ import type { StageProgressProps } from './types'
 // a table. Finished and current stages are filled; a stage not reached yet is an
 // outline, so the two are told apart by shape as well as by colour.
 //
+// Past twelve stages it is one continuous bar with a mark at the current
+// position, since segments that thin no longer read as stages.
+//
 // With `names`, each segment carries its stage's name under it, for a bar that
 // has the room: the band over a run. The `inverse` tone is for a navy band.
+
+/** Past this many stages the bar is drawn as one continuous fill. */
+const CONTINUOUS_OVER = 12
 
 const FILL = {
   default: {
@@ -62,6 +68,31 @@ export function StageProgress({
             </span>
           </span>
         ))}
+      </span>
+    )
+  }
+
+  // Past twelve, segments get too thin to read: one bar filled to the share of
+  // stages done, with a mark where the run is, coloured for why it stopped.
+  if (segments.length > CONTINUOUS_OVER) {
+    const done = segments.filter((status) => status === 'done').length
+    const at = `${(done / segments.length) * 100}%`
+    return (
+      <span
+        role="img"
+        aria-label={label}
+        className={`relative flex h-2 overflow-hidden rounded-[3px] ${
+          tone === 'inverse' ? 'bg-white/18' : 'bg-ink-soft/18'
+        } ${className}`}
+      >
+        <span className={`h-full ${FILL[tone].done}`} style={{ width: at }} />
+        {segments.includes('current') && (
+          <span
+            data-mark
+            className={`absolute inset-y-0 w-[3px] ${FILL[tone][current]}`}
+            style={{ left: at }}
+          />
+        )}
       </span>
     )
   }

@@ -149,6 +149,13 @@ export type DataTableProps<T> = {
   renderExpanded?: (row: T) => ReactNode
   expandedIds?: string[]
   onExpandedChange?: (ids: string[]) => void
+  /**
+   * What opens a row. `row` (default): a click anywhere on it, or its name
+   * button. `button`: a chevron button of its own at the start of the row,
+   * named by `labels.expandRow`, and the row itself stays inert. Use `button`
+   * for rows full of links, where a click on the row should open nothing.
+   */
+  expandToggle?: 'row' | 'button'
 
   /** Trailing per-row controls. Clicks inside never toggle the row. */
   rowActions?: (row: T) => ReactNode

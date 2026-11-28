@@ -79,3 +79,11 @@ export const NamedOnNavy: Story = {
     names: ['Intake', 'Gather', 'Analyze', 'Approve', 'Decide & notify'],
   },
 }
+
+/** Past twelve stages: one continuous bar, filled to the share done, with a mark where the run is. */
+export const TwentyStages: Story = {
+  args: {
+    label: 'Stage 11 of 20, Verify links',
+    segments: [...Array(10).fill('done'), 'current', ...Array(9).fill('upcoming')],
+  },
+}

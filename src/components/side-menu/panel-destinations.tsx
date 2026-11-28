@@ -1,23 +1,11 @@
 import type { NavigateHandler } from '../../primitives/link'
 import { StatusDot } from '../../primitives/status-dot'
 import { MenuPanelLabel, MenuPanelRow } from './panel-parts'
-import type { MenuDestination, MenuSection, MenuStatus } from './types'
+import { MENU_STATUS_DOT } from './status-dots'
+import type { MenuDestination, MenuSection } from './types'
 
 // The destinations a panel lists (`SideMenuPanel.sections`), drawn with the
 // same rows a host builds by hand, so a listed page and a hand-made row match.
-
-/**
- * The dot for each status. `warning` is the attention orange the rail's count
- * uses, `info` the brand blue, and `idle` a hollow ring. Each colour carries its
- * own dark value. Written out in full because Tailwind scans for class names.
- */
-const MENU_STATUS_DOT: Record<MenuStatus, string> = {
-  warning: 'bg-notify',
-  error: 'bg-danger-fg',
-  info: 'bg-brand-fg',
-  success: 'bg-success',
-  idle: 'bg-transparent shadow-[inset_0_0_0_1.5px_var(--ink-soft)]',
-}
 
 type Props = {
   sections: MenuSection[]
