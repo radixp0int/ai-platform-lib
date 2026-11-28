@@ -38,6 +38,24 @@ const DEFAULT_HINTS = (
  * Inert about data — it never filters anything. `groups` are supplied by the
  * host, already matched against `value`, and `onSelect` is the host's.
  */
+const TONES = {
+  default: {
+    field:
+      'min-h-[42px] rounded-surface border-line bg-panel-solid px-3 py-1.5 focus-within:border-accent focus-within:ring-3 focus-within:ring-accent/20',
+    icon: 16,
+    glyph: 'text-ink-soft',
+    input: 'text-sm text-ink placeholder:text-ink-soft',
+  },
+  // On the navy band, in both modes: literal whites and the brand ramp.
+  inverse: {
+    field:
+      'min-h-[54px] rounded-xl border-white/24 bg-white/8 pr-2.5 pl-[18px] focus-within:border-brand-200 focus-within:bg-white/12 focus-within:ring-4 focus-within:ring-brand-200/20',
+    icon: 20,
+    glyph: 'text-brand-200',
+    input: 'text-base text-white placeholder:text-brand-200',
+  },
+}
+
 export function Omnibox({
   label,
   value,
@@ -51,8 +69,10 @@ export function Omnibox({
   shortcut,
   onMenuChange,
   hints = DEFAULT_HINTS,
+  tone = 'default',
   className = '',
 }: OmniboxProps) {
+  const look = TONES[tone]
   const baseId = useId()
   const wrapRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -167,8 +187,11 @@ export function Omnibox({
         {label}
       </label>
 
-      <div className="flex min-h-[42px] min-w-0 flex-wrap items-center gap-x-2 gap-y-1.5 rounded-surface border border-line bg-panel-solid px-3 py-1.5 transition focus-within:border-accent focus-within:ring-3 focus-within:ring-accent/20">
-        <SearchIcon width={16} height={16} className="shrink-0 text-ink-soft" />
+      <div
+        data-tone={tone}
+        className={`flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1.5 border transition ${look.field}`}
+      >
+        <SearchIcon width={look.icon} height={look.icon} className={`shrink-0 ${look.glyph}`} />
 
         {chips.map((chip) => (
           <span
@@ -223,7 +246,7 @@ export function Omnibox({
           // was dismissed it is the only way back besides typing.
           onClick={() => setOpen(true)}
           onKeyDown={onKeyDown}
-          className="min-w-24 basis-24 grow bg-transparent py-0.5 text-sm text-ink outline-none placeholder:text-ink-soft"
+          className={`min-w-24 basis-24 grow bg-transparent py-0.5 outline-none ${look.input}`}
         />
 
         {suffix && <span className="ml-auto flex shrink-0 items-center">{suffix}</span>}
