@@ -44,6 +44,9 @@ export function Conversation({
   suggestions,
   typeaheadPool,
   showActions = true,
+  landing,
+  notice,
+  quote,
 }: ConversationProps) {
   const dockRef = useRef<QueueDockHandle>(null)
   const { containerRef, contentRef, atBottom, scrollToBottom } = useStickToBottom()
@@ -139,44 +142,53 @@ export function Conversation({
     <>
       <div className="relative min-h-0 flex-1">
         <div ref={containerRef} className="h-full overflow-y-auto">
-          <div
-            ref={contentRef}
-            className={`mx-auto flex w-full max-w-3xl flex-col px-5 transition-all duration-500 ${
-              inChat ? 'py-6' : 'min-h-full'
-            }`}
-          >
-            {inChat ? (
-              <div className="flex flex-col gap-7">
-                {messages.map((m) => (
-                  <ChatMessage
-                    key={m.id}
-                    message={m}
-                    onRetry={onRetry}
-                    onFollowup={m.id === lastId ? submit : undefined}
-                    busy={busy}
-                    showActions={showActions}
-                    scopeChips={scopeChips}
-                    onRestoreScope={onRestoreScope}
-                    showSourceTip={m.id === firstCitedId}
-                  />
-                ))}
-              </div>
-            ) : (
-              /* my-auto centers when there is room, without clipping on short viewports */
-              <div className="my-auto py-8">
-                {greeting}
-                <div className="mt-8 mb-8 flex flex-col gap-7">
-                  {composer(false, setEmptyDraft)}
-                  <SuggestedQuestions
-                    suggestions={suggestions}
-                    onPick={submit}
-                    limit={EMPTY_SUGGESTIONS}
-                    activeIndex={ghost.index}
-                  />
+          {!inChat && landing ? (
+            // The host lays the empty page out edge to edge; it still sits in
+            // the scroller, so a short window can reach all of it.
+            <div ref={contentRef} className="min-h-full">
+              {landing(composer(false, setEmptyDraft))}
+            </div>
+          ) : (
+            <div
+              ref={contentRef}
+              className={`mx-auto flex w-full max-w-3xl flex-col px-5 transition-all duration-500 ${
+                inChat ? 'py-6' : 'min-h-full'
+              }`}
+            >
+              {inChat ? (
+                <div className="flex flex-col gap-7">
+                  {messages.map((m) => (
+                    <ChatMessage
+                      key={m.id}
+                      message={m}
+                      onRetry={onRetry}
+                      onFollowup={m.id === lastId ? submit : undefined}
+                      busy={busy}
+                      showActions={showActions}
+                      scopeChips={scopeChips}
+                      onRestoreScope={onRestoreScope}
+                      showSourceTip={m.id === firstCitedId}
+                      quote={quote}
+                    />
+                  ))}
                 </div>
-              </div>
-            )}
-          </div>
+              ) : (
+                /* my-auto centers when there is room, without clipping on short viewports */
+                <div className="my-auto py-8">
+                  {greeting}
+                  <div className="mt-8 mb-8 flex flex-col gap-7">
+                    {composer(false, setEmptyDraft)}
+                    <SuggestedQuestions
+                      suggestions={suggestions}
+                      onPick={submit}
+                      limit={EMPTY_SUGGESTIONS}
+                      activeIndex={ghost.index}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {inChat && (
@@ -189,6 +201,7 @@ export function Conversation({
 
       {inChat && (
         <div className="mx-auto w-full max-w-3xl px-5 pb-5 animate-fade-up">
+          {notice && <div className="mb-2">{notice}</div>}
           <QueueDraft>
             {(draft, onDraftChange) => (
               <>
@@ -197,7 +210,9 @@ export function Conversation({
               </>
             )}
           </QueueDraft>
-          <p className="mt-2.5 text-center text-xs text-ink-soft/80">{disclaimer}</p>
+          {!notice && disclaimer && (
+            <p className="mt-2.5 text-center text-xs text-ink-soft/80">{disclaimer}</p>
+          )}
         </div>
       )}
     </>

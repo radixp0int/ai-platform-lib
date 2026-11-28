@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { useState } from 'react'
 import { buildMenu } from '../../fixtures/platform/menu'
 import { INITIAL_TENANTS } from '../../fixtures/platform/tenants'
-import { SlidersIcon, WorkflowIcon } from '../../primitives/icons'
+import { PlusIcon, SlidersIcon, WorkflowIcon } from '../../primitives/icons'
 import { MenuPanelLabel, MenuPanelRow, MenuPanelSearch } from './panel-parts'
 import { SideMenu } from './side-menu'
 import { InSideMenu, SideMenuSlotProvider } from './slot'
@@ -72,7 +73,8 @@ export const NoPanel: Story = { args: { activeId: 'home' } }
 
 /**
  * A page adds to the panel with `InSideMenu` when what it holds depends on the
- * page's own state. The section keeps that state.
+ * page's own state. The section keeps that state. Its `action` puts a button
+ * at the end of the panel's heading for something only the page can do.
  */
 export const WithPageSection: Story = {
   args: { activeId: 'chat', panels: { chat: { title: 'Chat' } } },
@@ -89,12 +91,20 @@ export const WithPageSection: Story = {
 }
 
 function PageSection() {
+  const [cleared, setCleared] = useState(false)
   return (
-    <InSideMenu>
+    <InSideMenu
+      action={{
+        label: 'New chat',
+        icon: <PlusIcon width={16} height={16} />,
+        onSelect: () => setCleared(true),
+      }}
+    >
       <section aria-label="This page" className="flex flex-col">
         <MenuPanelLabel>Recent chats</MenuPanelLabel>
         <MenuPanelRow name="Supplier onboarding checklist" sub="2 days ago" />
         <MenuPanelRow name="Holiday rota questions" sub="3 days ago" />
+        {cleared && <p className="px-2 pt-3 text-sm text-ink-soft">Started a new chat.</p>}
       </section>
     </InSideMenu>
   )

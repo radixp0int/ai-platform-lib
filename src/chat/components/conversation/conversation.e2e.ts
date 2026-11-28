@@ -87,4 +87,28 @@ test.describe('Conversation', () => {
     await expect(page.getByRole('alert')).toContainText('The connection to the model was lost.')
     await expect(page.getByRole('button', { name: 'Retry' })).toBeVisible()
   })
+
+  test('`landing` lays out the empty page around the composer', async ({ story, page }) => {
+    await story.open('chat-components-conversation--landing')
+    const heading = page.getByRole('heading', { name: 'What should we work on?' })
+    const box = page.getByRole('textbox', { name: 'Message Acme' })
+    await expect(heading).toBeVisible()
+    await expect(box).toBeVisible()
+    // The library's own empty state steps aside.
+    await expect(page.getByRole('region', { name: 'Suggested for today' })).toHaveCount(0)
+    expect((await box.boundingBox())!.y).toBeGreaterThan((await heading.boundingBox())!.y)
+  })
+
+  test('`notice` docks above the composer and the disclaimer steps aside', async ({
+    story,
+    page,
+  }) => {
+    await story.open('chat-components-conversation--with-notice')
+    const notice = page.getByText('Acme can make mistakes.', { exact: true })
+    const box = page.getByRole('textbox', { name: 'Message Acme' })
+    await expect(notice).toBeVisible()
+    expect((await box.boundingBox())!.y).toBeGreaterThan((await notice.boundingBox())!.y)
+    await expect(page.getByText('AI can make mistakes. Verify important details.')).toHaveCount(0)
+    await expect(page.locator('blockquote')).toHaveCSS('font-style', 'italic')
+  })
 })

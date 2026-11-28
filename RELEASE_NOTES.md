@@ -3,6 +3,43 @@
 Changes to the component library as seen from Storybook. Newest first. Each
 entry names the modules it touches so the sidebar entry is easy to find.
 
+## 2026-11-27 — Recipes: Chat, Chat history and Settings from Finals 2.0
+
+Three new recipes inside the shared app shell. The old Chat/Recipes stories stay
+until the cleanup PR.
+
+- **Recipes/Chat** is the shell's `chat` route. Before the first message, a
+  centred `PageBand` greeting with the composer lifted over its edge, today's
+  suggestions and "Pick up where you left off". Once a chat begins, a slim band
+  with its title, New chat and Share over the thread; follow-ups on the circle
+  rail; the AI notice as an `Alert variant="bar"` docked over the composer; and
+  quotes in the subtle, italic, snug blockquote style. The Chat panel lists the
+  chats under Pinned, Today, Yesterday and Previous 7 days, with search, a
+  History row and New chat in its heading. A past chat opens at
+  `/chat/c/<id>`. Stories: Default, Dark, Tablet, Portrait, Conversation,
+  ConversationDark, Answering.
+- **Recipes/Chat history** at `/chat/history`: a `PageBand` with New chat;
+  search; Any time / Today / This week / Custom range, with a date popover that
+  checks its dates; label pills with counts; the chats grouped by day beside a
+  preview with Continue, Pin, Share, Rename and Delete (with undo), the last
+  answer, sources, and follow-ups that start a new chat. Below 900px the list
+  and preview take turns. Stories add Loading, LoadError and Empty.
+- **Recipes/Settings**: the one Settings dialog over the chat page, opened from
+  the rail's Settings item (Profile and look) and the account menu (Answer
+  features). Stories: Default, Features, Dark, FeaturesDark, Tablet, Portrait.
+- **Conversation**: `landing` lays out the page before the first message
+  around the composer it is handed; `notice` docks a standing notice over the
+  composer and hides the disclaimer while it shows; `quote` passes a
+  blockquote style to each message. New stories: Landing, WithNotice.
+- **InSideMenu**: `action` puts a page's own button at the end of the panel's
+  heading, for something only the page can do (the chat's New chat).
+- **PageBand**: `align="center"` centres the title and line over a centred
+  page body, keeping the trail at the start. New story: Centred.
+- **Fixtures**: `fixtures/platform/conversations.ts`, one list of past chats
+  for the panel, the pick-up list and the history page.
+- **Tests:** e2e for each recipe and for the three component additions; unit
+  tests for `InSideMenu`'s action and `PageBand`'s alignment.
+
 ## 2026-11-27 — Recipes: Ingestion and Tenants from Finals 2.0
 
 - **Recipes/Ingestion** (new), the shell's `/t/<tenant>/ingestion` page.

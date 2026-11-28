@@ -94,6 +94,18 @@ export const Dark: Story = {
   globals: { mode: 'dark' },
 }
 
+/** `align="center"`: a greeting over one centred column, the trail kept at the start. */
+export const Centred: Story = {
+  args: {
+    align: 'center',
+    title: 'What should we work on, John?',
+    description: 'It reads everything this tenant has connected: 14 sources, 1,171 documents.',
+    breadcrumbs: [{ label: 'Overview', href: '#overview' }, { label: 'Use' }],
+    details: undefined,
+    actions: undefined,
+  },
+}
+
 /**
  * `footer` is a row along the bottom of the band: here the Insights page's
  * "Overview" heading with the links that jump down the page.

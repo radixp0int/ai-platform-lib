@@ -46,6 +46,12 @@ export type PageBandProps = Omit<HTMLAttributes<HTMLElement>, 'title'> & {
   /** A "Show details" link at the end of the description, and the strip it opens. */
   details?: PageBandDetails
   /**
+   * `center` centres the title and its line over a page whose body is one
+   * centred column — a chat's greeting over its composer. The trail stays at
+   * the start, and actions go under the line. Defaults to `start`.
+   */
+  align?: 'start' | 'center'
+  /**
    * A row along the bottom of the band, under a hairline: the heading of the
    * first section and links that jump down the page, as on Insights. The page
    * body still lifts over the band below it.

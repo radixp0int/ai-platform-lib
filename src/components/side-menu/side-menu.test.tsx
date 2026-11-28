@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { flattenMenu, matchDestination, parentOf } from './menu'
 import { SideMenu } from './side-menu'
+import { InSideMenu, SideMenuSlotProvider } from './slot'
 import type { MenuSection, SideMenuPanel, SideMenuProps } from './types'
 
 const sections: MenuSection[] = [
@@ -168,5 +169,40 @@ describe('menu helpers', () => {
 
   it('finds the parent of a grandchild', () => {
     expect(parentOf(nested, 'tenants')?.id).toBe('tenant-admin')
+  })
+})
+
+describe('InSideMenu', () => {
+  it("adds the page's rows to the panel and its action to the panel's heading", async () => {
+    viewport(false)
+    const onNew = vi.fn()
+    render(
+      <SideMenuSlotProvider>
+        <SideMenu
+          sections={sections}
+          rail={['home', 'chat']}
+          activeId="chat"
+          panels={{ chat: { title: 'Chat' } }}
+        />
+        <InSideMenu action={{ label: 'New chat', onSelect: onNew }}>
+          <p>Recent chats</p>
+        </InSideMenu>
+      </SideMenuSlotProvider>,
+    )
+    const panel = screen.getByRole('complementary', { name: 'Chat' })
+    expect(within(panel).getByText('Recent chats')).toBeTruthy()
+    const heading = within(panel).getByRole('heading', { name: 'Chat' }).parentElement!
+    await userEvent.click(within(heading).getByRole('button', { name: 'New chat' }))
+    expect(onNew).toHaveBeenCalledOnce()
+  })
+
+  it('draws nothing where there is no panel', () => {
+    render(
+      <InSideMenu action={{ label: 'New chat', onSelect: () => {} }}>
+        <p>Recent chats</p>
+      </InSideMenu>,
+    )
+    expect(screen.queryByText('Recent chats')).toBeNull()
+    expect(screen.queryByRole('button', { name: 'New chat' })).toBeNull()
   })
 })

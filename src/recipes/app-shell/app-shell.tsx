@@ -43,6 +43,7 @@ import { DemoFeaturesProvider, useDemoFeatureState } from '../settings/settings-
 import { DemoSettingsDialog, type DemoSettingsSection } from '../settings/settings-dialog'
 import { TenantsPage } from '../tenants'
 import { AccountButton } from '../top-bar/account-button'
+import { ChatSpace } from '../chat/chat-space'
 import { SpaceUnavailablePage } from './pages/SpaceUnavailablePage'
 import { WorkflowsFlyout, WorkflowsPanel } from './menu-panels'
 import { PlatformContext, type PlatformValue } from './platform-context'
@@ -398,21 +399,19 @@ export function AppShell({
                           onOpenUserSettings: () => setSettings('look'),
                           onOpenFeatureToggles: () => setSettings('features'),
                         }) ??
-                        (space === 'insights' ? (
+                        (space === 'chat' ? (
+                          <ChatSpace path={rest} base={base} />
+                        ) : space === 'insights' ? (
                           <InsightsPage base={base} />
                         ) : space === 'ingestion' && rest === '/ingestion' ? (
                           <IngestionPage />
                         ) : (
-                          // The workflows list is the workflows recipe's: a host
+                          // Chat's and Insights' pages are their recipes'. The
+                          // workflows list is the workflows recipe's: a host
                           // supplies it through `renderSpace`, as the stories do.
                           <PlaceholderPage
                             title={
-                              active?.label ??
-                              (space === 'chat'
-                                ? 'Chat'
-                                : space === 'workflows'
-                                  ? 'Workflows'
-                                  : 'Ingestion')
+                              active?.label ?? (space === 'workflows' ? 'Workflows' : 'Ingestion')
                             }
                             addSource={space === 'ingestion'}
                           />
