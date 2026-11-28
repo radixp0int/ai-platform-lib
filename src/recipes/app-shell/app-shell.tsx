@@ -41,6 +41,7 @@ import { ThemeToggle } from '../../primitives/theme-toggle'
 import { DemoFeaturesProvider, useDemoFeatureState } from '../settings/settings-state'
 import { DemoSettingsDialog, type DemoSettingsSection } from '../settings/settings-dialog'
 import { AccountButton } from '../top-bar/account-button'
+import { ChatSpace } from '../chat/chat-space'
 import { SpaceUnavailablePage } from './pages/SpaceUnavailablePage'
 import { WorkflowsFlyout, WorkflowsPanel } from './menu-panels'
 import { PlatformContext, type PlatformValue } from './platform-context'
@@ -390,23 +391,25 @@ export function AppShell({
                           base,
                           onOpenUserSettings: () => setSettings('look'),
                           onOpenFeatureToggles: () => setSettings('features'),
-                        }) ?? (
-                          // The workflows list is the workflows recipe's: a host
-                          // supplies it through `renderSpace`, as the stories do.
+                        }) ??
+                        (space === 'chat' ? (
+                          <ChatSpace path={rest} base={base} />
+                        ) : (
+                          // Chat's pages are the Chat recipe's. The workflows list is
+                          // the workflows recipe's: a host supplies it through
+                          // `renderSpace`, as the stories do.
                           <PlaceholderPage
                             title={
                               active?.label ??
-                              (space === 'chat'
-                                ? 'Chat'
-                                : space === 'insights'
-                                  ? 'Insights'
-                                  : space === 'workflows'
-                                    ? 'Workflows'
-                                    : 'Ingestion')
+                              (space === 'insights'
+                                ? 'Insights'
+                                : space === 'workflows'
+                                  ? 'Workflows'
+                                  : 'Ingestion')
                             }
                             addSource={space === 'ingestion'}
                           />
-                        ))
+                        )))
                       ) : (
                         <PlaceholderPage title="Page unavailable" />
                       )}
