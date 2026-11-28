@@ -35,4 +35,16 @@ test.describe('Menu', () => {
     await expect(page.getByRole('menu')).toBeHidden()
     await expect(trigger).toHaveAttribute('aria-expanded', 'false')
   })
+
+  test('a separator sits between groups, and the arrow keys pass over it', async ({
+    story,
+    page,
+  }) => {
+    await story.open('primitives-menu--with-separator')
+    const menu = page.getByRole('menu', { name: 'Tenant actions' })
+    await expect(menu.getByRole('separator')).toHaveCount(1)
+    await menu.getByRole('menuitem', { name: 'Manage people' }).focus()
+    await page.keyboard.press('ArrowDown')
+    await expect(menu.getByRole('menuitem', { name: 'Delete tenant…' })).toBeFocused()
+  })
 })

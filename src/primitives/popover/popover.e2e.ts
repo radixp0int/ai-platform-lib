@@ -61,4 +61,12 @@ test.describe('Popover', () => {
     const [a, p] = [(await trigger.boundingBox())!, (await panel.boundingBox())!]
     expect(p.y + p.height).toBeLessThan(a.y)
   })
+
+  test('above-end rises from the anchor, lined up with its right edge', async ({ story, page }) => {
+    await story.open('primitives-popover--above-end')
+    const { trigger, panel } = await open(page)
+    const [a, p] = [(await trigger.boundingBox())!, (await panel.boundingBox())!]
+    expect(p.y + p.height).toBeLessThan(a.y)
+    expect(Math.abs(p.x + p.width - (a.x + a.width))).toBeLessThan(2)
+  })
 })

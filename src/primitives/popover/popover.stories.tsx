@@ -66,6 +66,15 @@ export const End: Story = {
 /** To the right of the anchor, level with its top — for a control in a narrow rail. */
 export const Side: Story = { render: () => <Demo align="side" width={220} /> }
 
+/** Rising, lined up with the anchor's right edge — a row menu on the last rows of a list. */
+export const AboveEnd: Story = {
+  render: () => (
+    <div className="flex h-64 items-end justify-end">
+      <Demo align="above-end" />
+    </div>
+  ),
+}
+
 /** Rising from an anchor pinned to the bottom of the screen. */
 export const Above: Story = {
   render: () => (

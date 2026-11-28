@@ -4,7 +4,7 @@ import { fn } from 'storybook/test'
 import { Button } from '../button'
 import { CheckIcon, PencilIcon, SlidersIcon, TrashIcon, UserIcon } from '../icons'
 import { Popover } from '../popover'
-import { Menu } from './menu'
+import { Menu, MenuSeparator } from './menu'
 import { MenuItem } from './menu-item'
 
 const meta = {
@@ -62,6 +62,29 @@ export const LabelsOnly: Story = {
         <MenuItem
           icon={<TrashIcon width={16} height={16} />}
           label="Delete"
+          tone="danger"
+          onSelect={fn()}
+        />
+      </Menu>
+    </div>
+  ),
+}
+
+/** `MenuSeparator` sets a destructive item apart from the rest. */
+export const WithSeparator: Story = {
+  render: () => (
+    <div className={frame}>
+      <Menu aria-label="Tenant actions">
+        <MenuItem icon={<PencilIcon width={16} height={16} />} label="Rename" onSelect={fn()} />
+        <MenuItem
+          icon={<UserIcon width={16} height={16} />}
+          label="Manage people"
+          onSelect={fn()}
+        />
+        <MenuSeparator />
+        <MenuItem
+          icon={<TrashIcon width={16} height={16} />}
+          label="Delete tenant…"
           tone="danger"
           onSelect={fn()}
         />

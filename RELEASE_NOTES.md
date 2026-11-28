@@ -3,6 +3,51 @@
 Changes to the component library as seen from Storybook. Newest first. Each
 entry names the modules it touches so the sidebar entry is easy to find.
 
+## 2026-11-27 — Recipes: Ingestion and Tenants from Finals 2.0
+
+- **Recipes/Ingestion** (new), the shell's `/t/<tenant>/ingestion` page.
+  `PageBand` with "1 failing · Show details" and its figures (Documents,
+  Sources syncing, Added this week, Last sync), and Schedule a sync, Connect an
+  API and Upload documents in the band. Upload documents opens the Add a source
+  wizard. Below it, one card holds the sources `DataGrid`: a Filters panel
+  (Status, Type), chips in the search box, Export (CSV, JSON), a bulk bar
+  (Sync now, Pause), pagination, and Sync now / Edit / More on every row.
+- **Recipes/Tenants** (new) replaces the shell's old `/tenants` page. Status
+  means the tenant you are in: Alderfinch Group shows **Active**, every other
+  row a muted dash.
+  - `PageBand` with Show details. The figures are Tenants ("You are in
+    Alderfinch Group"), Seats in use, Plans (6 · 6 · 3) and New in the last 90
+    days. Import from CSV and Add a tenant sit in the band.
+  - The grid shows plan · region under each name, the primary contact, a seats
+    bar that says "nearly full" at 90%, and the created date.
+  - Every row has **View details**, **Edit** and **More actions**: Switch to
+    this tenant (not on the one you are in), Copy tenant ID, Manage people, a
+    rule, then Delete tenant… in red, disabled on the tenant you are in ("You
+    are in it"). On the last three rows of a page the menu opens upward.
+  - Filters: Plan, Region, Created (Last 30 days, Last 90 days, Over a year ago)
+    and Has active seats. Bulk: Change plan, Export, Delete. `/tenants?q=…`
+    starts with a search and `/tenants?details` with the strip open.
+  - The Home panel reads "15 tenants · 1,204 people" under Tenant Admin and
+    "Every organisation, and the one you are in" under Tenants.
+- **DataTable: `rowActionsVisible`** (`'hover'` by default, or `'always'`).
+  `always` draws the row actions on every row instead of on hover, for a list
+  whose action is the point of the row. `DataGrid` passes it through. New story:
+  Components/DataTable › Row Actions Always.
+- **Popover: `align="above-end"`** rises from the anchor, lined up with its
+  right edge — for a row menu near the foot of a list. Story: Above End.
+- **`MenuSeparator`**: a rule between groups of menu items; the arrow keys pass
+  over it. Story: Primitives/Menu › With Separator.
+- **Icons:** `UsersIcon` and `SwitchIcon`.
+- Each recipe has Default, Dark, Details open, Tablet (1024), Portrait (834,
+  dark), Empty and No match stories; Tenants adds Row Menu Open and Row Menu
+  Open Dark. Fixture dates move with today, so date
+  filters always find something.
+- **Tests:** e2e for both pages (Details, filters, sorting, paging, bulk
+  select, row actions and the row menu, export, empty and no-match states, and
+  nothing cut off at 1024 and 834), and for `rowActionsVisible`, `above-end`
+  and `MenuSeparator`. The shell's
+  older tenants-table tests are gone with that page.
+
 ## 2026-11-27 — Recipes: Overview and Insights from Finals 2.0
 
 - **Recipes/Overview** is the new landing page, and the shell's Home page

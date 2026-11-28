@@ -185,13 +185,13 @@ export function buildHomePanel(tenant: Tenant): MenuSection[] {
         id: 'tenant-admin',
         label: 'Tenant Admin',
         href: '/tenants',
-        description: '14 tenants · 1,204 people',
+        description: '15 tenants · 1,204 people',
         children: [
           {
             id: 'tenants',
             label: 'Tenants',
             href: '/tenants',
-            description: '3 waiting on an invite',
+            description: 'Every organisation, and the one you are in',
           },
           {
             id: 'people',
