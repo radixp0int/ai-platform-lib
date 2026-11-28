@@ -71,7 +71,7 @@ export const NeedsAttention: Story = {
         id: 'bluefin',
         name: 'Bluefin Logistics · $310,000',
         startedBy: 'Marcus Lee',
-        result: 'Failed at Credit pull',
+        result: 'Failed at Registry lookup',
         state: 'stopped',
         stagesDone: 1,
         progress: 'Stopped at stage 2 · Gather',
