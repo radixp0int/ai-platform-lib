@@ -3,6 +3,39 @@
 Changes to the component library as seen from Storybook. Newest first. Each
 entry names the modules it touches so the sidebar entry is easy to find.
 
+## 2026-11-27 — Recipes: Overview and Insights from Finals 2.0
+
+- **Recipes/Overview** is the new landing page, and the shell's Home page
+  (`app-shell/pages/HomePage.tsx`) is gone. It has:
+  - a greeting band with an "Ask Acme, or jump" search. It asks Chat, or jumps
+    to an action in any section, and ⌘K focuses it;
+  - floating section tabs grouped Use · Build · Automate · Measure · Govern,
+    each with a count of what waits in it. Number keys 1–8 open a tab;
+  - quick actions and a Hide numbers switch;
+  - Answer quality, the Sections list, Needs you, and Pick up where you left
+    off with a filter;
+  - a view of one section when you pick its tab.
+    Only the sections the tenant has are shown.
+- **Recipes/Insights** renders for the shell's `insights` route. It has:
+  - a PageBand with the date range (14 days, 7 days, Today, or a custom range
+    in a popover) and Export;
+  - four large and six small StatTiles, Questions per day and Top topics;
+  - three sections: Evaluation scores (score lines you can hide, low-scoring
+    sources, test suites that open), User feedback (ratings, reasons that
+    filter the comments) and Errors in responses (by day and by type, with an
+    examples drawer).
+    Every figure is worked out from the range and the range before it. The
+    charts use one hue, the accent; the score lines differ by dash.
+- **SegmentedControl** `tone="inverse"` and **Omnibox** `tone="inverse"` are
+  for controls on the navy band. **PageBand** `footer` is a row along the
+  band's bottom.
+- Stories: Default, Dark, Tablet (1024), Portrait (834, dark), plus Overview's
+  Chat-only tenant, and Insights' Today and no-earlier-data ranges.
+- Tests: e2e tests for the tabs, keys, search, Hide numbers and filters; the
+  range switch, the custom range, the section links, the score toggles,
+  comment filters, the drawer and the suites; and the new tones and footer.
+  There are unit tests for the Insights figures and the PageBand footer.
+
 ## 2026-11-27 — App shell: the Finals 2.0 frame
 
 The first step of moving every recipe onto the Finals 2.0 designs.
