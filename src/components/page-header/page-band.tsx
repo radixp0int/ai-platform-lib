@@ -61,6 +61,7 @@ export function PageBand({
   breadcrumbs,
   actions,
   details,
+  footer,
   children,
   className = '',
   ...rest
@@ -132,6 +133,14 @@ export function PageBand({
               {details.stats.map((stat, i) => (
                 <Stat key={i} stat={stat} first={i === 0} />
               ))}
+            </div>
+          )}
+          {footer && (
+            <div
+              data-page-band-footer=""
+              className="mt-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-2.5 border-t border-white/14 pt-[18px]"
+            >
+              {footer}
             </div>
           )}
         </div>

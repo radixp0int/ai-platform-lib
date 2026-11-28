@@ -77,5 +77,11 @@ export type OmniboxProps = {
   shortcut?: string
   /** Keyboard legend under the suggestions. Pass `null` to drop it. */
   hints?: ReactNode
+  /**
+   * `inverse` draws the field for a brand band, as the landing page's greeting
+   * does: a translucent white field, a taller box and white type. The
+   * suggestions under it are the same panel in either tone.
+   */
+  tone?: 'default' | 'inverse'
   className?: string
 }
