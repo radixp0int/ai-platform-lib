@@ -52,6 +52,12 @@ export type PageBandProps = Omit<HTMLAttributes<HTMLElement>, 'title'> & {
    */
   align?: 'start' | 'center'
   /**
+   * A row along the bottom of the band, under a hairline: the heading of the
+   * first section and links that jump down the page, as on Insights. The page
+   * body still lifts over the band below it.
+   */
+  footer?: ReactNode
+  /**
    * The page body. Its top edge lifts over the bottom of the band, so the
    * first card overlaps it.
    */

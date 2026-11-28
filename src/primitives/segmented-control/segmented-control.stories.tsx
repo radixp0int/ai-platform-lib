@@ -74,3 +74,27 @@ export const WithDisabledOption: Story = {
     onValueChange: fn(),
   },
 }
+
+/**
+ * `tone="inverse"`, for a brand band: the date range on the Insights page's
+ * PageBand. The band stays navy in dark mode too, so the control does as well.
+ */
+export const Inverse: Story = {
+  args: {
+    label: 'Date range',
+    value: '14d',
+    tone: 'inverse',
+    options: [
+      { value: '14d', label: '14 days' },
+      { value: '7d', label: '7 days' },
+      { value: 'today', label: 'Today' },
+      { value: 'custom', label: 'Custom range' },
+    ],
+    onValueChange: fn(),
+  },
+  render: (args) => (
+    <div className="bg-brand-900 p-6">
+      <SegmentedControl {...args} />
+    </div>
+  ),
+}

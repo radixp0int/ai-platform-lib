@@ -105,3 +105,31 @@ export const Centred: Story = {
     actions: undefined,
   },
 }
+
+/**
+ * `footer` is a row along the bottom of the band: here the Insights page's
+ * "Overview" heading with the links that jump down the page.
+ */
+export const WithFooter: Story = {
+  args: {
+    title: 'Insights',
+    description:
+      'How closely answers stick to the sources, what people think of them, and what went wrong.',
+    breadcrumbs: [{ label: 'Overview', href: '#overview' }, { label: 'Measure' }],
+    details: undefined,
+    actions: <Button variant="inverse">Export</Button>,
+    footer: (
+      <>
+        <h2 className="text-lg font-extrabold text-white">Overview</h2>
+        <nav aria-label="Sections on this page" className="flex gap-4 text-[13px] font-bold">
+          <a href="#evaluation" className="text-brand-100 hover:text-white">
+            Evaluation scores ↓
+          </a>
+          <a href="#feedback" className="text-brand-100 hover:text-white">
+            User feedback ↓
+          </a>
+        </nav>
+      </>
+    ),
+  },
+}

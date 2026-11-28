@@ -1,6 +1,7 @@
 import { SlideOver } from '../../components/slide-over'
 import { NavigateProvider } from '../../primitives/link'
-import { HomePage } from './pages/HomePage'
+import { InsightsPage } from '../insights'
+import { OverviewPage } from '../overview'
 import { PlaceholderPage } from './pages/PlaceholderPage'
 import { TasksPage } from './pages/TasksPage'
 import { TenantsPage } from './pages/TenantsPage'
@@ -378,7 +379,7 @@ export function AppShell({
                           onClearEdit={() => navigate('/tenants')}
                         />
                       ) : rest === '/home' || !rest ? (
-                        <HomePage />
+                        <OverviewPage />
                       ) : rest === '/tasks' ? (
                         <TasksPage />
                       ) : wizard ? (
@@ -394,18 +395,15 @@ export function AppShell({
                         }) ??
                         (space === 'chat' ? (
                           <ChatSpace path={rest} base={base} />
+                        ) : space === 'insights' ? (
+                          <InsightsPage base={base} />
                         ) : (
-                          // Chat's pages are the Chat recipe's. The workflows list is
-                          // the workflows recipe's: a host supplies it through
-                          // `renderSpace`, as the stories do.
+                          // Chat's and Insights' pages are their recipes'. The
+                          // workflows list is the workflows recipe's: a host
+                          // supplies it through `renderSpace`, as the stories do.
                           <PlaceholderPage
                             title={
-                              active?.label ??
-                              (space === 'insights'
-                                ? 'Insights'
-                                : space === 'workflows'
-                                  ? 'Workflows'
-                                  : 'Ingestion')
+                              active?.label ?? (space === 'workflows' ? 'Workflows' : 'Ingestion')
                             }
                             addSource={space === 'ingestion'}
                           />
