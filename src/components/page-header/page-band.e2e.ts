@@ -64,4 +64,17 @@ test.describe('PageBand', () => {
     }
     expect(story.errors).toEqual([])
   })
+
+  test('the footer row sits inside the band, under the title, above the body', async ({
+    story,
+    page,
+  }) => {
+    await story.open('components-page-band--with-footer')
+    const band = (await page.locator('header').first().boundingBox())!
+    const title = (await page.getByRole('heading', { level: 1 }).boundingBox())!
+    const footer = (await page.locator('[data-page-band-footer]').boundingBox())!
+    expect(footer.y).toBeGreaterThan(title.y + title.height)
+    expect(footer.y + footer.height).toBeLessThanOrEqual(band.y + band.height)
+    await expect(page.getByRole('navigation', { name: 'Sections on this page' })).toBeVisible()
+  })
 })

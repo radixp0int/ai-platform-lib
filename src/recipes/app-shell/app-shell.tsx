@@ -1,6 +1,7 @@
 import { SlideOver } from '../../components/slide-over'
 import { NavigateProvider } from '../../primitives/link'
-import { HomePage } from './pages/HomePage'
+import { InsightsPage } from '../insights'
+import { OverviewPage } from '../overview'
 import { PlaceholderPage } from './pages/PlaceholderPage'
 import { TasksPage } from './pages/TasksPage'
 import { WizardPage } from './pages/WizardPage'
@@ -383,7 +384,7 @@ export function AppShell({
                           )}
                         />
                       ) : rest === '/home' || !rest ? (
-                        <HomePage />
+                        <OverviewPage />
                       ) : rest === '/tasks' ? (
                         <TasksPage />
                       ) : wizard ? (
@@ -397,7 +398,9 @@ export function AppShell({
                           onOpenUserSettings: () => setSettings('look'),
                           onOpenFeatureToggles: () => setSettings('features'),
                         }) ??
-                        (space === 'ingestion' && rest === '/ingestion' ? (
+                        (space === 'insights' ? (
+                          <InsightsPage base={base} />
+                        ) : space === 'ingestion' && rest === '/ingestion' ? (
                           <IngestionPage />
                         ) : (
                           // The workflows list is the workflows recipe's: a host
@@ -407,11 +410,9 @@ export function AppShell({
                               active?.label ??
                               (space === 'chat'
                                 ? 'Chat'
-                                : space === 'insights'
-                                  ? 'Insights'
-                                  : space === 'workflows'
-                                    ? 'Workflows'
-                                    : 'Ingestion')
+                                : space === 'workflows'
+                                  ? 'Workflows'
+                                  : 'Ingestion')
                             }
                             addSource={space === 'ingestion'}
                           />

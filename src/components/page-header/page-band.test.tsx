@@ -81,4 +81,13 @@ describe('PageBand', () => {
     expect(screen.getByRole('button', { name: 'Add a tenant' })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: 'All tenants' })).toBeInTheDocument()
   })
+
+  it('draws a footer row in the band only when given one', () => {
+    const { container, rerender } = render(<PageBand title="Insights" />)
+    expect(container.querySelector('[data-page-band-footer]')).toBeNull()
+    rerender(<PageBand title="Insights" footer={<h2>Overview</h2>} />)
+    const footer = container.querySelector('[data-page-band-footer]')
+    expect(footer).toContainElement(screen.getByRole('heading', { level: 2, name: 'Overview' }))
+    expect(screen.getByRole('banner')).toContainElement(footer as HTMLElement)
+  })
 })
