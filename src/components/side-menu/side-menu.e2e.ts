@@ -34,7 +34,7 @@ test.describe('SideMenu', () => {
   }) => {
     await story.open('components-side-menu--default')
     const rail = page.getByRole('navigation', { name: 'Apps' })
-    await expect(rail.locator('[aria-current="page"]')).toContainText('Flows')
+    await expect(rail.locator('[aria-current="page"]')).toContainText('Workflows')
     await expect(rail.getByRole('link', { name: 'Home' })).toHaveAttribute('href', /\/home$/)
     await expect(rail.getByRole('link', { name: 'Tasks, 2 waiting' })).toBeVisible()
   })

@@ -249,7 +249,7 @@ export function WorkflowsPage({
         sortType: 'number',
         // Newest first reads as descending, so the newest has the highest value.
         sortValue: (w) => -w.recency,
-        width: '7rem',
+        width: '7.75rem',
         hideBelow: 'xl',
         cell: (w) => (
           <span className="text-[12.5px] whitespace-nowrap text-ink-soft">{w.updated}</span>
