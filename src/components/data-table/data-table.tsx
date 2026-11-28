@@ -21,6 +21,7 @@ import {
 } from './selection'
 import { SkeletonRows, StateRow } from './states'
 import { DEFAULT_TABLE_LABELS, HEADER_HEIGHT, MIN_BODY_HEIGHT, selectionLabel } from './labels'
+import { ROW_TONE_EDGE } from './row-tone'
 import type { Column, DataTableLabels, DataTableProps } from './types'
 
 /** A radio in the selection column, for `maxSelections={1}`. */
@@ -146,6 +147,7 @@ export function DataTableView<T>({
   onExpandedChange,
   rowActions,
   rowActionsVisible = 'hover',
+  rowTone,
   empty,
   emptyAction,
   noMatch,
@@ -379,12 +381,20 @@ export function DataTableView<T>({
                 const isSelected = selected.includes(id)
                 const panelId = `${baseId}-panel-${id}`
                 const [first, ...rest] = columns
+                const tone = rowTone?.(row)
+                // The state edge, or for an open row with no tone, the brand rail.
+                const edge = tone
+                  ? ROW_TONE_EDGE[tone]
+                  : isOpen
+                    ? 'shadow-[inset_3px_0_0_var(--brand-solid)]'
+                    : ''
 
                 return (
                   <Fragment key={id}>
                     <tr
                       data-open={isOpen}
                       data-selected={isSelected}
+                      data-tone={tone}
                       onClick={
                         rowClick
                           ? (e) => {
@@ -394,8 +404,9 @@ export function DataTableView<T>({
                       }
                       className={[
                         'group/row border-b border-line/70 transition',
+                        edge,
                         isOpen
-                          ? 'shadow-[inset_3px_0_0_var(--brand-solid)] [&_[data-avatar]]:bg-brand-solid [&_[data-avatar]]:text-on-brand-solid'
+                          ? '[&_[data-avatar]]:bg-brand-solid [&_[data-avatar]]:text-on-brand-solid'
                           : isSelected
                             ? 'bg-chip/50'
                             : 'hover:bg-tint/4',
@@ -481,7 +492,7 @@ export function DataTableView<T>({
                     </tr>
 
                     {expandable && isOpen && (
-                      <tr className="border-b border-line bg-canvas shadow-[inset_3px_0_0_var(--brand-solid)]">
+                      <tr className={`border-b border-line bg-canvas ${edge}`}>
                         <td
                           id={panelId}
                           colSpan={visibleCols}
