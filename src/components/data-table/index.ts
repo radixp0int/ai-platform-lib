@@ -1,5 +1,11 @@
 export { BulkBar } from './bulk-bar'
 export { DataTable, DataTableView } from './data-table'
+export {
+  actionsColumnWidth,
+  DEFAULT_SHOW_VISIBLE,
+  menuHeight,
+  splitRowActions,
+} from './row-action-model'
 export { ROW_TONE_EDGE } from './row-tone'
 export type { RowTone } from './row-tone'
 export { DEFAULT_TABLE_LABELS, MIN_BODY_HEIGHT, selectionLabel } from './labels'
@@ -12,5 +18,7 @@ export type {
   DataTableLabels,
   DataTablePagination,
   DataTableProps,
+  PerRow,
+  RowAction,
   SortType,
 } from './types'

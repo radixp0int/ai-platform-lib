@@ -1,3 +1,4 @@
+import type { Locator, Page } from '@playwright/test'
 import { expect, test } from '../../../tests/story'
 
 test.describe('DataTable', () => {
@@ -131,12 +132,11 @@ test.describe('DataTable', () => {
   })
 
   test.describe('sorting by type', () => {
-    const request = (page: import('@playwright/test').Page) =>
-      page.getByRole('status', { name: 'Sort request' })
+    const request = (page: Page) => page.getByRole('status', { name: 'Sort request' })
     /** The text of one column, top to bottom. */
-    const column = (page: import('@playwright/test').Page, n: number) =>
+    const column = (page: Page, n: number) =>
       page.locator(`#storybook-root tbody tr td:nth-child(${n})`).allInnerTexts()
-    const names = (page: import('@playwright/test').Page) =>
+    const names = (page: Page) =>
       page.locator('#storybook-root tbody tr [data-row-title]').allInnerTexts()
 
     test('a numeric column sorts as numbers, so 88 comes before 412', async ({ story, page }) => {
@@ -320,5 +320,291 @@ test.describe('DataTable, row actions', () => {
     for (const button of await buttons.all()) {
       await expect(button.locator('..')).toHaveCSS('opacity', '1')
     }
+  })
+})
+
+test.describe('DataTable, actions header', () => {
+  const table = (page: Page) => page.getByRole('table', { name: 'Tenants' })
+  const header = (page: Page) => table(page).getByRole('columnheader', { name: 'Actions' })
+
+  /** Where a box ends: its right edge, in page pixels. */
+  const rightEdge = async (target: Locator) => {
+    const box = await target.boundingBox()
+    return box!.x + box!.width
+  }
+
+  test('"visible" shows the word in the header style, right-aligned over the buttons', async ({
+    story,
+    page,
+  }) => {
+    await story.open('components-datatable--actions-header-visible')
+    const th = header(page)
+    const word = th.getByText('Actions')
+    await expect(word).toBeVisible()
+    await expect(word).not.toHaveClass(/sr-only/)
+    await expect(th).toHaveCSS('text-align', 'right')
+
+    // The same small caps as the other headers.
+    const status = table(page).getByRole('columnheader', { name: 'Status' })
+    for (const property of ['font-size', 'font-weight', 'letter-spacing', 'text-transform']) {
+      const expected = await status
+        .locator('span')
+        .evaluate((el, p) => getComputedStyle(el).getPropertyValue(p), property)
+      const actual = await word.evaluate(
+        (el, p) => getComputedStyle(el).getPropertyValue(p),
+        property,
+      )
+      expect(actual, property).toBe(expected)
+    }
+    await expect(word).toHaveCSS('color', await status.evaluate((el) => getComputedStyle(el).color))
+
+    // It ends where the last button does, and sits over the buttons rather than over the name.
+    const more = table(page).getByRole('button', { name: /^More actions for / })
+    const edge = await rightEdge(word)
+    expect(Math.abs(edge - (await rightEdge(more.first())))).toBeLessThanOrEqual(1.5)
+    const nameCell = table(page).locator('tbody tr').first().getByRole('cell').first()
+    expect(edge).toBeGreaterThan(await rightEdge(nameCell))
+  })
+
+  test('"visible" is still the one column header named Actions, with a cell of buttons under it', async ({
+    story,
+    page,
+  }) => {
+    await story.open('components-datatable--actions-header-visible')
+    await expect(table(page).getByRole('columnheader')).toHaveCount(7)
+    await expect(header(page)).toHaveCount(1)
+    await expect(header(page)).toHaveAttribute('scope', 'col')
+    await expect(table(page).getByRole('button', { name: /^Edit / })).toHaveCount(6)
+  })
+
+  test('"visible" holds in dark', async ({ story, page }) => {
+    await story.open('components-datatable--actions-header-visible-dark', { mode: 'dark' })
+    await expect(header(page).getByText('Actions')).toBeVisible()
+    await expect(header(page).getByText('Actions')).toHaveCSS(
+      'color',
+      await table(page)
+        .getByRole('columnheader', { name: 'Status' })
+        .evaluate((el) => getComputedStyle(el).color),
+    )
+  })
+
+  test('"hidden", the default, keeps the name for screen readers and shows nothing', async ({
+    story,
+    page,
+  }) => {
+    await story.open('components-datatable--actions-header-hidden')
+    const th = header(page)
+    // Still named Actions and still a header, so the column is announced.
+    await expect(th).toHaveCount(1)
+    await expect(table(page).getByRole('columnheader')).toHaveCount(7)
+    // But the word takes no room: a 1px clipped box, not a label.
+    const box = await th.getByText('Actions').boundingBox()
+    expect(box!.width).toBeLessThanOrEqual(1)
+    expect(box!.height).toBeLessThanOrEqual(1)
+  })
+
+  test('a table that does not ask for it keeps the hidden name', async ({ story, page }) => {
+    await story.open('components-datatable--row-actions-always')
+    await expect(header(page).getByText('Actions')).toHaveClass(/sr-only/)
+  })
+})
+
+test.describe('DataTable, row actions as a list', () => {
+  const table = (page: Page) => page.getByRole('table', { name: 'Tenants' })
+  const dataRow = (page: Page, index: number) =>
+    table(page)
+      .getByRole('row')
+      .nth(index + 1)
+  const dots = (page: Page, index: number) =>
+    dataRow(page, index).getByRole('button', { name: /^More actions for / })
+  const buttonsIn = (page: Page, index: number) => dataRow(page, index).getByRole('button')
+  const said = (page: Page) => page.getByRole('status')
+
+  test('the first two actions are icon buttons, then the ⋯: three buttons a row', async ({
+    story,
+    page,
+  }) => {
+    await story.open('components-datatable--row-action-list')
+    for (let index = 0; index < 6; index++) {
+      await expect(buttonsIn(page, index)).toHaveCount(3)
+    }
+    const first = dataRow(page, 0)
+    await expect(first.getByRole('button', { name: /^View details for / })).toBeVisible()
+    await expect(first.getByRole('button', { name: /^Edit for / })).toBeVisible()
+    await expect(dots(page, 0)).toBeVisible()
+    // Not a text button: an icon button is a 32px box.
+    const box = (await first.getByRole('button', { name: /^Edit for / }).boundingBox())!
+    expect(box.width).toBe(32)
+    await first.getByRole('button', { name: /^Edit for / }).click()
+    await expect(said(page)).toHaveText(/^Editing /)
+  })
+
+  test('the column is sized for its buttons, so nothing spills left over the Created column', async ({
+    story,
+    page,
+  }) => {
+    await story.open('components-datatable--row-action-list')
+    const cell = (await dataRow(page, 0).getByRole('cell').last().boundingBox())!
+    const view = (await buttonsIn(page, 0).first().boundingBox())!
+    expect(view.x).toBeGreaterThanOrEqual(cell.x)
+  })
+
+  test('the ⋯ opens the rest: a rule, a disabled item with its reason, a hidden one left out', async ({
+    story,
+    page,
+  }) => {
+    await story.open('components-datatable--row-action-list')
+    // The first row is active: Copy tenant ID and a disabled Delete, no Resend invite.
+    await dots(page, 0).click()
+    await expect(dots(page, 0)).toHaveAttribute('aria-expanded', 'true')
+    let menu = page.getByRole('menu')
+    await expect(menu.getByRole('menuitem')).toHaveText([
+      'Copy tenant ID',
+      'Delete tenant…Suspend it first',
+    ])
+    await expect(menu.getByRole('separator')).toHaveCount(1)
+    await expect(menu.getByRole('menuitem', { name: /Delete/ })).toBeDisabled()
+    // Hangs below the ⋯, lined up with its right edge.
+    const button = (await dots(page, 0).boundingBox())!
+    const list = (await page.getByRole('dialog').boundingBox())!
+    expect(list.y).toBeGreaterThan(button.y + button.height)
+    expect(Math.abs(list.x + list.width - (button.x + button.width))).toBeLessThanOrEqual(1)
+    await page.keyboard.press('Escape')
+    await expect(menu).toBeHidden()
+    await expect(dots(page, 0)).toBeFocused()
+
+    // The third is pending, so Resend invite is there; the fifth is suspended, so Delete is not disabled.
+    await dots(page, 2).click()
+    menu = page.getByRole('menu')
+    await expect(menu.getByRole('menuitem')).toHaveText([
+      'Copy tenant ID',
+      'Resend invite',
+      'Delete tenant…Suspend it first',
+    ])
+    await page.keyboard.press('Escape')
+    await dots(page, 4).click()
+    await expect(page.getByRole('menu').getByRole('menuitem', { name: /Delete/ })).toBeEnabled()
+  })
+
+  test('choosing an item runs it for that row, closes the menu and gives focus back to the ⋯', async ({
+    story,
+    page,
+  }) => {
+    await story.open('components-datatable--row-action-list')
+    await dots(page, 3).click()
+    await page.getByRole('menuitem', { name: 'Copy tenant ID' }).click()
+    await expect(said(page)).toHaveText(/^Copied tnt_/)
+    await expect(page.getByRole('menu')).toBeHidden()
+    await expect(dots(page, 3)).toBeFocused()
+  })
+
+  test('the keyboard works the menu: Enter opens it, the arrows move, Escape closes', async ({
+    story,
+    page,
+  }) => {
+    await story.open('components-datatable--row-action-list')
+    await dots(page, 2).focus()
+    await page.keyboard.press('Enter')
+    const items = page.getByRole('menuitem')
+    await expect(items.first()).toBeVisible()
+    await items.first().focus()
+    await page.keyboard.press('ArrowDown')
+    await expect(items.nth(1)).toBeFocused()
+    await page.keyboard.press('Escape')
+    await expect(page.getByRole('menu')).toBeHidden()
+    await expect(dots(page, 2)).toBeFocused()
+  })
+
+  test('near the foot of the screen the menu opens upward', async ({ story, page }) => {
+    await page.setViewportSize({ width: 1280, height: 430 })
+    await story.open('components-datatable--row-action-list')
+    await dots(page, 5).click()
+    const button = (await dots(page, 5).boundingBox())!
+    const list = (await page.getByRole('dialog').boundingBox())!
+    expect(list.y + list.height).toBeLessThan(button.y)
+    await page.keyboard.press('Escape')
+    // And the first row, with room below, still opens downward.
+    await dots(page, 0).click()
+    const top = (await dots(page, 0).boundingBox())!
+    expect((await page.getByRole('dialog').boundingBox())!.y).toBeGreaterThan(top.y + top.height)
+  })
+
+  test('showVisible={3} gives three buttons and a wider column', async ({ story, page }) => {
+    await story.open('components-datatable--show-visible-three')
+    await expect(buttonsIn(page, 0)).toHaveCount(4)
+    await expect(
+      dataRow(page, 0).getByRole('button', { name: /^Copy tenant ID for / }),
+    ).toBeVisible()
+    const cell = (await dataRow(page, 0).getByRole('cell').last().boundingBox())!
+    const first = (await buttonsIn(page, 0).first().boundingBox())!
+    expect(first.x).toBeGreaterThanOrEqual(cell.x)
+    expect(cell.width).toBeGreaterThan(150)
+  })
+
+  test('showVisible={0} leaves only the ⋯, and enough of them leaves none', async ({
+    story,
+    page,
+  }) => {
+    await story.open('components-datatable--show-visible-none')
+    await expect(buttonsIn(page, 0)).toHaveCount(1)
+    await expect(dots(page, 0)).toBeVisible()
+    await dots(page, 0).click()
+    await expect(page.getByRole('menuitem').first()).toHaveText('View details')
+    await page.keyboard.press('Escape')
+
+    await story.open('components-datatable--show-visible-all')
+    await expect(buttonsIn(page, 0)).toHaveCount(3)
+    await expect(page.getByRole('button', { name: /^More actions/ })).toHaveCount(0)
+  })
+
+  test('an action with no icon is a text button, and the menu has no glyphs to go with it', async ({
+    story,
+    page,
+  }) => {
+    await story.open('components-datatable--text-buttons')
+    const open = dataRow(page, 0).getByRole('button', { name: /^Open for / })
+    await expect(open).toHaveText('Open')
+    await expect(open.locator('svg')).toHaveCount(0)
+    await dots(page, 0).click()
+    await expect(page.getByRole('menuitem')).toHaveText(['Rename', 'Archive', 'Delete'])
+    await expect(page.getByRole('menuitem').locator('svg')).toHaveCount(0)
+    await expect(page.getByRole('separator')).toHaveCount(1)
+  })
+
+  test('the ⋯ stays while its menu is open, even with the pointer on the menu; the row actions otherwise hide', async ({
+    story,
+    page,
+  }) => {
+    await story.open('components-datatable--row-action-list-on-hover')
+    const wrapper = dots(page, 1).locator('xpath=ancestor::div[1]')
+    await expect(wrapper).toHaveCSS('opacity', '0')
+    await dataRow(page, 1).hover()
+    await expect(wrapper).toHaveCSS('opacity', '1')
+    await dots(page, 1).click()
+    await page.getByRole('menuitem').first().hover()
+    await expect(wrapper).toHaveCSS('opacity', '1')
+    await page.keyboard.press('Escape')
+    // Focus is back on the ⋯, which keeps the row's actions showing; take it away and they hide.
+    await expect(dots(page, 1)).toBeFocused()
+    await expect(wrapper).toHaveCSS('opacity', '1')
+    await dots(page, 1).blur()
+    await page.mouse.move(5, 700)
+    await expect(wrapper).toHaveCSS('opacity', '0')
+  })
+
+  test('the menu holds in dark', async ({ story, page }) => {
+    await story.open('components-datatable--row-action-menu-open-dark', { mode: 'dark' })
+    const menu = page.getByRole('menu')
+    await expect(menu.getByRole('menuitem').first()).toBeVisible()
+    const color = (el: Element) => getComputedStyle(el).color
+    const danger = await menu
+      .getByRole('menuitem', { name: /Delete/ })
+      .locator('.font-semibold')
+      .evaluate(color)
+    const plain = await menu
+      .getByRole('menuitem', { name: /Copy/ })
+      .locator('.font-semibold')
+      .evaluate(color)
+    expect(danger).not.toBe(plain)
   })
 })

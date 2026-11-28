@@ -9,6 +9,8 @@ export const DEFAULT_TABLE_LABELS: DataTableLabels = {
   selectedOf: (n, max) => `${n.toLocaleString()} of ${max.toLocaleString()} selected`,
   selectedOne: (row) => `${row} selected`,
   clearSelection: 'Clear',
+  rowAction: (action, row) => `${action} for ${row}`,
+  moreActions: 'More actions',
   emptyTitle: 'Nothing here yet',
   emptyBody: 'Rows will show up here once there are some.',
   errorTitle: 'Couldn’t load this list',

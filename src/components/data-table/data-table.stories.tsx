@@ -1,16 +1,17 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useMemo, useState } from 'react'
+import { userEvent, within } from 'storybook/test'
 import { STATUS_LABEL, STATUS_TONE, TENANTS, fmtDate, type Tenant } from '../../fixtures/tenants'
 import { Avatar } from '../../primitives/avatar'
 import { Button } from '../../primitives/button'
 import { IconButton } from '../../primitives/icon-button'
-import { DotsIcon, PencilIcon, TrashIcon } from '../../primitives/icons'
+import { CopyIcon, DotsIcon, EyeIcon, PencilIcon, TrashIcon } from '../../primitives/icons'
 import { Pill } from '../../primitives/pill'
 import type { Sort } from '../paging'
 import { DataTable } from './data-table'
 import { sortRows as sortByType, toSortParam } from './sorting'
 import type { RowTone } from './row-tone'
-import type { Column } from './types'
+import type { Column, RowAction } from './types'
 
 const COLUMNS: Column<Tenant>[] = [
   {
@@ -75,6 +76,21 @@ const COLUMNS: Column<Tenant>[] = [
     cell: (t) => <span className="whitespace-nowrap text-ink-soft">{fmtDate(t.created)}</span>,
   },
 ]
+
+/** Edit, Delete and More: three icon buttons, the way a list's own row actions look. */
+const iconActions = (t: Tenant) => (
+  <>
+    <IconButton size="sm" shape="rounded" aria-label={`Edit ${t.name}`} title="Edit">
+      <PencilIcon width={14} height={14} />
+    </IconButton>
+    <IconButton size="sm" shape="rounded" aria-label={`Delete ${t.name}`} title="Delete">
+      <TrashIcon width={14} height={14} />
+    </IconButton>
+    <IconButton size="sm" shape="rounded" aria-label={`More actions for ${t.name}`} title="More">
+      <DotsIcon width={14} height={14} />
+    </IconButton>
+  </>
+)
 
 function Detail({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -167,24 +183,7 @@ export const ExpandableRows: Story = {
             <Detail label="Renewal">{fmtDate(t.renewal)}</Detail>
           </div>
         )}
-        rowActions={(t) => (
-          <>
-            <IconButton size="sm" shape="rounded" aria-label={`Edit ${t.name}`} title="Edit">
-              <PencilIcon width={14} height={14} />
-            </IconButton>
-            <IconButton size="sm" shape="rounded" aria-label={`Delete ${t.name}`} title="Delete">
-              <TrashIcon width={14} height={14} />
-            </IconButton>
-            <IconButton
-              size="sm"
-              shape="rounded"
-              aria-label={`More actions for ${t.name}`}
-              title="More"
-            >
-              <DotsIcon width={14} height={14} />
-            </IconButton>
-          </>
-        )}
+        rowActions={iconActions}
       />
     )
   },
@@ -204,6 +203,176 @@ export const RowActionsAlways: Story = {
       </Button>
     ),
   },
+}
+
+/**
+ * `actionsHeader="visible"` names the actions column in the header: small caps like the others,
+ * right-aligned so it ends over the last button. The default, `hidden`, keeps the name for screen
+ * readers only. Either way the header is "Actions" to a screen reader.
+ */
+export const ActionsHeaderVisible: Story = {
+  args: {
+    rowActions: iconActions,
+    rowActionsVisible: 'always',
+    actionsHeader: 'visible',
+    actionsWidth: '120px',
+  },
+}
+
+export const ActionsHeaderVisibleDark: Story = {
+  ...ActionsHeaderVisible,
+  globals: { mode: 'dark' },
+}
+
+/** The default: the same column with its header's name for screen readers only. */
+export const ActionsHeaderHidden: Story = {
+  args: { ...ActionsHeaderVisible.args, actionsHeader: 'hidden' },
+}
+
+export const ActionsHeaderHiddenDark: Story = {
+  ...ActionsHeaderHidden,
+  globals: { mode: 'dark' },
+}
+
+/**
+ * `rowActions` as a list: the table draws the first `showVisible` as buttons and puts the rest in a
+ * ⋯ menu that is ready to use. `hidden`, `disabled` and `hint` can depend on the row. Here "Resend
+ * invite" is only for a pending tenant and "Delete" waits until a tenant is suspended.
+ */
+const rowActionList = (say: (line: string) => void): RowAction<Tenant>[] => [
+  {
+    id: 'view',
+    label: 'View details',
+    icon: <EyeIcon width={15} height={15} />,
+    onSelect: (t) => say(`Viewing ${t.name}`),
+  },
+  {
+    id: 'edit',
+    label: 'Edit',
+    icon: <PencilIcon width={15} height={15} />,
+    onSelect: (t) => say(`Editing ${t.name}`),
+  },
+  {
+    id: 'copy',
+    label: 'Copy tenant ID',
+    icon: <CopyIcon width={15} height={15} />,
+    onSelect: (t) => say(`Copied ${t.id}`),
+  },
+  {
+    id: 'resend',
+    label: 'Resend invite',
+    hidden: (t) => t.status !== 'pending',
+    onSelect: (t) => say(`Invite sent to ${t.contact}`),
+  },
+  {
+    id: 'delete',
+    label: 'Delete tenant…',
+    icon: <TrashIcon width={15} height={15} />,
+    tone: 'danger',
+    separatorBefore: true,
+    disabled: (t) => t.status !== 'suspended',
+    hint: (t) => (t.status !== 'suspended' ? 'Suspend it first' : undefined),
+    onSelect: (t) => say(`Deleting ${t.name}`),
+  },
+]
+
+/** A row's name for people, so a button reads "Edit for Crestview Bank", not "Edit for tnt_…". */
+const rowLabel = (t: Tenant) => t.name
+
+/** The same list, as a story: what was last chosen is said under the table. */
+function ActionListTable({
+  only,
+  ...props
+}: React.ComponentProps<typeof DataTable<Tenant>> & { only?: number }) {
+  const [said, setSaid] = useState('Nothing chosen yet')
+  return (
+    <div className="flex flex-col gap-3">
+      <DataTable {...props} rowActions={rowActionList(setSaid).slice(0, only)} />
+      <p role="status" className="text-[13px] text-ink-soft">
+        {said}
+      </p>
+    </div>
+  )
+}
+
+const openFirstMenu: Story['play'] = async ({ canvasElement }) => {
+  await userEvent.click(
+    within(canvasElement).getByRole('button', {
+      name: 'More actions for Crestview Bank',
+    }),
+  )
+}
+
+/**
+ * `rowActions` as a list: the first two actions are buttons and the rest are in the ⋯ menu, which
+ * opens, closes, flips upward near the foot of the screen and works from the keyboard. The
+ * column's width follows from `showVisible`.
+ */
+export const RowActionList: Story = {
+  args: { actionsHeader: 'visible', rowActionsVisible: 'always', rowLabel },
+  render: (args) => <ActionListTable {...args} />,
+}
+
+/**
+ * The default `rowActionsVisible="hover"`: the buttons and the ⋯ show on hover and focus, and the
+ * ⋯ stays while its menu is open, even with the pointer over the menu.
+ */
+export const RowActionListOnHover: Story = {
+  args: { rowLabel },
+  render: (args) => <ActionListTable {...args} />,
+}
+
+/** `showVisible={3}`: three buttons and the ⋯, and the column is wider to hold them. */
+export const ShowVisibleThree: Story = {
+  ...RowActionList,
+  args: { ...RowActionList.args, showVisible: 3 },
+}
+
+/** `showVisible={0}`: only the ⋯, for a table where the actions are secondary. */
+export const ShowVisibleNone: Story = {
+  ...RowActionList,
+  args: { ...RowActionList.args, showVisible: 0 },
+}
+
+/** Three actions and `showVisible={3}`: room for all of them, so there is no ⋯. */
+export const ShowVisibleAll: Story = {
+  args: { ...RowActionList.args, showVisible: 3 },
+  render: (args) => <ActionListTable {...args} only={3} />,
+}
+
+/**
+ * An action without an icon is a small text button, and a glyph in the menu is optional too. A
+ * text button's width is not known, so give `actionsWidth` for one.
+ */
+export const TextButtons: Story = {
+  args: { actionsHeader: 'visible', rowActionsVisible: 'always', actionsWidth: '176px', rowLabel },
+  render: (args) => (
+    <DataTable
+      {...args}
+      showVisible={1}
+      rowActions={[
+        { id: 'open', label: 'Open', onSelect: () => {} },
+        { id: 'rename', label: 'Rename', onSelect: () => {} },
+        { id: 'archive', label: 'Archive', onSelect: () => {} },
+        {
+          id: 'delete',
+          label: 'Delete',
+          tone: 'danger',
+          separatorBefore: true,
+          onSelect: () => {},
+        },
+      ]}
+    />
+  ),
+}
+
+/** The ⋯ menu, open: Copy, Delete (disabled, with its hint), and a rule between. */
+export const RowActionMenuOpen: Story = { ...RowActionList, play: openFirstMenu }
+
+export const RowActionMenuOpenDark: Story = {
+  ...RowActionList,
+  globals: { mode: 'dark' },
+  play: openFirstMenu,
 }
 
 /** Skeleton rows keep the header and frame; match `skeletonRows` to the page size. */

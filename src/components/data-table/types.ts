@@ -61,6 +61,40 @@ export type Column<T> = {
   cellClassName?: string
 }
 
+/** A value, or a function of the row for one that depends on it. */
+export type PerRow<V, T> = V | ((row: T) => V)
+
+/**
+ * One row action, for `rowActions` given as a list. The first `showVisible`
+ * show as buttons; the rest go into the built-in ⋯ menu, in order.
+ */
+export type RowAction<T> = {
+  /** Stable key. */
+  id: string
+  /**
+   * The action's name: the button's tooltip, its text when it has no icon, and
+   * the menu item's label. A button's accessible name adds the row's, as
+   * `labels.rowAction` writes it ("Edit for Bayshore Foods").
+   */
+  label: string
+  /**
+   * A glyph, about 15px. With one, a visible action is an icon button; without
+   * one it is a small text button. In the menu it is an optional glyph before
+   * the label.
+   */
+  icon?: ReactNode
+  onSelect: (row: T) => void
+  /** Leaves this action out for the rows it says so for: no "Switch" on the tenant you are in. */
+  hidden?: PerRow<boolean, T>
+  disabled?: PerRow<boolean, T>
+  /** A quieter line under the label in the menu: why it is disabled, say. */
+  hint?: PerRow<ReactNode, T>
+  /** `danger` for an action that removes something. It colours the menu item and a text button. */
+  tone?: 'default' | 'danger'
+  /** A rule above this item when it is in the menu — before a destructive one. */
+  separatorBefore?: boolean
+}
+
 export type DataTableLabels = {
   selectAll: string
   selectRow: (row: string) => string
@@ -72,6 +106,10 @@ export type DataTableLabels = {
   /** The bulk bar when one row may be picked: "Crestview Bank selected". */
   selectedOne: (row: string) => string
   clearSelection: string
+  /** A row action button's accessible name: "Edit for Bayshore Foods". */
+  rowAction: (action: string, row: string) => string
+  /** The ⋯ button's tooltip, and with the row's name its accessible name and its menu's. */
+  moreActions: string
   emptyTitle: string
   emptyBody?: ReactNode
   errorTitle: string
@@ -102,7 +140,9 @@ export type DataTableProps<T> = {
    * Width of the row-actions column. It is sized rather than left to share
    * what the other columns leave over: unsized, it takes half of the slack and
    * squeezes whichever data column was also unsized. Default fits three
-   * `sm` icon buttons; a lone `lg` one needs about `72px`.
+   * `sm` icon buttons; a lone `lg` one needs about `72px`. With `rowActions` as
+   * a list of icon actions it is worked out from `showVisible`, and this
+   * overrides it; give one when a visible action is a text button.
    */
   actionsWidth?: string
 
@@ -151,8 +191,21 @@ export type DataTableProps<T> = {
   expandedIds?: string[]
   onExpandedChange?: (ids: string[]) => void
 
-  /** Trailing per-row controls. Clicks inside never toggle the row. */
-  rowActions?: (row: T) => ReactNode
+  /**
+   * Trailing per-row controls. Clicks inside never toggle the row.
+   *
+   * Either a function that draws whatever you like for the row, or a list of
+   * `RowAction`s, which the table draws for you: the first `showVisible` as
+   * buttons and the rest in a ⋯ menu that opens, closes, flips upward near the
+   * foot of the screen and works from the keyboard with nothing more from you.
+   */
+  rowActions?: ((row: T) => ReactNode) | RowAction<T>[]
+  /**
+   * With `rowActions` as a list: how many show as buttons before the rest move
+   * into the ⋯ menu. Defaults to `2`, which with the ⋯ is about as wide as the
+   * default `actionsWidth`. Enough to show them all leaves no ⋯; `0` leaves only the ⋯.
+   */
+  showVisible?: number
   /**
    * When the row actions show. `hover` (the default) keeps a long list quiet:
    * they appear on hover, focus, selection or an open row, and always on a
@@ -160,6 +213,14 @@ export type DataTableProps<T> = {
    * the point of the row — a "Resend invite" button, say.
    */
   rowActionsVisible?: 'hover' | 'always'
+  /**
+   * Whether the row-actions column's header shows its name. The header is named
+   * "Actions" and stays a column header either way. `hidden` (the default)
+   * keeps that name for screen readers only, so the column looks unlabelled;
+   * `visible` draws it in the other headers' small caps, right-aligned so it
+   * ends over the last button.
+   */
+  actionsHeader?: 'visible' | 'hidden'
 
   /**
    * A row's state, drawn as a 3px edge down the row's full height on the left:

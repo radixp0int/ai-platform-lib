@@ -71,6 +71,32 @@ test.describe('Recipes/Tenants, the grid', () => {
     await expect(row(page, 'Crestview Builders')).not.toContainText('nearly full')
   })
 
+  test('the actions column is headed Actions, right-aligned over the buttons', async ({
+    story,
+    page,
+  }) => {
+    await story.open(id('default'))
+    const header = table(page).getByRole('columnheader', { name: 'Actions' })
+    const word = header.getByText('Actions')
+    await expect(word).toBeVisible()
+    await expect(header).toHaveCSS('text-align', 'right')
+    // Still a column header for a screen reader: one of them, in the header row.
+    await expect(header).toHaveCount(1)
+    await expect(header).toHaveAttribute('scope', 'col')
+
+    // It ends where the ⋯ button below it does.
+    const wordBox = (await word.boundingBox())!
+    const dotsBox = (await more(page, 'Alderfinch Group').boundingBox())!
+    expect(Math.abs(wordBox.x + wordBox.width - (dotsBox.x + dotsBox.width))).toBeLessThanOrEqual(
+      1.5,
+    )
+    // And it is over the buttons, not over the tenant name.
+    const eye = (await page
+      .getByRole('button', { name: 'View details for Alderfinch Group' })
+      .boundingBox())!
+    expect(wordBox.x).toBeGreaterThan(eye.x - 40)
+  })
+
   test('sorts by name, then by created, newest first', async ({ story, page }) => {
     await story.open(id('default'))
     await expect(bodyRows(page).first()).toContainText('Alderfinch Group')
@@ -139,7 +165,7 @@ test.describe('Recipes/Tenants, the grid', () => {
     await story.open(id('default'))
     await page.getByRole('button', { name: 'View details for Bayshore Foods' }).click()
     await expect(page.getByRole('status')).toHaveText('Details for Bayshore Foods would open here')
-    await page.getByRole('button', { name: 'Edit Bayshore Foods' }).click()
+    await page.getByRole('button', { name: 'Edit for Bayshore Foods' }).click()
     await expect(page.getByRole('status')).toHaveText('Editing Bayshore Foods would open here')
     await expect(more(page, 'Bayshore Foods')).toBeVisible()
   })

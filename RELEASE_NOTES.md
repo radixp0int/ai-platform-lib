@@ -3,6 +3,49 @@
 Changes to the component library as seen from Storybook. Newest first. Each
 entry names the modules it touches so the sidebar entry is easy to find.
 
+## 2026-11-28 — DataTable: a visible "Actions" header, and row actions as a list
+
+- **DataTable: `actionsHeader`** (`'hidden'` by default, or `'visible'`). The
+  row-actions column's header has always been named "Actions" for screen
+  readers only, so a column of icon buttons looked unlabelled. `visible` draws
+  the word in the other headers' small caps, right-aligned so it ends over the
+  last button, as the Finals 2.0 Tenants and Runs boards do. The header is the
+  same real column header either way, named "Actions". `DataGrid` passes it
+  through. Nothing changes for a table that does not ask for it. New stories:
+  Components/DataTable › Actions Header Visible, Actions Header Hidden, and a
+  dark one of each.
+- **DataTable: `rowActions` as a list, and `showVisible`.** Besides a function
+  that draws a row's controls, `rowActions` takes a list of `RowAction`s
+  (`id`, `label`, optional `icon`, `onSelect(row)`, and `hidden`, `disabled`
+  and `hint` as a value or a function of the row, `tone: 'danger'`,
+  `separatorBefore`). The table draws the first `showVisible` (default `2`) as
+  buttons, an icon button with an icon and a small text button without, and puts
+  the rest in a ⋯ menu that is ready to use: it opens below its button and
+  flips upward near the foot of the screen, closes on Escape or a choice and
+  returns focus to the ⋯, works from the keyboard, and never toggles an
+  expandable row. Enough room to show them all leaves no ⋯; `0` leaves only
+  the ⋯. The column's width follows from `showVisible` for icon actions, so
+  `actionsWidth` is only needed for a text button. A hidden action is left out
+  before counting, so the next one moves up. `DataGrid` passes both through.
+  New labels: `rowAction` ("Edit for Bayshore Foods") and `moreActions`. With
+  `rowActionsVisible="hover"` the ⋯ now stays showing while its menu is open.
+  New stories: Row Action List, Row Action List On Hover, Show Visible Three,
+  Show Visible None, Show Visible All, Text Buttons, Row Action Menu Open and
+  its dark one.
+- **Recipes/Tenants** opts in and uses the list: View details and Edit, then
+  the ⋯ with Switch to this tenant (not on the tenant you are in), Copy tenant
+  ID, Manage people, a rule and Delete tenant… (disabled on the tenant you are
+  in). Its hand-built menu is gone, and its menu now flips by what fits on
+  screen, not by being among the last three rows. Its buttons' names read "Edit
+  for …". The Workflows recipe's runs list will opt in when it is built;
+  Ingestion stays as it is until a decision is made.
+- **Tests:** unit tests for the split, the width and the height estimate; for
+  both header settings, the list form, the menu and its focus, and `DataGrid`
+  passing them on; e2e for the header (visible, in the header style, ending
+  where the last button does, still the column header), for the list in every
+  `showVisible` case, the menu's placement above and below, the keyboard, and
+  the hover behaviour, and for the Tenants page.
+
 ## 2026-11-27 — DataTable: row tones
 
 - **`DataTable` and `DataGrid` take `rowTone(row)`.** It returns `'error'`,

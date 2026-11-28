@@ -3,13 +3,13 @@
 // with its Details strip, Import from CSV and Add a tenant, then the grid.
 //
 // Built from the library's parts: PageBand, DataGrid (filters, chips, export,
-// bulk bar, pagination), Pill, Avatar, IconButton and a Menu in a Popover for
-// each row's More actions. The page holds every piece of state and filters the
+// bulk bar, pagination, and a list of row actions it draws as two buttons and a
+// ⋯ menu), Pill and Avatar. The page holds every piece of state and filters the
 // fixture in memory, as a real page would ask an API.
 import { useContext, useMemo, useState } from 'react'
 import { DataGrid, downloadRows, termMatches, type FilterTerm } from '../../components/data-grid'
 import type { ExportColumn } from '../../components/data-grid'
-import { sortRows, type Column } from '../../components/data-table'
+import { sortRows, type Column, type RowAction } from '../../components/data-table'
 import type { FilterField } from '../../components/filter-panel'
 import { PageBand, type PageBandStat } from '../../components/page-header'
 import type { Sort } from '../../components/paging'
@@ -17,10 +17,8 @@ import { daysAgo, daysSince, longDate, todayIso } from '../../fixtures/as-of-tod
 import { Avatar } from '../../primitives/avatar'
 import { Button } from '../../primitives/button'
 import type { DateRange } from '../../primitives/date-field'
-import { IconButton } from '../../primitives/icon-button'
 import {
   CopyIcon,
-  DotsIcon,
   EyeIcon,
   PencilIcon,
   PlusIcon,
@@ -28,9 +26,7 @@ import {
   TrashIcon,
   UsersIcon,
 } from '../../primitives/icons'
-import { Menu, MenuItem, MenuSeparator } from '../../primitives/menu'
 import { Pill } from '../../primitives/pill'
-import { Popover } from '../../primitives/popover'
 import { PlatformContext } from '../app-shell/platform-context'
 import { GridCard } from '../grid-card'
 import { usePageToast } from '../page-toast'
@@ -47,8 +43,6 @@ import {
 
 /** A tenant this close to its seat count is "nearly full". */
 const NEARLY_FULL = 0.9
-/** How many rows at the foot of a page open their menu upward. */
-const MENU_UP_ROWS = 3
 
 const TERM_FIELDS = [
   { key: 'name', label: 'Tenant', glyph: 'Aa', param: 'name__icontains' },
@@ -92,82 +86,6 @@ function Seats({ org }: { org: Org }) {
         />
       </span>
     </span>
-  )
-}
-
-type RowMenuProps = {
-  org: Org
-  /** The tenant you are in: no Switch, and Delete is disabled. */
-  current: boolean
-  /** Opens upward, for the last rows of a page. */
-  up: boolean
-  onSwitch: () => void
-  onCopyId: () => void
-  onPeople: () => void
-  onDelete: () => void
-}
-
-/** A row's More actions: the ⋯ button and the menu it opens. */
-function RowMenu({ org, current, up, onSwitch, onCopyId, onPeople, onDelete }: RowMenuProps) {
-  const [anchor, setAnchor] = useState<HTMLButtonElement | null>(null)
-  const [open, setOpen] = useState(false)
-  const choose = (run: () => void) => () => {
-    setOpen(false)
-    run()
-  }
-  return (
-    <>
-      <IconButton
-        ref={setAnchor}
-        size="sm"
-        shape="rounded"
-        active={open}
-        aria-label={`More actions for ${org.name}`}
-        title="More actions"
-        aria-haspopup="menu"
-        aria-expanded={open}
-        onClick={() => setOpen((value) => !value)}
-      >
-        <DotsIcon width={15} height={15} />
-      </IconButton>
-      <Popover
-        anchor={anchor}
-        open={open}
-        onClose={() => setOpen(false)}
-        label={`Actions for ${org.name}`}
-        width={232}
-        align={up ? 'above-end' : 'end'}
-      >
-        <Menu aria-label={`Actions for ${org.name}`}>
-          {!current && (
-            <MenuItem
-              icon={<SwitchIcon width={15} height={15} />}
-              label="Switch to this tenant"
-              onSelect={choose(onSwitch)}
-            />
-          )}
-          <MenuItem
-            icon={<CopyIcon width={15} height={15} />}
-            label="Copy tenant ID"
-            onSelect={choose(onCopyId)}
-          />
-          <MenuItem
-            icon={<UsersIcon width={15} height={15} />}
-            label="Manage people"
-            onSelect={choose(onPeople)}
-          />
-          <MenuSeparator />
-          <MenuItem
-            icon={<TrashIcon width={15} height={15} />}
-            label="Delete tenant…"
-            hint={current ? 'You are in it' : undefined}
-            tone="danger"
-            disabled={current}
-            onSelect={choose(onDelete)}
-          />
-        </Menu>
-      </Popover>
-    </>
   )
 }
 
@@ -419,6 +337,55 @@ export function TenantsPage({
   }
   const addTenant = () => say('Add a tenant would open here')
 
+  // Two buttons, then the ⋯ menu: Switch (not on the tenant you are in), Copy, Manage people, a
+  // rule and Delete (not on the tenant you are in either).
+  const rowActions: RowAction<Org>[] = [
+    {
+      id: 'view',
+      label: 'View details',
+      icon: <EyeIcon width={15} height={15} />,
+      onSelect: (o) => say(`Details for ${o.name} would open here`),
+    },
+    {
+      id: 'edit',
+      label: 'Edit',
+      icon: <PencilIcon width={15} height={15} />,
+      onSelect: (o) => say(`Editing ${o.name} would open here`),
+    },
+    {
+      id: 'switch',
+      label: 'Switch to this tenant',
+      icon: <SwitchIcon width={15} height={15} />,
+      hidden: (o) => o.id === currentId,
+      onSelect: (o) => {
+        setCurrentId(o.id)
+        say(`You are in ${o.name} now`)
+      },
+    },
+    {
+      id: 'copy',
+      label: 'Copy tenant ID',
+      icon: <CopyIcon width={15} height={15} />,
+      onSelect: copyId,
+    },
+    {
+      id: 'people',
+      label: 'Manage people',
+      icon: <UsersIcon width={15} height={15} />,
+      onSelect: (o) => say(`People in ${o.name} would open here`),
+    },
+    {
+      id: 'delete',
+      label: 'Delete tenant…',
+      icon: <TrashIcon width={15} height={15} />,
+      tone: 'danger',
+      separatorBefore: true,
+      disabled: (o) => o.id === currentId,
+      hint: (o) => (o.id === currentId ? 'You are in it' : undefined),
+      onSelect: (o) => say(`Deleting ${o.name} would ask you to confirm`),
+    },
+  ]
+
   return (
     <PageBand
       title="Tenants"
@@ -507,45 +474,9 @@ export function TenantsPage({
             </>
           }
           minWidth="600px"
-          actionsWidth="120px"
           rowActionsVisible="always"
-          rowActions={(o) => {
-            const index = pageRows.indexOf(o)
-            return (
-              <span className="flex justify-end gap-0.5">
-                <IconButton
-                  size="sm"
-                  shape="rounded"
-                  aria-label={`View details for ${o.name}`}
-                  title="View details"
-                  onClick={() => say(`Details for ${o.name} would open here`)}
-                >
-                  <EyeIcon width={15} height={15} />
-                </IconButton>
-                <IconButton
-                  size="sm"
-                  shape="rounded"
-                  aria-label={`Edit ${o.name}`}
-                  title="Edit"
-                  onClick={() => say(`Editing ${o.name} would open here`)}
-                >
-                  <PencilIcon width={15} height={15} />
-                </IconButton>
-                <RowMenu
-                  org={o}
-                  current={o.id === currentId}
-                  up={index >= pageRows.length - MENU_UP_ROWS}
-                  onSwitch={() => {
-                    setCurrentId(o.id)
-                    say(`You are in ${o.name} now`)
-                  }}
-                  onCopyId={() => copyId(o)}
-                  onPeople={() => say(`People in ${o.name} would open here`)}
-                  onDelete={() => say(`Deleting ${o.name} would ask you to confirm`)}
-                />
-              </span>
-            )
-          }}
+          actionsHeader="visible"
+          rowActions={rowActions}
           emptyAction={
             <Button
               variant="primary"
