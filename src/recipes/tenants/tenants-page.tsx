@@ -1,10 +1,11 @@
-// Tenants — every organisation on the platform, its plan and its seats, as
-// the Finals 2.0 Tenants board draws it: the navy band with "need a look" and
-// its Details strip, Import from CSV and Add a tenant, then the grid.
+// Tenants — every organisation on the platform, its plan and its seats, and
+// the one you are in, as the Finals 2.0 Tenants board draws it: the navy band
+// with its Details strip, Import from CSV and Add a tenant, then the grid.
 //
 // Built from the library's parts: PageBand, DataGrid (filters, chips, export,
-// bulk bar, pagination), Pill, Avatar and Button. The page holds every piece of
-// state and filters the fixture in memory, as a real page would ask an API.
+// bulk bar, pagination), Pill, Avatar, IconButton and a Menu in a Popover for
+// each row's More actions. The page holds every piece of state and filters the
+// fixture in memory, as a real page would ask an API.
 import { useContext, useMemo, useState } from 'react'
 import { DataGrid, downloadRows, termMatches, type FilterTerm } from '../../components/data-grid'
 import type { ExportColumn } from '../../components/data-grid'
@@ -16,32 +17,38 @@ import { daysAgo, daysSince, longDate, todayIso } from '../../fixtures/as-of-tod
 import { Avatar } from '../../primitives/avatar'
 import { Button } from '../../primitives/button'
 import type { DateRange } from '../../primitives/date-field'
-import { PlusIcon } from '../../primitives/icons'
-import { Pill, type PillTone } from '../../primitives/pill'
+import { IconButton } from '../../primitives/icon-button'
+import {
+  CopyIcon,
+  DotsIcon,
+  EyeIcon,
+  PencilIcon,
+  PlusIcon,
+  SwitchIcon,
+  TrashIcon,
+  UsersIcon,
+} from '../../primitives/icons'
+import { Menu, MenuItem, MenuSeparator } from '../../primitives/menu'
+import { Pill } from '../../primitives/pill'
+import { Popover } from '../../primitives/popover'
 import { PlatformContext } from '../app-shell/platform-context'
 import { GridCard } from '../grid-card'
 import { usePageToast } from '../page-toast'
 import {
+  CURRENT_ORG_ID,
   initialsOf,
   ORGS,
   PLANS,
   REGIONS,
-  STATUS_LABEL,
-  STATUSES,
   type Org,
-  type OrgStatus,
   type Plan,
   type Region,
 } from './tenants.fixtures'
 
-const STATUS_TONE: Record<OrgStatus, PillTone> = {
-  active: 'success',
-  pending: 'warning',
-  suspended: 'danger',
-}
-
 /** A tenant this close to its seat count is "nearly full". */
 const NEARLY_FULL = 0.9
+/** How many rows at the foot of a page open their menu upward. */
+const MENU_UP_ROWS = 3
 
 const TERM_FIELDS = [
   { key: 'name', label: 'Tenant', glyph: 'Aa', param: 'name__icontains' },
@@ -55,7 +62,6 @@ const EXPORT_COLUMNS: ExportColumn<Org>[] = [
   { key: 'id', header: 'ID' },
   { key: 'name', header: 'Tenant' },
   { key: 'domain', header: 'Domain' },
-  { key: 'status', header: 'Status', value: (o) => STATUS_LABEL[o.status] },
   { key: 'plan', header: 'Plan' },
   { key: 'region', header: 'Region' },
   { key: 'contact', header: 'Primary contact' },
@@ -66,16 +72,14 @@ const EXPORT_COLUMNS: ExportColumn<Org>[] = [
 ]
 
 const NO_DATES: DateRange = { from: null, to: null }
+const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`
 
 function Seats({ org }: { org: Org }) {
-  if (org.status !== 'active') {
-    return <span className="block truncate text-xs text-ink-soft">{org.note}</span>
-  }
   const share = org.seats ? org.seatsUsed / org.seats : 0
   return (
     <span className="flex min-w-0 flex-col gap-1.5 text-[12.5px]">
       <span className="truncate tabular-nums">
-        {org.seatsUsed} of {org.seats}
+        {org.seatsUsed.toLocaleString('en-US')} of {org.seats.toLocaleString('en-US')}
         {share >= NEARLY_FULL && (
           <span className="font-semibold text-ink-soft"> · nearly full</span>
         )}
@@ -91,65 +95,150 @@ function Seats({ org }: { org: Org }) {
   )
 }
 
-const COLUMNS: Column<Org>[] = [
-  {
-    id: 'name',
-    header: 'Tenant',
-    sortKey: 'name',
-    cell: (o) => (
-      <span className="flex min-w-0 items-center gap-2.5">
-        <Avatar
-          variant="text"
-          text={initialsOf(o.name)}
-          shape="square"
-          size={30}
-          tone="soft"
-          aria-hidden
-        />
-        <span className="flex min-w-0 flex-col">
-          <span data-row-title className="truncate font-bold text-ink-strong">
-            {o.name}
-          </span>
-          <span className="truncate text-xs text-ink-soft">
-            {o.plan} · {o.region}
+type RowMenuProps = {
+  org: Org
+  /** The tenant you are in: no Switch, and Delete is disabled. */
+  current: boolean
+  /** Opens upward, for the last rows of a page. */
+  up: boolean
+  onSwitch: () => void
+  onCopyId: () => void
+  onPeople: () => void
+  onDelete: () => void
+}
+
+/** A row's More actions: the ⋯ button and the menu it opens. */
+function RowMenu({ org, current, up, onSwitch, onCopyId, onPeople, onDelete }: RowMenuProps) {
+  const [anchor, setAnchor] = useState<HTMLButtonElement | null>(null)
+  const [open, setOpen] = useState(false)
+  const choose = (run: () => void) => () => {
+    setOpen(false)
+    run()
+  }
+  return (
+    <>
+      <IconButton
+        ref={setAnchor}
+        size="sm"
+        shape="rounded"
+        active={open}
+        aria-label={`More actions for ${org.name}`}
+        title="More actions"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen((value) => !value)}
+      >
+        <DotsIcon width={15} height={15} />
+      </IconButton>
+      <Popover
+        anchor={anchor}
+        open={open}
+        onClose={() => setOpen(false)}
+        label={`Actions for ${org.name}`}
+        width={232}
+        align={up ? 'above-end' : 'end'}
+      >
+        <Menu aria-label={`Actions for ${org.name}`}>
+          {!current && (
+            <MenuItem
+              icon={<SwitchIcon width={15} height={15} />}
+              label="Switch to this tenant"
+              onSelect={choose(onSwitch)}
+            />
+          )}
+          <MenuItem
+            icon={<CopyIcon width={15} height={15} />}
+            label="Copy tenant ID"
+            onSelect={choose(onCopyId)}
+          />
+          <MenuItem
+            icon={<UsersIcon width={15} height={15} />}
+            label="Manage people"
+            onSelect={choose(onPeople)}
+          />
+          <MenuSeparator />
+          <MenuItem
+            icon={<TrashIcon width={15} height={15} />}
+            label="Delete tenant…"
+            hint={current ? 'You are in it' : undefined}
+            tone="danger"
+            disabled={current}
+            onSelect={choose(onDelete)}
+          />
+        </Menu>
+      </Popover>
+    </>
+  )
+}
+
+function columnsFor(currentId: string): Column<Org>[] {
+  return [
+    {
+      id: 'name',
+      header: 'Tenant',
+      sortKey: 'name',
+      cell: (o) => (
+        <span className="flex min-w-0 items-center gap-2.5">
+          <Avatar
+            variant="text"
+            text={initialsOf(o.name)}
+            shape="square"
+            size={30}
+            tone="soft"
+            aria-hidden
+          />
+          <span className="flex min-w-0 flex-col">
+            <span data-row-title className="truncate font-bold text-ink-strong">
+              {o.name}
+            </span>
+            <span className="truncate text-xs text-ink-soft">
+              {o.plan} · {o.region}
+            </span>
           </span>
         </span>
-      </span>
-    ),
-  },
-  {
-    id: 'status',
-    header: 'Status',
-    width: '132px',
-    cell: (o) => (
-      <Pill tone={STATUS_TONE[o.status]} size="sm" dot>
-        {STATUS_LABEL[o.status]}
-      </Pill>
-    ),
-  },
-  {
-    id: 'contact',
-    header: 'Primary contact',
-    width: '17%',
-    hideBelow: 'lg',
-    cell: (o) => (
-      <span className="flex min-w-0 flex-col">
-        <span className="truncate font-semibold text-ink-strong">{o.contact}</span>
-        <span className="truncate text-xs text-ink-soft">{o.email}</span>
-      </span>
-    ),
-  },
-  { id: 'seats', header: 'Seats', width: '21%', cell: (o) => <Seats org={o} /> },
-  {
-    id: 'created',
-    header: 'Created',
-    sortKey: 'created',
-    sortType: 'date',
-    width: '120px',
-    hideBelow: 'xl',
-    cell: (o) => <span className="whitespace-nowrap text-ink-soft">{longDate(o.created)}</span>,
-  },
-]
+      ),
+    },
+    {
+      id: 'status',
+      header: 'Status',
+      width: '112px',
+      // Status is "the tenant you are in": one row says so, the rest are blank.
+      cell: (o) =>
+        o.id === currentId ? (
+          <Pill tone="success" size="sm" dot title="The tenant you are in">
+            Active
+          </Pill>
+        ) : (
+          <span className="text-ink-soft">
+            <span aria-hidden="true">—</span>
+            <span className="sr-only">Not the tenant you are in</span>
+          </span>
+        ),
+    },
+    {
+      id: 'contact',
+      header: 'Primary contact',
+      width: '19%',
+      hideBelow: 'lg',
+      cell: (o) => (
+        <span className="flex min-w-0 flex-col">
+          <span className="truncate font-semibold text-ink-strong">{o.contact}</span>
+          <span className="truncate text-xs text-ink-soft">{o.email}</span>
+        </span>
+      ),
+    },
+    { id: 'seats', header: 'Seats', width: '21%', cell: (o) => <Seats org={o} /> },
+    {
+      id: 'created',
+      header: 'Created',
+      sortKey: 'created',
+      sortType: 'date',
+      width: '120px',
+      hideBelow: 'xl',
+      cell: (o) => <span className="whitespace-nowrap text-ink-soft">{longDate(o.created)}</span>,
+    },
+  ]
+}
 
 const SORT_WORDS: Record<string, [string, string]> = {
   name: ['name, A to Z', 'name, Z to A'],
@@ -173,11 +262,11 @@ export function TenantsPage({
 }: TenantsPageProps) {
   const platform = useContext(PlatformContext)
   const [toast, say] = usePageToast()
-  const [orgs, setOrgs] = useState(initial)
+  const [orgs] = useState(initial)
+  const [currentId, setCurrentId] = useState(CURRENT_ORG_ID)
   const [terms, setTerms] = useState<FilterTerm[]>(
     initialQuery ? [{ id: 'search:initial', field: null, value: initialQuery }] : [],
   )
-  const [statuses, setStatuses] = useState<OrgStatus[]>([])
   const [plans, setPlans] = useState<Plan[]>([])
   const [regions, setRegions] = useState<Region[]>([])
   const [created, setCreated] = useState<DateRange>(NO_DATES)
@@ -187,10 +276,10 @@ export function TenantsPage({
   const [size, setSize] = useState(8)
   const [selected, setSelected] = useState<string[]>([])
 
+  const columns = useMemo(() => columnsFor(currentId), [currentId])
   const filtered = useMemo(
     () =>
       orgs.filter((o) => {
-        if (statuses.length && !statuses.includes(o.status)) return false
         if (plans.length && !plans.includes(o.plan)) return false
         if (regions.length && !regions.includes(o.region)) return false
         if (created.from && o.created < created.from) return false
@@ -204,82 +293,53 @@ export function TenantsPage({
               ),
         )
       }),
-    [orgs, statuses, plans, regions, created, hasSeats, terms],
+    [orgs, plans, regions, created, hasSeats, terms],
   )
-  const sorted = useMemo(() => sortRows(filtered, sort, COLUMNS), [filtered, sort])
+  const sorted = useMemo(() => sortRows(filtered, sort, columns), [filtered, sort, columns])
   const totalPages = Math.max(1, Math.ceil(sorted.length / size))
   const safePage = Math.min(page, totalPages)
   const pageRows = sorted.slice((safePage - 1) * size, safePage * size)
 
   const reset = () => {
-    setStatuses([])
     setPlans([])
     setRegions([])
     setCreated(NO_DATES)
     setHasSeats(false)
     setPage(1)
   }
-  const showOnly = (status: OrgStatus) => {
-    setStatuses([status])
-    setPage(1)
-  }
-  const update = (ids: string[], patch: Partial<Org>) =>
-    setOrgs((all) => all.map((o) => (ids.includes(o.id) ? { ...o, ...patch } : o)))
 
   // ── The band ────────────────────────────────────────────────────────────
-  const count = (status: OrgStatus) => orgs.filter((o) => o.status === status).length
-  const pending = orgs.filter((o) => o.status === 'pending')
-  const oldestInvite = pending.length ? Math.max(...pending.map((o) => daysSince(o.created))) : 0
-  const active = orgs.filter((o) => o.status === 'active')
-  const used = active.reduce((n, o) => n + o.seatsUsed, 0)
-  const paid = active.reduce((n, o) => n + o.seats, 0)
-  const needLook = orgs.length - active.length
+  const current = orgs.find((o) => o.id === currentId)
+  const used = orgs.reduce((n, o) => n + o.seatsUsed, 0)
+  const paid = orgs.reduce((n, o) => n + o.seats, 0)
+  const fresh = orgs.filter((o) => daysSince(o.created) <= 90)
+  const newest = [...fresh].sort((a, b) => b.created.localeCompare(a.created))[0]
   const stats: PageBandStat[] = [
     {
-      label: 'Active',
-      value: String(active.length),
-      note: 'Signed in this month',
-      onSelect: () => showOnly('active'),
-    },
-    {
-      label: 'Waiting on an invite',
-      value: String(pending.length),
-      note: pending.length
-        ? `Oldest sent ${oldestInvite} ${oldestInvite === 1 ? 'day' : 'days'} ago`
-        : 'None outstanding',
-      onSelect: () => showOnly('pending'),
-    },
-    {
-      label: 'Suspended',
-      value: String(count('suspended')),
-      note: 'Nobody can sign in',
-      onSelect: () => showOnly('suspended'),
+      label: 'Tenants',
+      value: String(orgs.length),
+      note: current ? `You are in ${current.name}` : 'You are in none of them',
     },
     {
       label: 'Seats in use',
       value: `${used.toLocaleString('en-US')} of ${paid.toLocaleString('en-US')}`,
       note: paid ? `${Math.round((used / paid) * 100)}% of paid seats in use` : 'No paid seats',
     },
+    {
+      label: 'Plans',
+      value: PLANS.map((plan) => orgs.filter((o) => o.plan === plan).length).join(' · '),
+      note: PLANS.join(' · '),
+    },
+    {
+      label: 'New in the last 90 days',
+      value: String(fresh.length),
+      note: newest ? `Most recent: ${newest.name}` : 'None',
+    },
   ]
 
   // ── The grid ────────────────────────────────────────────────────────────
   const today = todayIso()
   const fields: FilterField[] = [
-    {
-      id: 'status',
-      label: 'Status',
-      type: 'options',
-      value: statuses,
-      options: STATUSES.map((status) => ({
-        value: status,
-        label: STATUS_LABEL[status],
-        count: count(status),
-      })),
-      onChange: (next) => {
-        setStatuses(next as OrgStatus[])
-        setPage(1)
-      },
-    },
     {
       id: 'plan',
       label: 'Plan',
@@ -344,38 +404,19 @@ export function TenantsPage({
     ? 'Nothing here yet'
     : `${
         sorted.length === orgs.length
-          ? `${orgs.length} tenants`
-          : `${sorted.length} of ${orgs.length} tenants match`
+          ? plural(orgs.length, 'tenant')
+          : `${sorted.length} of ${plural(orgs.length, 'tenant')} match`
       } · sorted by ${sortWords}`
 
-  const rowAction = (o: Org) =>
-    o.status === 'pending' ? (
-      <Button
-        variant="primary"
-        size="sm"
-        onClick={() => {
-          update([o.id], { note: 'Invite sent today' })
-          say(`Invite resent to ${o.contact}`)
-        }}
-      >
-        Resend invite
-      </Button>
-    ) : o.status === 'suspended' ? (
-      <Button
-        size="sm"
-        onClick={() => {
-          update([o.id], { status: 'active', note: '' })
-          say(`${o.name} is active again`)
-        }}
-      >
-        Reactivate
-      </Button>
-    ) : (
-      <Button variant="ghost" size="sm" onClick={() => say(`${o.name} would open here`)}>
-        Open
-      </Button>
-    )
-
+  const exportRows = (format: string, rows: Org[]) => {
+    downloadRows('tenants', format, rows, EXPORT_COLUMNS)
+    say(`Downloaded tenants.${format} · ${plural(rows.length, 'row')}`)
+  }
+  const copyId = (o: Org) => {
+    // The clipboard can refuse (no focus, no permission); the ID is in the message either way.
+    navigator.clipboard?.writeText(o.id).catch(() => {})
+    say(`Copied ${o.name}’s tenant ID, ${o.id}`)
+  }
   const addTenant = () => say('Add a tenant would open here')
 
   return (
@@ -387,11 +428,7 @@ export function TenantsPage({
         { label: 'Govern' },
         { label: 'Tenant Admin' },
       ]}
-      details={{
-        summary: needLook ? `${needLook} need a look` : undefined,
-        stats,
-        defaultOpen: defaultDetailsOpen,
-      }}
+      details={{ stats, defaultOpen: defaultDetailsOpen }}
       actions={
         <>
           <Button variant="inverse" onClick={() => say('Import from CSV would open here')}>
@@ -411,7 +448,7 @@ export function TenantsPage({
         <DataGrid
           searchLabel="Search and filter tenants"
           caption="Tenants"
-          columns={COLUMNS}
+          columns={columns}
           rows={pageRows}
           rowId={(o) => o.id}
           rowLabel={(o) => o.name}
@@ -436,40 +473,79 @@ export function TenantsPage({
               <Button
                 variant="inverse"
                 size="sm"
-                onClick={() => say(`Change plan for ${selected.length} would open here`)}
+                onClick={() =>
+                  say(`Change plan for ${plural(selected.length, 'tenant')} would open here`)
+                }
               >
                 Change plan
               </Button>
               <Button
                 variant="inverse"
                 size="sm"
-                onClick={() => {
-                  update(selected, { status: 'suspended', note: 'Suspended today' })
-                  say(
-                    `Suspended ${selected.length} ${selected.length === 1 ? 'tenant' : 'tenants'}`,
+                onClick={() =>
+                  exportRows(
+                    'csv',
+                    sorted.filter((o) => selected.includes(o.id)),
                   )
-                  setSelected([])
-                }}
+                }
               >
-                Suspend
+                Export
               </Button>
               <Button
                 variant="inverse"
                 size="sm"
                 onClick={() =>
                   say(
-                    `Emailing ${selected.length} ${selected.length === 1 ? 'contact' : 'contacts'} would open here`,
+                    selected.includes(currentId)
+                      ? 'You can’t delete the tenant you are in. Clear it from the selection first.'
+                      : `Deleting ${plural(selected.length, 'tenant')} would ask you to confirm`,
                   )
                 }
               >
-                Email contacts
+                Delete
               </Button>
             </>
           }
           minWidth="600px"
-          actionsWidth="136px"
+          actionsWidth="120px"
           rowActionsVisible="always"
-          rowActions={(o) => <span className="flex justify-end">{rowAction(o)}</span>}
+          rowActions={(o) => {
+            const index = pageRows.indexOf(o)
+            return (
+              <span className="flex justify-end gap-0.5">
+                <IconButton
+                  size="sm"
+                  shape="rounded"
+                  aria-label={`View details for ${o.name}`}
+                  title="View details"
+                  onClick={() => say(`Details for ${o.name} would open here`)}
+                >
+                  <EyeIcon width={15} height={15} />
+                </IconButton>
+                <IconButton
+                  size="sm"
+                  shape="rounded"
+                  aria-label={`Edit ${o.name}`}
+                  title="Edit"
+                  onClick={() => say(`Editing ${o.name} would open here`)}
+                >
+                  <PencilIcon width={15} height={15} />
+                </IconButton>
+                <RowMenu
+                  org={o}
+                  current={o.id === currentId}
+                  up={index >= pageRows.length - MENU_UP_ROWS}
+                  onSwitch={() => {
+                    setCurrentId(o.id)
+                    say(`You are in ${o.name} now`)
+                  }}
+                  onCopyId={() => copyId(o)}
+                  onPeople={() => say(`People in ${o.name} would open here`)}
+                  onDelete={() => say(`Deleting ${o.name} would ask you to confirm`)}
+                />
+              </span>
+            )
+          }}
           emptyAction={
             <Button
               variant="primary"
@@ -489,14 +565,12 @@ export function TenantsPage({
           }}
           exportFormats={['csv', 'json']}
           totalCount={sorted.length}
-          onExport={(format, scope) => {
-            const rows =
-              scope === 'selected' ? sorted.filter((o) => selected.includes(o.id)) : sorted
-            downloadRows('tenants', format, rows, EXPORT_COLUMNS)
-            say(
-              `Downloaded tenants.${format} · ${rows.length} ${rows.length === 1 ? 'row' : 'rows'}`,
+          onExport={(format, scope) =>
+            exportRows(
+              format,
+              scope === 'selected' ? sorted.filter((o) => selected.includes(o.id)) : sorted,
             )
-          }}
+          }
           pagination={{
             page: safePage,
             size,

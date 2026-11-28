@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { userEvent, within } from 'storybook/test'
 import { AppShell } from '../app-shell'
 import { TenantsPage } from './tenants-page'
 
@@ -22,7 +23,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'The Finals 2.0 Tenants page inside the app shell: `PageBand` with "5 need a look · Show details", its figures (each but Seats in use filters the grid) and Import from CSV / Add a tenant, then the `DataGrid` of every organisation — plan and region under the name, a status pill, the primary contact, a seats bar that says "nearly full", and one action per row.',
+          'The Finals 2.0 Tenants page inside the app shell: `PageBand` with Show details and its figures (Tenants, Seats in use, Plans, New in the last 90 days) and Import from CSV / Add a tenant, then the `DataGrid` of every organisation — plan and region under the name, Active on the tenant you are in and a dash on the rest, the primary contact, a seats bar that says "nearly full", and View details, Edit and a More actions menu on every row.',
       },
     },
   },
@@ -35,7 +36,7 @@ export const Default: Story = {}
 
 export const Dark: Story = { globals: { mode: 'dark' } }
 
-/** Active, Waiting on an invite and Suspended are buttons that filter the grid to them. */
+/** The figures: Tenants, Seats in use, Plans, New in the last 90 days. */
 export const DetailsOpen: Story = { args: { initialPath: '/tenants?details' } }
 
 /** 1024 wide: the Home panel starts shut, and Created drops out. */
@@ -50,6 +51,18 @@ export const Portrait: Story = {
   args: { initialPanelOpen: false },
   globals: { mode: 'dark', viewport: { value: 'portrait834', isRotated: false } },
 }
+
+/** Opens Crestview Builders' More actions: Switch, Copy tenant ID, Manage people, Delete. */
+const openRowMenu: Story['play'] = async ({ canvasElement }) => {
+  await userEvent.click(
+    within(canvasElement).getByRole('button', { name: 'More actions for Crestview Builders' }),
+  )
+}
+
+/** A row's More actions, open — the TenantsA2Menu board. */
+export const RowMenuOpen: Story = { play: openRowMenu }
+
+export const RowMenuOpenDark: Story = { globals: { mode: 'dark' }, play: openRowMenu }
 
 /**
  * A platform with no tenants yet, shown as the page alone: the shell's
