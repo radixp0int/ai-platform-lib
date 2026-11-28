@@ -1,7 +1,8 @@
+import type { ReactNode } from 'react'
 import type { TraceStep } from '../run-trace'
 
 /** What the inspector can show of a step. */
-export type TraceInspectorTab = 'trace' | 'io' | 'raw'
+export type TraceInspectorTab = 'summary' | 'trace' | 'io' | 'raw'
 
 export type TraceInspectorProps = {
   step: TraceStep
@@ -13,5 +14,15 @@ export type TraceInspectorProps = {
   tab?: TraceInspectorTab
   defaultTab?: TraceInspectorTab
   onTabChange?: (tab: TraceInspectorTab) => void
+  /** Overrides the status pill's words: "Needs you", "Waiting on Dana W.". */
+  statusLabel?: string
+  /** Where the step sits, in place of its stage and kind: "Approve · step 2 of 3". */
+  context?: string
+  /**
+   * What someone can do about the step, drawn between its description and its
+   * facts: an approval bar, or a failed step's Retry. With it, a step's
+   * `failure` is left to the bar to say.
+   */
+  actions?: ReactNode
   className?: string
 }

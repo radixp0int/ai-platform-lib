@@ -39,7 +39,7 @@ export function TraceSequence({ calls, duration, className = '' }: TraceSequence
               className="relative hidden h-2.5 rounded-check bg-ink-soft/12 sm:block"
             >
               <span
-                className={`absolute inset-y-0 min-w-[3px] rounded-check ${kind.bar}`}
+                className={`absolute inset-y-0 min-w-[3px] rounded-check ${call.failed ? 'bg-danger-solid' : kind.bar}`}
                 style={{
                   left: `${(call.startedAt / duration) * 100}%`,
                   width: `${(call.duration / duration) * 100}%`,

@@ -43,12 +43,27 @@ export function TraceInspector({
   tab,
   defaultTab = 'trace',
   onTabChange,
+  statusLabel,
+  context,
+  actions,
   className = '',
 }: TraceInspectorProps) {
-  const [held, setHeld] = useState<TraceInspectorTab>(defaultTab)
-  const open = tab ?? held
   const live = step.status === 'running' || step.status === 'waiting'
   const hasCalls = (step.calls?.length ?? 0) > 0
+  // A step with a Summary opens on it, and shows Trace only when it made calls.
+  const hasSummary = Boolean(step.notes?.length || step.history?.length)
+  const showTrace = !hasSummary || hasCalls
+  const [held, setHeld] = useState<TraceInspectorTab>(defaultTab)
+  const wanted = tab ?? held
+  const open =
+    (wanted === 'summary' && !hasSummary) || (wanted === 'trace' && !showTrace)
+      ? hasSummary
+        ? 'summary'
+        : 'trace'
+      : wanted
+  const duration =
+    step.duration === undefined ? '—' : `${formatDuration(step.duration)}${live ? ' so far' : ''}`
+  const started = step.startedAt === undefined ? 'Not started' : formatOffset(step.startedAt)
 
   return (
     <section
@@ -68,28 +83,28 @@ export function TraceInspector({
             size="md"
             leadingIcon={<TraceStatusIcon status={step.status} size={14} />}
           >
-            {step.kind === 'human' && step.status === 'done'
-              ? 'Answered'
-              : TRACE_STATUS_LABEL[step.status]}
+            {statusLabel ??
+              (step.kind === 'human' && step.status === 'done'
+                ? 'Answered'
+                : TRACE_STATUS_LABEL[step.status])}
           </Pill>
           <span className="ml-auto text-xs text-ink-soft">
-            {stageName} · {STEP_KIND_LABEL[step.kind]}
+            {context ?? `${stageName} · ${STEP_KIND_LABEL[step.kind]}`}
           </span>
         </div>
         <p className="m-0 text-sm leading-normal text-ink">{step.description}</p>
+        {actions}
         <div className="flex flex-wrap gap-x-7 gap-y-1.5 pt-1.5 pb-3">
-          <Fact
-            label="Started"
-            value={step.startedAt === undefined ? 'Not started' : formatOffset(step.startedAt)}
-          />
-          <Fact
-            label="Duration"
-            value={
-              step.duration === undefined
-                ? '—'
-                : `${formatDuration(step.duration)}${live ? ' so far' : ''}`
-            }
-          />
+          <Fact label="Started" value={started} />
+          {step.kind === 'human' && (step.waited || step.due || step.assignee) ? (
+            <>
+              {step.waited && <Fact label="Waiting" value={step.waited} />}
+              {step.assignee && <Fact label="Assigned to" value={step.assignee} />}
+              {step.due && <Fact label="Due" value={step.due} />}
+            </>
+          ) : (
+            <Fact label="Duration" value={duration} />
+          )}
           {step.usage ? (
             <>
               <Fact label="Model" value={step.usage.model} />
@@ -98,10 +113,17 @@ export function TraceInspector({
                 value={`${formatTokens(step.usage.inputTokens)} in · ${formatTokens(step.usage.outputTokens)} out`}
               />
             </>
-          ) : step.assignee ? (
-            <Fact label="Asked" value={step.assignee} />
+          ) : step.route ? (
+            <Fact label="Route taken" value={step.route} />
+          ) : step.kind === 'human' ? (
+            step.assignee && !step.waited && !step.due ? (
+              <Fact label="Asked" value={step.assignee} />
+            ) : null
           ) : step.kind === 'tool' ? (
-            <Fact label="Tool" value={<span className="font-mono">{step.title}</span>} />
+            <>
+              <Fact label="Tool" value={<span className="font-mono">{step.title}</span>} />
+              {step.retries && <Fact label="Retries" value={step.retries} />}
+            </>
           ) : null}
         </div>
       </div>
@@ -115,15 +137,49 @@ export function TraceInspector({
         }}
       >
         <TabsList aria-label="Views of this step" className="px-4">
-          <TabsTrigger value="trace">Trace</TabsTrigger>
+          {hasSummary && <TabsTrigger value="summary">Summary</TabsTrigger>}
+          {showTrace && <TabsTrigger value="trace">Trace</TabsTrigger>}
           <TabsTrigger value="io">Input and output</TabsTrigger>
           <TabsTrigger value="raw">Raw span</TabsTrigger>
         </TabsList>
         <div className="flex flex-col gap-4 px-5.5 pt-4.5 pb-5.5">
-          {step.failure && (
+          {step.failure && !actions && (
             <Alert tone="error" title="Failed, and the run kept going">
               {step.failure}
             </Alert>
+          )}
+          {hasSummary && (
+            <TabsContent value="summary" className="flex flex-col gap-4">
+              {step.notes?.map((note) => (
+                <Block key={note.heading} title={note.heading}>
+                  <p className="m-0 max-w-[68ch] text-sm leading-normal text-ink">{note.body}</p>
+                </Block>
+              ))}
+              {step.reasoning && (
+                <Block title="Agent’s reasoning, summarized">
+                  <p className="m-0 max-w-[68ch] border-l-2 border-accent/60 pl-3.5 text-[15px] leading-relaxed text-ink-strong">
+                    {step.reasoning}
+                  </p>
+                </Block>
+              )}
+              {!step.notes?.length && !step.reasoning && (
+                <Block title="Result">
+                  <pre className={code}>{step.output}</pre>
+                </Block>
+              )}
+              {step.history && step.history.length > 0 && (
+                <Block title="History">
+                  <ol className="m-0 flex list-none flex-col gap-1 p-0">
+                    {step.history.map((event, i) => (
+                      <li key={i} className="flex gap-3 text-[13px] text-ink">
+                        <span className="w-14 shrink-0 text-ink-soft tabular-nums">{event.at}</span>
+                        {event.text}
+                      </li>
+                    ))}
+                  </ol>
+                </Block>
+              )}
+            </TabsContent>
           )}
           <TabsContent value="trace" className="flex flex-col gap-4">
             {hasCalls && (
@@ -131,7 +187,7 @@ export function TraceInspector({
                 <TraceSequence calls={step.calls ?? []} duration={step.duration ?? 1} />
               </Block>
             )}
-            {step.reasoning && (
+            {step.reasoning && !hasSummary && (
               <Block title="Agent’s reasoning, summarized">
                 <p className="m-0 max-w-[68ch] border-l-2 border-accent/60 pl-3.5 text-[15px] leading-relaxed text-ink-strong">
                   {step.reasoning}
