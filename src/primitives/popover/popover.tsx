@@ -41,9 +41,10 @@ export function Popover({
         setPos({ left: Math.min(r.right + GAP, max), top: r.top })
         return
       }
-      if (align === 'above') {
+      if (align === 'above' || align === 'above-end') {
+        const left = align === 'above-end' ? r.right - width : r.left
         setPos({
-          left: Math.max(EDGE, Math.min(r.left, max)),
+          left: Math.max(EDGE, Math.min(left, max)),
           bottom: window.innerHeight - r.top + GAP,
         })
         return

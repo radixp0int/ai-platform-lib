@@ -3,6 +3,121 @@
 Changes to the component library as seen from Storybook. Newest first. Each
 entry names the modules it touches so the sidebar entry is easy to find.
 
+## 2026-11-27 — Recipes: Chat, Chat history and Settings from Finals 2.0
+
+Three new recipes inside the shared app shell. The old Chat/Recipes stories stay
+until the cleanup PR.
+
+- **Recipes/Chat** is the shell's `chat` route. Before the first message, a
+  centred `PageBand` greeting with the composer lifted over its edge, today's
+  suggestions and "Pick up where you left off". Once a chat begins, a slim band
+  with its title, New chat and Share over the thread; follow-ups on the circle
+  rail; the AI notice as an `Alert variant="bar"` docked over the composer; and
+  quotes in the subtle, italic, snug blockquote style. The Chat panel lists the
+  chats under Pinned, Today, Yesterday and Previous 7 days, with search, a
+  History row and New chat in its heading. A past chat opens at
+  `/chat/c/<id>`. Stories: Default, Dark, Tablet, Portrait, Conversation,
+  ConversationDark, Answering.
+- **Recipes/Chat history** at `/chat/history`: a `PageBand` with New chat;
+  search; Any time / Today / This week / Custom range, with a date popover that
+  checks its dates; label pills with counts; the chats grouped by day beside a
+  preview with Continue, Pin, Share, Rename and Delete (with undo), the last
+  answer, sources, and follow-ups that start a new chat. Below 900px the list
+  and preview take turns. Stories add Loading, LoadError and Empty.
+- **Recipes/Settings**: the one Settings dialog over the chat page, opened from
+  the rail's Settings item (Profile and look) and the account menu (Answer
+  features). Stories: Default, Features, Dark, FeaturesDark, Tablet, Portrait.
+- **Conversation**: `landing` lays out the page before the first message
+  around the composer it is handed; `notice` docks a standing notice over the
+  composer and hides the disclaimer while it shows; `quote` passes a
+  blockquote style to each message. New stories: Landing, WithNotice.
+- **InSideMenu**: `action` puts a page's own button at the end of the panel's
+  heading, for something only the page can do (the chat's New chat).
+- **PageBand**: `align="center"` centres the title and line over a centred
+  page body, keeping the trail at the start. New story: Centred.
+- **Fixtures**: `fixtures/platform/conversations.ts`, one list of past chats
+  for the panel, the pick-up list and the history page.
+- **Tests:** e2e for each recipe and for the three component additions; unit
+  tests for `InSideMenu`'s action and `PageBand`'s alignment.
+
+## 2026-11-27 — Recipes: Ingestion and Tenants from Finals 2.0
+
+- **Recipes/Ingestion** (new), the shell's `/t/<tenant>/ingestion` page.
+  `PageBand` with "1 failing · Show details" and its figures (Documents,
+  Sources syncing, Added this week, Last sync), and Schedule a sync, Connect an
+  API and Upload documents in the band. Upload documents opens the Add a source
+  wizard. Below it, one card holds the sources `DataGrid`: a Filters panel
+  (Status, Type), chips in the search box, Export (CSV, JSON), a bulk bar
+  (Sync now, Pause), pagination, and Sync now / Edit / More on every row.
+- **Recipes/Tenants** (new) replaces the shell's old `/tenants` page. Status
+  means the tenant you are in: Alderfinch Group shows **Active**, every other
+  row a muted dash.
+  - `PageBand` with Show details. The figures are Tenants ("You are in
+    Alderfinch Group"), Seats in use, Plans (6 · 6 · 3) and New in the last 90
+    days. Import from CSV and Add a tenant sit in the band.
+  - The grid shows plan · region under each name, the primary contact, a seats
+    bar that says "nearly full" at 90%, and the created date.
+  - Every row has **View details**, **Edit** and **More actions**: Switch to
+    this tenant (not on the one you are in), Copy tenant ID, Manage people, a
+    rule, then Delete tenant… in red, disabled on the tenant you are in ("You
+    are in it"). On the last three rows of a page the menu opens upward.
+  - Filters: Plan, Region, Created (Last 30 days, Last 90 days, Over a year ago)
+    and Has active seats. Bulk: Change plan, Export, Delete. `/tenants?q=…`
+    starts with a search and `/tenants?details` with the strip open.
+  - The Home panel reads "15 tenants · 1,204 people" under Tenant Admin and
+    "Every organisation, and the one you are in" under Tenants.
+- **DataTable: `rowActionsVisible`** (`'hover'` by default, or `'always'`).
+  `always` draws the row actions on every row instead of on hover, for a list
+  whose action is the point of the row. `DataGrid` passes it through. New story:
+  Components/DataTable › Row Actions Always.
+- **Popover: `align="above-end"`** rises from the anchor, lined up with its
+  right edge — for a row menu near the foot of a list. Story: Above End.
+- **`MenuSeparator`**: a rule between groups of menu items; the arrow keys pass
+  over it. Story: Primitives/Menu › With Separator.
+- **Icons:** `UsersIcon` and `SwitchIcon`.
+- Each recipe has Default, Dark, Details open, Tablet (1024), Portrait (834,
+  dark), Empty and No match stories; Tenants adds Row Menu Open and Row Menu
+  Open Dark. Fixture dates move with today, so date
+  filters always find something.
+- **Tests:** e2e for both pages (Details, filters, sorting, paging, bulk
+  select, row actions and the row menu, export, empty and no-match states, and
+  nothing cut off at 1024 and 834), and for `rowActionsVisible`, `above-end`
+  and `MenuSeparator`. The shell's
+  older tenants-table tests are gone with that page.
+
+## 2026-11-27 — Recipes: Overview and Insights from Finals 2.0
+
+- **Recipes/Overview** is the new landing page, and the shell's Home page
+  (`app-shell/pages/HomePage.tsx`) is gone. It has:
+  - a greeting band with an "Ask Acme, or jump" search. It asks Chat, or jumps
+    to an action in any section, and ⌘K focuses it;
+  - floating section tabs grouped Use · Build · Automate · Measure · Govern,
+    each with a count of what waits in it. Number keys 1–8 open a tab;
+  - quick actions and a Hide numbers switch;
+  - Answer quality, the Sections list, Needs you, and Pick up where you left
+    off with a filter;
+  - a view of one section when you pick its tab.
+    Only the sections the tenant has are shown.
+- **Recipes/Insights** renders for the shell's `insights` route. It has:
+  - a PageBand with the date range (14 days, 7 days, Today, or a custom range
+    in a popover) and Export;
+  - four large and six small StatTiles, Questions per day and Top topics;
+  - three sections: Evaluation scores (score lines you can hide, low-scoring
+    sources, test suites that open), User feedback (ratings, reasons that
+    filter the comments) and Errors in responses (by day and by type, with an
+    examples drawer).
+    Every figure is worked out from the range and the range before it. The
+    charts use one hue, the accent; the score lines differ by dash.
+- **SegmentedControl** `tone="inverse"` and **Omnibox** `tone="inverse"` are
+  for controls on the navy band. **PageBand** `footer` is a row along the
+  band's bottom.
+- Stories: Default, Dark, Tablet (1024), Portrait (834, dark), plus Overview's
+  Chat-only tenant, and Insights' Today and no-earlier-data ranges.
+- Tests: e2e tests for the tabs, keys, search, Hide numbers and filters; the
+  range switch, the custom range, the section links, the score toggles,
+  comment filters, the drawer and the suites; and the new tones and footer.
+  There are unit tests for the Insights figures and the PageBand footer.
+
 ## 2026-11-27 — App shell: the Finals 2.0 frame
 
 The first step of moving every recipe onto the Finals 2.0 designs.

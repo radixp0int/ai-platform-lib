@@ -115,4 +115,18 @@ test.describe('Omnibox', () => {
       page.getByRole('combobox', { name: 'Search and filter tenants' }),
     ).not.toBeFocused()
   })
+
+  test('the inverse tone is a taller, translucent field with white type', async ({
+    story,
+    page,
+  }) => {
+    await story.open('components-omnibox--inverse')
+    const box = page.getByRole('combobox', { name: 'Ask Acme, or jump to a section' })
+    await expect(box).toHaveCSS('color', 'rgb(255, 255, 255)')
+    const field = page.locator('[data-tone="inverse"]')
+    expect((await field.boundingBox())!.height).toBeGreaterThanOrEqual(54)
+    await box.fill('upl')
+    await expect(page.getByRole('option', { name: /Ask Acme: “upl”/ })).toBeVisible()
+    await expect(page.getByRole('option', { name: 'Upload documents' })).toBeVisible()
+  })
 })

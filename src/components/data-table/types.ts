@@ -152,6 +152,13 @@ export type DataTableProps<T> = {
 
   /** Trailing per-row controls. Clicks inside never toggle the row. */
   rowActions?: (row: T) => ReactNode
+  /**
+   * When the row actions show. `hover` (the default) keeps a long list quiet:
+   * they appear on hover, focus, selection or an open row, and always on a
+   * touch screen. `always` draws them on every row, for a list whose action is
+   * the point of the row — a "Resend invite" button, say.
+   */
+  rowActionsVisible?: 'hover' | 'always'
 
   /** Replaces the whole empty state. */
   empty?: ReactNode

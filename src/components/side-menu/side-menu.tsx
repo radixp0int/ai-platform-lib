@@ -301,6 +301,8 @@ export function SideMenu({
             {!inApps && panel?.action && (
               <PanelAction action={panel.action} onNavigate={onNavigate} />
             )}
+            {/* A page's own heading button — see InSideMenu's `action`. */}
+            {!inApps && <span ref={slots?.setAction} className="contents" />}
             <button
               type="button"
               onClick={() => setOpen(false)}
@@ -373,7 +375,8 @@ export function SideMenu({
   )
 }
 
-function PanelAction({
+/** The button at the end of a panel's heading. */
+export function PanelAction({
   action,
   onNavigate,
 }: {

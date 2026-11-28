@@ -188,3 +188,48 @@ export const QuickPicks: Story = {
     />
   ),
 }
+
+/**
+ * `tone="inverse"` on a brand band: the landing page's "Ask Acme, or jump"
+ * field. Taller, translucent, white type; the suggestions are the usual panel.
+ */
+export const Inverse: Story = {
+  render: function InverseStory() {
+    const [q, setQ] = useState('')
+    const places = ['Upload documents', 'Audit log', 'New workflow', 'Invite people']
+    const hits = places.filter((p) => q.trim() && p.toLowerCase().includes(q.trim().toLowerCase()))
+    return (
+      <div className="bg-brand-900 px-6 pt-10 pb-56">
+        <Omnibox
+          label="Ask Acme, or jump to a section"
+          placeholder="Ask Acme, or jump: “upload”, “audit”, “new workflow”"
+          value={q}
+          onValueChange={setQ}
+          tone="inverse"
+          className="mx-auto w-[45rem] max-w-full"
+          hints={null}
+          groups={
+            q.trim()
+              ? [
+                  {
+                    id: 'ask',
+                    label: 'Ask',
+                    items: [{ id: 'ask', label: `Ask Acme: “${q.trim()}”`, onSelect: () => {} }],
+                  },
+                  ...(hits.length
+                    ? [
+                        {
+                          id: 'go',
+                          label: 'Go to',
+                          items: hits.map((p) => ({ id: p, label: p, onSelect: () => {} })),
+                        },
+                      ]
+                    : []),
+                ]
+              : []
+          }
+        />
+      </div>
+    )
+  },
+}
