@@ -46,6 +46,29 @@ entry names the modules it touches so the sidebar entry is easy to find.
   `showVisible` case, the menu's placement above and below, the keyboard, and
   the hover behaviour, and for the Tenants page.
 
+## 2026-11-27 — DataTable: row tones
+
+- **`DataTable` and `DataGrid` take `rowTone(row)`.** It returns `'error'`,
+  `'warning'`, `'info'`, `'success'` or `undefined`, the tone names `Alert`
+  takes, and a toned row gets a 3px edge down its full height on the left. Red
+  for a failed step, amber for a row that needs someone. Return `undefined` and
+  the row renders exactly as before; leave `rowTone` out and nothing changes.
+- **The edge takes no layout.** It is an inset shadow on the row, so the cells
+  sit where an untoned row puts them. It holds through hover, focus and
+  selection: a selected warning row keeps its edge. An open row's rail takes
+  the tone too, down through its expanded detail; an open row with no tone keeps
+  the brand rail.
+- **Colours are `Alert`'s edge colours**, with their dark values: info
+  `--brand-fg`, success `--success-fg`, warning `--caution`, error
+  `--danger-fg`. Say the state in a cell as well; colour is reinforcement.
+- **`RowTone` and `ROW_TONE_EDGE`** are exported from `components/data-table`
+  for rows a table draws itself.
+- **`WorkflowRunsTable` gains `rowTone(run)`** with the same tones and edge.
+- **Stories:** Components/DataTable: Row Tones, Row Tones Dark, Runs List and
+  Runs List Dark (one failed run, three waiting on someone, the rest plain, with
+  a selected warning row). Workflows/Components/Workflow runs table: Needs
+  Attention and Needs Attention Dark.
+
 ## 2026-11-27 — Recipes: Chat, Chat history and Settings from Finals 2.0
 
 Three new recipes inside the shared app shell. The old Chat/Recipes stories stay

@@ -174,3 +174,12 @@ describe('termMatches', () => {
     expect(termMatches({ id: '1', field: null, value: 'x' }, undefined)).toBe(false)
   })
 })
+
+describe('DataGrid rowTone', () => {
+  it('passes rowTone through to the table rows', () => {
+    render(<Host rowTone={(r) => (r.id === 'b' ? 'error' : undefined)} />)
+    const row = screen.getByText('Sarah Johnson').closest('tr')!
+    expect(row).toHaveAttribute('data-tone', 'error')
+    expect(screen.getByText('Marcus Webb').closest('tr')).not.toHaveAttribute('data-tone')
+  })
+})

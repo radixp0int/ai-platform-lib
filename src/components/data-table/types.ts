@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import type { PaginationProps } from '../pagination'
 import type { Sort } from '../paging'
+import type { RowTone } from './row-tone'
 
 export type ColumnAlign = 'start' | 'end'
 
@@ -220,6 +221,21 @@ export type DataTableProps<T> = {
    * ends over the last button.
    */
   actionsHeader?: 'visible' | 'hidden'
+
+  /**
+   * A row's state, drawn as a 3px edge down the row's full height on the left:
+   * `'error'` for a failed step, `'warning'` for a row that needs someone,
+   * `'info'` or `'success'`. The same tone names `Alert` takes. Return
+   * `undefined` for a row with nothing to say, and it renders as it always has.
+   *
+   * The edge is an inset shadow, so the cells do not move. It sits alongside
+   * hover, focus and selection: a selected warning row keeps its edge. An open
+   * row's rail takes the tone too, down through its expanded detail.
+   *
+   * Colour is reinforcement, not the message: say the state in a cell as well
+   * ("Failed at Approve", "Waiting on you").
+   */
+  rowTone?: (row: T) => RowTone | undefined
 
   /** Replaces the whole empty state. */
   empty?: ReactNode

@@ -205,6 +205,99 @@ test.describe('DataTable', () => {
       await expect(request(page)).not.toContainText('email')
     })
   })
+
+  test.describe('row tones', () => {
+    /** A row's edge colour, read off its 3px inset shadow; null when it has none. */
+    const edgeOf = (el: Element) => {
+      const shadow = getComputedStyle(el).boxShadow
+      const match = shadow.match(/([a-z]+\([^)]*\)) 3px 0px 0px 0px inset/)
+      return match ? match[1] : null
+    }
+
+    test('each tone draws a 3px edge down the row, and no tone draws none', async ({
+      story,
+      page,
+    }) => {
+      await story.open('components-datatable--row-tones')
+      const rows = page.getByRole('table', { name: 'Row tones' }).locator('tbody tr')
+      await expect(rows).toHaveCount(5)
+      for (const tone of ['error', 'warning', 'info', 'success']) {
+        const edge = await page.locator(`tr[data-tone="${tone}"]`).evaluate(edgeOf)
+        expect(edge, `${tone} has an edge`).not.toBeNull()
+      }
+      const plain = rows.filter({ hasText: 'no tone' })
+      await expect(plain).not.toHaveAttribute('data-tone')
+      expect(await plain.evaluate(edgeOf)).toBeNull()
+      // Warning is the caution amber, error the danger red: four different colours.
+      expect(await page.locator('tr[data-tone="warning"]').evaluate(edgeOf)).toBe('rgb(161, 98, 7)')
+      const colours = await page
+        .locator('tr[data-tone]')
+        .evaluateAll((els) =>
+          els.map((el) => getComputedStyle(el).boxShadow.match(/^(.*?) 3px 0px/)?.[1]),
+        )
+      expect(new Set(colours).size).toBe(4)
+    })
+
+    test('the edge takes no room: toned and plain cells line up', async ({ story, page }) => {
+      await story.open('components-datatable--row-tones')
+      const table = page.getByRole('table', { name: 'Row tones' })
+      const firstCell = (sel: string) => table.locator(sel).locator('td').first().boundingBox()
+      const toned = (await firstCell('tr[data-tone="error"]'))!
+      const plain = (await firstCell('tbody tr:not([data-tone])'))!
+      expect(toned.x).toBe(plain.x)
+      expect(toned.width).toBe(plain.width)
+    })
+
+    test('the edge is on the row, not a cell, so it spans the full height', async ({
+      story,
+      page,
+    }) => {
+      await story.open('components-datatable--row-tones')
+      const row = page.locator('tr[data-tone="error"]')
+      expect(await row.evaluate(edgeOf)).not.toBeNull()
+      const cells = await row
+        .locator('td')
+        .evaluateAll((tds) => tds.map((td) => getComputedStyle(td).boxShadow))
+      expect(cells.every((s) => !/3px 0px 0px 0px inset/.test(s))).toBe(true)
+      const rowBox = (await row.boundingBox())!
+      const cellBox = (await row.locator('td').first().boundingBox())!
+      expect(cellBox.height).toBe(rowBox.height)
+    })
+
+    test('a selected or hovered row keeps its edge', async ({ story, page }) => {
+      await story.open('components-datatable--runs-list')
+      const selected = page.locator('tr[data-selected="true"]')
+      await expect(selected).toHaveAttribute('data-tone', 'warning')
+      expect(await selected.evaluate(edgeOf)).toBe('rgb(161, 98, 7)')
+      const failed = page.locator('tr[data-tone="error"]')
+      const before = await failed.evaluate(edgeOf)
+      await failed.hover()
+      expect(await failed.evaluate(edgeOf)).toBe(before)
+      // Selecting it keeps it too.
+      await page.getByRole('checkbox', { name: /Northwind Supplies/ }).check()
+      await expect(failed).toHaveAttribute('data-selected', 'true')
+      expect(await failed.evaluate(edgeOf)).toBe(before)
+    })
+
+    test('the runs list: one failed, three waiting on someone, the rest plain', async ({
+      story,
+      page,
+    }) => {
+      await story.open('components-datatable--runs-list')
+      await expect(page.locator('tr[data-tone="error"]')).toHaveCount(1)
+      await expect(page.locator('tr[data-tone="warning"]')).toHaveCount(3)
+      const table = page.getByRole('table', { name: 'Runs' })
+      await expect(table.locator('tbody tr:not([data-tone])')).toHaveCount(3)
+    })
+
+    test('in dark, the edges take the dark tone values', async ({ story, page }) => {
+      await story.open('components-datatable--runs-list-dark')
+      const warning = await page.locator('tr[data-tone="warning"]').first().evaluate(edgeOf)
+      expect(warning).not.toBeNull()
+      expect(warning).not.toBe('rgb(161, 98, 7)')
+      expect(await page.locator('tr[data-tone="error"]').evaluate(edgeOf)).not.toBeNull()
+    })
+  })
 })
 
 test.describe('DataTable, row actions', () => {

@@ -22,4 +22,31 @@ test.describe('WorkflowRunsTable', () => {
     await expect(root.getByText('Showing the latest 4 of 31 runs')).toBeVisible()
     await expect(root.getByRole('button', { name: 'See all 31 runs' })).toBeVisible()
   })
+
+  test('rowTone edges the runs that need attention and leaves the rest plain', async ({
+    story,
+    page,
+  }) => {
+    const root = await story.open('workflows-components-workflow-runs-table--needs-attention')
+    const edgeOf = (el: Element) =>
+      getComputedStyle(el).boxShadow.match(/([a-z]+\([^)]*\)) 3px 0px 0px 0px inset/)?.[1] ?? null
+    const failed = root.getByRole('link', { name: /Bluefin Logistics/ })
+    const waiting = root.getByRole('link', { name: /Harbor Street Bakery/ })
+    const plain = root.getByRole('link', { name: /Ridgeline Dental/ })
+    await expect(failed).toHaveAttribute('data-tone', 'error')
+    await expect(waiting).toHaveAttribute('data-tone', 'warning')
+    await expect(plain).not.toHaveAttribute('data-tone')
+    expect(await waiting.evaluate(edgeOf)).toBe('rgb(161, 98, 7)')
+    expect(await failed.evaluate(edgeOf)).not.toBeNull()
+    expect(await plain.evaluate(edgeOf)).toBeNull()
+    // The edge takes no room: the name starts where a plain row's does.
+    const nameX = async (row: typeof plain) => (await row.locator('span').first().boundingBox())!.x
+    expect(await nameX(failed)).toBe(await nameX(plain))
+    await page.mouse.move(0, 0)
+  })
+
+  test('without rowTone, no run has an edge', async ({ story }) => {
+    const root = await story.open('workflows-components-workflow-runs-table--default')
+    await expect(root.locator('[data-tone]')).toHaveCount(0)
+  })
 })

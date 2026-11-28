@@ -2,10 +2,11 @@ import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { DataTable } from './data-table'
-import type { DataTableProps, RowAction } from './types'
+import { ROW_TONE_EDGE, type RowTone } from './row-tone'
+import type { Column, DataTableProps, RowAction } from './types'
 
-type Row = { id: string; name: string }
-const props: DataTableProps<Row> = {
+type ActionRow = { id: string; name: string }
+const actionProps: DataTableProps<ActionRow> = {
   caption: 'Rows',
   columns: [{ id: 'name', header: 'Name', cell: (r) => r.name }],
   rows: [{ id: 'a', name: 'Bayshore Foods' }],
@@ -17,12 +18,12 @@ const wrapperOf = () => screen.getByRole('button', { name: 'Open Bayshore Foods'
 
 describe('DataTable row actions', () => {
   it('reveal on hover by default', () => {
-    render(<DataTable {...props} />)
+    render(<DataTable {...actionProps} />)
     expect(wrapperOf().className).toContain('opacity-0')
   })
 
   it('show on every row with rowActionsVisible="always"', () => {
-    render(<DataTable {...props} rowActionsVisible="always" />)
+    render(<DataTable {...actionProps} rowActionsVisible="always" />)
     expect(wrapperOf().className).not.toContain('opacity-0')
   })
 })
@@ -31,18 +32,18 @@ describe('DataTable actionsHeader', () => {
   const header = () => screen.getByRole('columnheader', { name: 'Actions' })
 
   it('keeps the name for screen readers only by default', () => {
-    render(<DataTable {...props} />)
+    render(<DataTable {...actionProps} />)
     const name = within(header()).getByText('Actions')
     expect(name.className).toContain('sr-only')
   })
 
   it('"hidden" is the same as the default', () => {
-    render(<DataTable {...props} actionsHeader="hidden" />)
+    render(<DataTable {...actionProps} actionsHeader="hidden" />)
     expect(within(header()).getByText('Actions').className).toContain('sr-only')
   })
 
   it('"visible" draws the name, right-aligned, and it is still the column header', () => {
-    render(<DataTable {...props} actionsHeader="visible" />)
+    render(<DataTable {...actionProps} actionsHeader="visible" />)
     const th = header()
     expect(th.tagName).toBe('TH')
     expect(th).toHaveAttribute('scope', 'col')
@@ -53,17 +54,17 @@ describe('DataTable actionsHeader', () => {
   })
 
   it('has no actions header without row actions, whichever is asked for', () => {
-    render(<DataTable {...props} rowActions={undefined} actionsHeader="visible" />)
+    render(<DataTable {...actionProps} rowActions={undefined} actionsHeader="visible" />)
     expect(screen.queryByRole('columnheader', { name: 'Actions' })).toBeNull()
   })
 })
 
 describe('DataTable rowActions as a list', () => {
-  const rows: Row[] = [
+  const rows: ActionRow[] = [
     { id: 'a', name: 'Bayshore Foods' },
     { id: 'b', name: 'Crestview Builders' },
   ]
-  const make = (onSelect = vi.fn()): RowAction<Row>[] => [
+  const make = (onSelect = vi.fn()): RowAction<ActionRow>[] => [
     { id: 'view', label: 'View details', icon: <i />, onSelect },
     { id: 'edit', label: 'Edit', icon: <i />, onSelect },
     { id: 'copy', label: 'Copy ID', icon: <i />, onSelect },
@@ -78,8 +79,14 @@ describe('DataTable rowActions as a list', () => {
       onSelect,
     },
   ]
-  const table = (extra: Partial<DataTableProps<Row>> = {}) => (
-    <DataTable {...props} rows={rows} rowLabel={(r) => r.name} rowActions={make()} {...extra} />
+  const table = (extra: Partial<DataTableProps<ActionRow>> = {}) => (
+    <DataTable
+      {...actionProps}
+      rows={rows}
+      rowLabel={(r) => r.name}
+      rowActions={make()}
+      {...extra}
+    />
   )
   const more = (name: string) => screen.getByRole('button', { name: `More actions for ${name}` })
 
@@ -163,7 +170,7 @@ describe('DataTable rowActions as a list', () => {
   })
 
   it('an action hidden for a row is left out, and the next one moves up', () => {
-    const list: RowAction<Row>[] = [
+    const list: RowAction<ActionRow>[] = [
       { id: 'a', label: 'One', icon: <i />, hidden: (r) => r.id === 'a', onSelect: vi.fn() },
       { id: 'b', label: 'Two', icon: <i />, onSelect: vi.fn() },
       { id: 'c', label: 'Three', icon: <i />, onSelect: vi.fn() },
@@ -219,5 +226,85 @@ describe('DataTable rowActions as a list', () => {
     )
     expect(screen.getByRole('button', { name: 'Edit · Bayshore Foods' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Weitere · Bayshore Foods' })).toBeInTheDocument()
+  })
+})
+
+type Row = { id: string; name: string; tone?: RowTone }
+
+const ROWS: Row[] = [
+  { id: 'a', name: 'Failed run', tone: 'error' },
+  { id: 'b', name: 'Waiting run', tone: 'warning' },
+  { id: 'c', name: 'Plain run' },
+]
+const COLUMNS: Column<Row>[] = [{ id: 'name', header: 'Run', cell: (r) => r.name }]
+
+const table = (props: Partial<DataTableProps<Row>> = {}) =>
+  render(<DataTable caption="Runs" columns={COLUMNS} rows={ROWS} rowId={(r) => r.id} {...props} />)
+
+/** The `<tr>` a run's name sits in. */
+const rowOf = (name: string) => screen.getByText(name).closest('tr')!
+
+describe('DataTable rowTone', () => {
+  it('marks each toned row with its tone and its edge', () => {
+    table({ rowTone: (r) => r.tone })
+    expect(rowOf('Failed run')).toHaveAttribute('data-tone', 'error')
+    expect(rowOf('Failed run').className).toContain(ROW_TONE_EDGE.error)
+    expect(rowOf('Waiting run')).toHaveAttribute('data-tone', 'warning')
+    expect(rowOf('Waiting run').className).toContain(ROW_TONE_EDGE.warning)
+  })
+
+  it('leaves a row with no tone exactly as a table without rowTone draws it', () => {
+    const { unmount } = table()
+    const before = [...screen.getAllByRole('row')].map((r) => r.outerHTML)
+    unmount()
+    table({ rowTone: () => undefined })
+    const after = [...screen.getAllByRole('row')].map((r) => r.outerHTML)
+    expect(after).toEqual(before)
+  })
+
+  it('a plain row beside toned ones has no tone and no edge', () => {
+    table({ rowTone: (r) => r.tone })
+    const plain = rowOf('Plain run')
+    expect(plain).not.toHaveAttribute('data-tone')
+    expect(plain.className).not.toContain('shadow-')
+  })
+
+  it('a selected row keeps its tone', () => {
+    table({
+      rowTone: (r) => r.tone,
+      selectedIds: ['b'],
+      onSelectionChange: () => {},
+      rowLabel: (r) => r.name,
+    })
+    const row = rowOf('Waiting run')
+    expect(within(row).getByRole('checkbox', { name: /Waiting run/ })).toBeChecked()
+    expect(row).toHaveAttribute('data-selected', 'true')
+    expect(row).toHaveAttribute('data-tone', 'warning')
+    expect(row.className).toContain(ROW_TONE_EDGE.warning)
+  })
+
+  it('an open toned row carries its tone down through the expanded detail', () => {
+    table({
+      rowTone: (r) => r.tone,
+      expandedIds: ['a'],
+      onExpandedChange: () => {},
+      renderExpanded: (r) => <p>Detail for {r.name}</p>,
+    })
+    const row = rowOf('Failed run')
+    expect(row.className).toContain(ROW_TONE_EDGE.error)
+    expect(row.className).not.toContain('var(--brand-solid)]')
+    const panel = screen.getByText('Detail for Failed run').closest('tr')!
+    expect(panel.className).toContain(ROW_TONE_EDGE.error)
+  })
+
+  it('an open row with no tone keeps the brand rail', () => {
+    table({
+      expandedIds: ['c'],
+      onExpandedChange: () => {},
+      renderExpanded: (r) => <p>Detail for {r.name}</p>,
+    })
+    expect(rowOf('Plain run').className).toContain('shadow-[inset_3px_0_0_var(--brand-solid)]')
+    const panel = screen.getByText('Detail for Plain run').closest('tr')!
+    expect(panel.className).toContain('shadow-[inset_3px_0_0_var(--brand-solid)]')
   })
 })
