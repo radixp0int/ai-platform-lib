@@ -1,3 +1,4 @@
+import type { Locator, Page } from '@playwright/test'
 import { expect, test } from '../../../tests/story'
 
 test.describe('DataTable', () => {
@@ -131,12 +132,11 @@ test.describe('DataTable', () => {
   })
 
   test.describe('sorting by type', () => {
-    const request = (page: import('@playwright/test').Page) =>
-      page.getByRole('status', { name: 'Sort request' })
+    const request = (page: Page) => page.getByRole('status', { name: 'Sort request' })
     /** The text of one column, top to bottom. */
-    const column = (page: import('@playwright/test').Page, n: number) =>
+    const column = (page: Page, n: number) =>
       page.locator(`#storybook-root tbody tr td:nth-child(${n})`).allInnerTexts()
-    const names = (page: import('@playwright/test').Page) =>
+    const names = (page: Page) =>
       page.locator('#storybook-root tbody tr [data-row-title]').allInnerTexts()
 
     test('a numeric column sorts as numbers, so 88 comes before 412', async ({ story, page }) => {
@@ -227,5 +227,91 @@ test.describe('DataTable, row actions', () => {
     for (const button of await buttons.all()) {
       await expect(button.locator('..')).toHaveCSS('opacity', '1')
     }
+  })
+})
+
+test.describe('DataTable, actions header', () => {
+  const table = (page: Page) => page.getByRole('table', { name: 'Tenants' })
+  const header = (page: Page) => table(page).getByRole('columnheader', { name: 'Actions' })
+
+  /** Where a box ends: its right edge, in page pixels. */
+  const rightEdge = async (target: Locator) => {
+    const box = await target.boundingBox()
+    return box!.x + box!.width
+  }
+
+  test('"visible" shows the word in the header style, right-aligned over the buttons', async ({
+    story,
+    page,
+  }) => {
+    await story.open('components-datatable--actions-header-visible')
+    const th = header(page)
+    const word = th.getByText('Actions')
+    await expect(word).toBeVisible()
+    await expect(word).not.toHaveClass(/sr-only/)
+    await expect(th).toHaveCSS('text-align', 'right')
+
+    // The same small caps as the other headers.
+    const status = table(page).getByRole('columnheader', { name: 'Status' })
+    for (const property of ['font-size', 'font-weight', 'letter-spacing', 'text-transform']) {
+      const expected = await status
+        .locator('span')
+        .evaluate((el, p) => getComputedStyle(el).getPropertyValue(p), property)
+      const actual = await word.evaluate(
+        (el, p) => getComputedStyle(el).getPropertyValue(p),
+        property,
+      )
+      expect(actual, property).toBe(expected)
+    }
+    await expect(word).toHaveCSS('color', await status.evaluate((el) => getComputedStyle(el).color))
+
+    // It ends where the last button does, and sits over the buttons rather than over the name.
+    const more = table(page).getByRole('button', { name: /^More actions for / })
+    const edge = await rightEdge(word)
+    expect(Math.abs(edge - (await rightEdge(more.first())))).toBeLessThanOrEqual(1.5)
+    const nameCell = table(page).locator('tbody tr').first().getByRole('cell').first()
+    expect(edge).toBeGreaterThan(await rightEdge(nameCell))
+  })
+
+  test('"visible" is still the one column header named Actions, with a cell of buttons under it', async ({
+    story,
+    page,
+  }) => {
+    await story.open('components-datatable--actions-header-visible')
+    await expect(table(page).getByRole('columnheader')).toHaveCount(7)
+    await expect(header(page)).toHaveCount(1)
+    await expect(header(page)).toHaveAttribute('scope', 'col')
+    await expect(table(page).getByRole('button', { name: /^Edit / })).toHaveCount(6)
+  })
+
+  test('"visible" holds in dark', async ({ story, page }) => {
+    await story.open('components-datatable--actions-header-visible-dark', { mode: 'dark' })
+    await expect(header(page).getByText('Actions')).toBeVisible()
+    await expect(header(page).getByText('Actions')).toHaveCSS(
+      'color',
+      await table(page)
+        .getByRole('columnheader', { name: 'Status' })
+        .evaluate((el) => getComputedStyle(el).color),
+    )
+  })
+
+  test('"hidden", the default, keeps the name for screen readers and shows nothing', async ({
+    story,
+    page,
+  }) => {
+    await story.open('components-datatable--actions-header-hidden')
+    const th = header(page)
+    // Still named Actions and still a header, so the column is announced.
+    await expect(th).toHaveCount(1)
+    await expect(table(page).getByRole('columnheader')).toHaveCount(7)
+    // But the word takes no room: a 1px clipped box, not a label.
+    const box = await th.getByText('Actions').boundingBox()
+    expect(box!.width).toBeLessThanOrEqual(1)
+    expect(box!.height).toBeLessThanOrEqual(1)
+  })
+
+  test('a table that does not ask for it keeps the hidden name', async ({ story, page }) => {
+    await story.open('components-datatable--row-actions-always')
+    await expect(header(page).getByText('Actions')).toHaveClass(/sr-only/)
   })
 })

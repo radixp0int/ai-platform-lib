@@ -3,6 +3,24 @@
 Changes to the component library as seen from Storybook. Newest first. Each
 entry names the modules it touches so the sidebar entry is easy to find.
 
+## 2026-11-28 — DataTable: a visible "Actions" header
+
+- **DataTable: `actionsHeader`** (`'hidden'` by default, or `'visible'`). The
+  row-actions column's header has always been named "Actions" for screen
+  readers only, so a column of icon buttons looked unlabelled. `visible` draws
+  the word in the other headers' small caps, right-aligned so it ends over the
+  last button, as the Finals 2.0 Tenants and Runs boards do. The header is the
+  same real column header either way, named "Actions". `DataGrid` passes it
+  through. Nothing changes for a table that does not ask for it. New stories:
+  Components/DataTable › Actions Header Visible, Actions Header Hidden, and a
+  dark one of each.
+- **Recipes/Tenants** opts in, so its actions column reads "Actions" over View
+  details, Edit and More actions. The Workflows recipe's runs list will opt in
+  when it is built; Ingestion stays as it is until a decision is made.
+- **Tests:** unit tests for both settings on `DataTable` and for `DataGrid`
+  passing it on; e2e that the word is visible, in the header style, ends where
+  the last button does and is still the column header, plus the Tenants page.
+
 ## 2026-11-27 — Recipes: Chat, Chat history and Settings from Finals 2.0
 
 Three new recipes inside the shared app shell. The old Chat/Recipes stories stay

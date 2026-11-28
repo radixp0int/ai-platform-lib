@@ -75,6 +75,21 @@ const COLUMNS: Column<Tenant>[] = [
   },
 ]
 
+/** Edit, Delete and More: three icon buttons, the way a list's own row actions look. */
+const iconActions = (t: Tenant) => (
+  <>
+    <IconButton size="sm" shape="rounded" aria-label={`Edit ${t.name}`} title="Edit">
+      <PencilIcon width={14} height={14} />
+    </IconButton>
+    <IconButton size="sm" shape="rounded" aria-label={`Delete ${t.name}`} title="Delete">
+      <TrashIcon width={14} height={14} />
+    </IconButton>
+    <IconButton size="sm" shape="rounded" aria-label={`More actions for ${t.name}`} title="More">
+      <DotsIcon width={14} height={14} />
+    </IconButton>
+  </>
+)
+
 function Detail({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-0.5">
@@ -166,24 +181,7 @@ export const ExpandableRows: Story = {
             <Detail label="Renewal">{fmtDate(t.renewal)}</Detail>
           </div>
         )}
-        rowActions={(t) => (
-          <>
-            <IconButton size="sm" shape="rounded" aria-label={`Edit ${t.name}`} title="Edit">
-              <PencilIcon width={14} height={14} />
-            </IconButton>
-            <IconButton size="sm" shape="rounded" aria-label={`Delete ${t.name}`} title="Delete">
-              <TrashIcon width={14} height={14} />
-            </IconButton>
-            <IconButton
-              size="sm"
-              shape="rounded"
-              aria-label={`More actions for ${t.name}`}
-              title="More"
-            >
-              <DotsIcon width={14} height={14} />
-            </IconButton>
-          </>
-        )}
+        rowActions={iconActions}
       />
     )
   },
@@ -203,6 +201,35 @@ export const RowActionsAlways: Story = {
       </Button>
     ),
   },
+}
+
+/**
+ * `actionsHeader="visible"` names the actions column in the header: small caps like the others,
+ * right-aligned so it ends over the last button. The default, `hidden`, keeps the name for screen
+ * readers only. Either way the header is "Actions" to a screen reader.
+ */
+export const ActionsHeaderVisible: Story = {
+  args: {
+    rowActions: iconActions,
+    rowActionsVisible: 'always',
+    actionsHeader: 'visible',
+    actionsWidth: '120px',
+  },
+}
+
+export const ActionsHeaderVisibleDark: Story = {
+  ...ActionsHeaderVisible,
+  globals: { mode: 'dark' },
+}
+
+/** The default: the same column with its header's name for screen readers only. */
+export const ActionsHeaderHidden: Story = {
+  args: { ...ActionsHeaderVisible.args, actionsHeader: 'hidden' },
+}
+
+export const ActionsHeaderHiddenDark: Story = {
+  ...ActionsHeaderHidden,
+  globals: { mode: 'dark' },
 }
 
 /** Skeleton rows keep the header and frame; match `skeletonRows` to the page size. */

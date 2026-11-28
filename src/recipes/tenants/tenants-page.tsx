@@ -509,6 +509,7 @@ export function TenantsPage({
           minWidth="600px"
           actionsWidth="120px"
           rowActionsVisible="always"
+          actionsHeader="visible"
           rowActions={(o) => {
             const index = pageRows.indexOf(o)
             return (

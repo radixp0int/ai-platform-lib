@@ -159,6 +159,14 @@ export type DataTableProps<T> = {
    * the point of the row — a "Resend invite" button, say.
    */
   rowActionsVisible?: 'hover' | 'always'
+  /**
+   * Whether the row-actions column's header shows its name. The header is named
+   * "Actions" and stays a column header either way. `hidden` (the default)
+   * keeps that name for screen readers only, so the column looks unlabelled;
+   * `visible` draws it in the other headers' small caps, right-aligned so it
+   * ends over the last button.
+   */
+  actionsHeader?: 'visible' | 'hidden'
 
   /** Replaces the whole empty state. */
   empty?: ReactNode

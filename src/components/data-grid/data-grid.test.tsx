@@ -145,6 +145,18 @@ describe('DataGrid', () => {
     rerender(<Host rows={[]} pagination={{ ...page, totalElements: 0 }} />)
     expect(screen.queryByRole('navigation', { name: 'Pagination' })).not.toBeInTheDocument()
   })
+
+  it('passes actionsHeader to the table: Actions is named in the header only when asked', () => {
+    const rowActions = (r: Row) => <button type="button">Open {r.name}</button>
+    const { rerender } = render(<Host rowActions={rowActions} />)
+    expect(
+      within(screen.getByRole('columnheader', { name: 'Actions' })).getByText('Actions'),
+    ).toHaveClass('sr-only')
+    rerender(<Host rowActions={rowActions} actionsHeader="visible" />)
+    expect(
+      within(screen.getByRole('columnheader', { name: 'Actions' })).getByText('Actions'),
+    ).not.toHaveClass('sr-only')
+  })
 })
 
 describe('termMatches', () => {

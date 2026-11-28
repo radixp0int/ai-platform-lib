@@ -146,6 +146,7 @@ export function DataTableView<T>({
   onExpandedChange,
   rowActions,
   rowActionsVisible = 'hover',
+  actionsHeader = 'hidden',
   empty,
   emptyAction,
   noMatch,
@@ -348,11 +349,23 @@ export function DataTableView<T>({
                 )
               })}
 
-              {rowActions && (
-                <th scope="col" style={{ width: actionsWidth }} className="px-4">
-                  <span className="sr-only">Actions</span>
-                </th>
-              )}
+              {rowActions &&
+                (actionsHeader === 'visible' ? (
+                  // `px-3`, like the cells below, so the word ends where the last button does.
+                  <th
+                    scope="col"
+                    style={{ width: actionsWidth }}
+                    className="h-11 truncate px-3 text-right align-middle whitespace-nowrap text-ink-soft"
+                  >
+                    <span className="text-[10.5px] font-extrabold tracking-[0.07em] uppercase">
+                      Actions
+                    </span>
+                  </th>
+                ) : (
+                  <th scope="col" style={{ width: actionsWidth }} className="px-4">
+                    <span className="sr-only">Actions</span>
+                  </th>
+                ))}
             </tr>
           </thead>
 
